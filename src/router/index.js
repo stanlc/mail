@@ -47,6 +47,7 @@ const routes = [
         path:'/device/serial',
         name:'DeviceSerial',
         component:DeviceSerial,
+        redirect:'/device/sub',
         children:[
           {
             path:'/device/sub',

@@ -16,7 +16,8 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">查询</el-button>
+                    <el-button type="primary" @click="searchAccount">查询</el-button>
+                    <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>                                                                           
             </el-form>
             <el-form :inline="true">
@@ -40,27 +41,27 @@
                 <el-table-column
                 label="序号"
                 type="index"
-                width="50">
+                width="100">
                 </el-table-column>
                 <el-table-column
                 label="订阅账号"
                 prop="account"
-                width="180"
+                width="200"
                 
                 >
                 </el-table-column>                
                 <el-table-column
                 label="订阅状态"
                 prop="applayStatus"
-                width="80"
+                width="160"
                 :formatter="status"
                 >               
                 </el-table-column>             
                 <el-table-column
                 label="上一次调用更新设备时间"
                 prop="fechTime"
-                width="240"
                 :formatter="formatTime"
+                width="240"
                 >
                 </el-table-column>  
                 <el-table-column
@@ -129,10 +130,10 @@
             :model="addOldAccountForm">
             <el-form label-position="right" label-width="auto">
                 <el-form-item label="订阅账号：">
-                    <el-input v-model="addOldAccountForm.account"></el-input>
+                    <el-input v-model="addOldAccountForm.account" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="账号描述：">
-                    <el-input v-model="addOldAccountForm.userName"></el-input>
+                    <el-input v-model="addOldAccountForm.userName" size="small"></el-input>
                 </el-form-item>                                            
             </el-form>       
             <span slot="footer" class="dialog-footer">
@@ -223,7 +224,12 @@ export default {
             let h = date.getHours() + ':'
             let m = date.getMinutes() + ':'
             let s = date.getSeconds()
-            return Y+M+D+h+m+s            
+            if(Y==='1970-'){
+                return "设备未调用"
+            }else{
+                return Y+M+D+h+m+s    
+            }
+                    
         },
         //省市区
         getCityData(){
@@ -278,13 +284,31 @@ export default {
         }, 
         //添加账号
         addAccount(){
+            let that = this 
             this.$http.post('/account/apply',this.addAccountForm).then(res=>{
-                console.log(res.data)
+                        that.utils.getSubAccount(that,{
+                            "pageNum": 1,
+                            "pageSize": 8
+                        })
             })
             this.addAccountDialogVisible =false
         },
+        //筛选
+        searchAccount(){
+            this.utils.getSubAccount(this,this.searchForm)
+        },
+        clear(){
+            this.utils.getSubAccount(this,{
+                "pageNum": 1,
+                "pageSize": 8
+            })            
+        },
         //绑定已有订阅账号
         addOldAccount(){
+            this.$http.post(`/account/applyAccount/${this.addOldAccountForm.account}`).then(res=>{
+                console.log(res)
+                this.addOldAccountVisible = false
+            })
             
         },
     }
@@ -301,7 +325,7 @@ export default {
         border: none;
     }
     .box-card {
-        width: 75vw;
+        width: 82vw;
         height: 78vh;
         background: #06253d;
         border-radius: 5px;

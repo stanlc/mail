@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-aside>
+        <el-aside width="15vw">
            <el-menu 
           class="el-menu-demo" 
           background-color = "#1c4072"

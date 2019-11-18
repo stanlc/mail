@@ -290,6 +290,7 @@ export default {
             isAuthed:[],//角色已经配置的权限
             selectOrganId:0,
             selectRoleId:0,
+            selectRole:[],
             menuConfigList:[],
             selectParentId:null,
             userLevel:JSON.parse(localStorage.userInfo).level,
@@ -435,13 +436,16 @@ export default {
                     message:'请先选择组织'
                 })
             }else{
+                let that = this
                 this.addRoleForm.organId = this.selectOrganId
-                this.utils.addRole(this.addRoleForm)
-                this.utils.getRoleList(this,this.selectOrganId)
+                this.utils.addRole(this.addRoleForm).then(()=>{
+                    that.utils.getRoleList(that,that.selectOrganId) 
+                })
             }
             this.addRoleDialogVisible = false
         },
         roleSelect(e){
+            this.selectRole = e
             if(e.length===1){
                 this.configRoleForm = e[0]
                 this.selectRoleId = e[0].id
@@ -485,28 +489,22 @@ export default {
             }
         },
         delRole(){
-            let idList = ''
-            if(this.roleSelects&&this.roleSelects.length>1){
-                this.$message({
-                    type:'error',
-                    message:'一次只能删除一个角色'
-                })
-            }else{
-                this.$http.delete(`/role/delete/${this.selectRoleId}`).then((res)=>{
-                     if(res.data.code===200){
-                         this.$message({
-                             type:'success',
-                             message:'删除成功'
-                         })
-                     }else{
-                         this.$message({
-                             type:'error',
-                             message:'删除失败'
-                         })
-                     }
-                     this.utils.getRoleList(this,this.selectOrganId)
-                 })
-            }
+            let that = this
+            this.selectRole.forEach((item)=>{
+                if(item.id!==0){
+                    let id = item.id
+                    console.log(id)
+                    this.utils.delRole(id).then(()=>{
+                       that.utils.getRoleList(that,that.selectOrganId) 
+                    })
+                }
+            })
+               
+            this.$message({
+                            type:'success',
+                            message:'删除成功'
+                        })
+                
             
         },
         //权限配置
@@ -557,7 +555,7 @@ export default {
 </script>
 <style scoped>
     .box-card {
-        width: 37vw;
+        width: 40vw;
         height: 54vh;
         background: #06253d;
         border-radius: 5px;

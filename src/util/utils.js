@@ -45,10 +45,29 @@ let utils = {
         })
     },
     addRole(form){
-        Vue.prototype.$http.post('/role/add',form).then((res)=>{
-            console.log(res)
+        return Vue.prototype.$http.post('/role/add',form)
+    },
+    delRole(id){
+        return Vue.prototype.$http.delete(`/role/delete/${id}`)
+    }, 
+    //用户管理
+    getUserList(vm,form){
+        Vue.prototype.$http.post('user/userList',form).then(res=>{
+            localStorage.userList = JSON.stringify(res.data.paging.list)
+            vm.userList = JSON.parse(localStorage.userList)
         })
     },
+    addUser(vm,form){
+        Vue.prototype.$http.post('user/add',form).then(res=>{
+            console.log(res.data)
+        })
+    }, 
+    delUser(id){
+        return Vue.prototype.$http.delete(`/user/delete/${id}`)
+    },  
+    editUser(form){
+        return Vue.prototype.$http.post(`/user/edit/`,form)
+    } ,
     //获取账号订阅信息
     getSubAccount(vm,form){
         Vue.prototype.$http.post('/account/pagerList',form).then(res=>{

@@ -1,7 +1,7 @@
 <template>
     <el-container>
-        <el-aside>
-           <el-menu 
+        <el-aside width="15vw">
+            <el-menu 
           class="el-menu-demo" 
           background-color = "#1c4072"
           :default-active="$route.path"
@@ -33,9 +33,10 @@ export default {
 }
 </script>
 <style scoped>
-    .el-aside .el-menu{
+
+    .el-menu{
         text-align: center;
-        height: 100vh;
+        height: 84vh;
         
     }
     
