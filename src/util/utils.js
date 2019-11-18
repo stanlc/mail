@@ -48,6 +48,13 @@ let utils = {
         Vue.prototype.$http.post('/role/add',form).then((res)=>{
             console.log(res)
         })
+    },
+    //获取账号订阅信息
+    getSubAccount(vm,form){
+        Vue.prototype.$http.post('/account/pagerList',form).then(res=>{
+            localStorage.subAccountList = JSON.stringify(res.data.paging.list)
+            vm.accountList = JSON.parse(localStorage.subAccountList)
+        })
     }
 }
 

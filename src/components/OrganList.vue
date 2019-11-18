@@ -5,10 +5,10 @@
                 <span>机构管理</span>
             </div>
             <div>
-                <el-form :inline=true>
+                <el-form :inline="true">
                     <el-form-item>
                         <!-- 超级管理员才显示录入同级 -->
-                        <el-button type="primary" v-if="userLevel===1?true:false" @click="sameDialogVisible=true" >录入同级</el-button>       
+                        <el-button type="primary" v-if="userLevel===1 && selectParentId === null ?true:false" @click="sameDialogVisible=true" >录入同级</el-button>       
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="openAddSub">录入下级</el-button>
@@ -162,16 +162,17 @@
                         <el-button type="primary" @click="configRole">编辑</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger">删除</el-button>
+                        <el-button type="danger" @click="delRole">删除</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary">权限配置</el-button>
+                        <el-button type="primary" @click="openRoleMenuConfig">权限配置</el-button>
                     </el-form-item>
                 </el-form>
                     <el-table
                     :data="roleList"
                     style="width: 100%"
                     @select="roleSelect"
+                    @check-change="RoleCheckChange"
                     >
                         <el-table-column
                         type="selection"
@@ -249,7 +250,30 @@
                 <el-button @click="configRoleDialogVisible =false">取 消</el-button>
             </span>
             </el-dialog>
-            <!-- 编辑角色Dialog -->                      
+            <!-- 编辑角色Dialog -->    
+            <!-- 权限配置Dialog -->
+            <el-dialog
+            title="权限编辑"
+            :visible.sync="MenuConfigRoleDialogVisible"
+            width="35%"
+            custom-class="sameLevel">
+            <span class="blue">菜单权限</span>
+            <el-tree
+            :data="menuConfigList"
+            :props="menuConfigProps"
+            @check-change="menuTreeCheck"
+            show-checkbox
+            node-key="id"
+            ref="tree"
+            default-expand-all
+            :default-checked-keys="isAuthed">
+            </el-tree>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="MenuConfigRole">提交</el-button>
+                <el-button @click="MenuConfigRoleDialogVisible =false">取消</el-button>
+            </span>
+            </el-dialog>
+            <!-- 权限配置Dialog -->                                 
             </div>
         </el-card>        
     </div>
@@ -262,8 +286,12 @@ export default {
         return{
             organList:[],
             roleList:[],
+            selectConfigMenu:[],//权限配置的已选择权限项
+            isAuthed:[],//角色已经配置的权限
             selectOrganId:0,
             selectRoleId:0,
+            menuConfigList:[],
+            selectParentId:null,
             userLevel:JSON.parse(localStorage.userInfo).level,
             sameDialogVisible: false,
             sameinnerVisible:false,
@@ -275,6 +303,7 @@ export default {
             addRoleinnerVisible:false,
             configRoleDialogVisible:false,
             configRoleinnerVisible:false,
+            MenuConfigRoleDialogVisible:false,
             roleSelects:[],
             sameLevelForm:{
                 "organDesc": "",
@@ -312,18 +341,26 @@ export default {
                 "roleDesc":'',
                 "organId":0,               
             },
-            organProps:{
+            organProps:{ 
                 children: 'childrenList',
-                label: 'organName'
+                label: 'organName',
+                id:'id'
+            },
+            menuConfigProps:{
+                children: 'childrenList',
+                label: 'resourceName',
+                id:'id'
             }
         }
     },
     created(){
         this.utils.getOrganList(this)
+        this.menuConfigList = JSON.parse(localStorage.menuList)
     },
     methods:{
         handleNodeClick(e){
             this.selectOrganId = e.id
+            this.selectParentId = e.parentId
             this.configForm = e
             this.utils.getRoleList(this,e.id)
         },
@@ -347,6 +384,7 @@ export default {
             }else{
                 this.subDialogVisible=true
                 this.subLevelForm.referId = this.selectOrganId
+                
             }
         },
         openConfig(){
@@ -407,8 +445,29 @@ export default {
             if(e.length===1){
                 this.configRoleForm = e[0]
                 this.selectRoleId = e[0].id
+                this.$http.get(`/resource/list/${this.selectRoleId}`).then(res=>{
+                    let list = res.data.data
+                    let idlist = []
+                    list.forEach(item => {
+                        if(item.isAuth===1){
+                            idlist.push(item.id)
+                        }
+                        if(item.childrenList.length>0){
+                            item.childrenList.map(item=>{
+                                if(item.isAuth===1){
+                                    idlist.push(item.id)
+                                }
+                            })
+                        }
+                        return idlist
+                    });
+                    this.isAuthed = idlist
+                })
             }
             this.roleSelects = e
+         },
+         RoleCheckChange(){
+             this.isAuthed = []
          },
         configRole(){
             if(this.roleSelects.length>1){
@@ -423,6 +482,62 @@ export default {
                 }) 
             }else{
                 this.configRoleDialogVisible = true
+            }
+        },
+        delRole(){
+            let idList = ''
+            if(this.roleSelects&&this.roleSelects.length>1){
+                this.$message({
+                    type:'error',
+                    message:'一次只能删除一个角色'
+                })
+            }else{
+                this.$http.delete(`/role/delete/${this.selectRoleId}`).then((res)=>{
+                     if(res.data.code===200){
+                         this.$message({
+                             type:'success',
+                             message:'删除成功'
+                         })
+                     }else{
+                         this.$message({
+                             type:'error',
+                             message:'删除失败'
+                         })
+                     }
+                     this.utils.getRoleList(this,this.selectOrganId)
+                 })
+            }
+            
+        },
+        //权限配置
+        openRoleMenuConfig(){
+            if(this.selectRoleId===0){
+                this.$message({
+                    type:'error',
+                    message:'请先选择角色'
+                })
+            }else{
+                this.MenuConfigRoleDialogVisible = true
+                
+            }
+            
+        },
+        menuTreeCheck(){
+            let list = this.$refs.tree.getCheckedKeys()
+            this.selectConfigMenu = list
+        },
+        MenuConfigRole(){
+            if(this.selectConfigMenu.length===0){
+                this.$message({
+                    type:'error',
+                    message:'请选择至少一项权限'
+                })
+            }else{
+                this.$http.post(`/resource/auth/${this.selectRoleId}/?resourceIds=${this.selectConfigMenu.toString()}`).then(res=>{
+                    if(res.data.code===200){
+                        this.MenuConfigRoleDialogVisible = false
+                    }
+                })
             }
         },
         //内容格式化
@@ -442,7 +557,7 @@ export default {
 </script>
 <style scoped>
     .box-card {
-        width: 38vw;
+        width: 37vw;
         height: 54vh;
         background: #06253d;
         border-radius: 5px;
@@ -498,5 +613,14 @@ export default {
     .choose-btn{
         width:150px;
     }
-    
+    /*el-tree样式*/
+    .el-tree{
+        background: none;
+    }
+    /* .el-tree:hover{
+        background: none;
+    } */
+    .el-tree-node__content:hover{
+        background: none;
+    }
 </style>
