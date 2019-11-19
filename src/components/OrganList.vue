@@ -159,13 +159,13 @@
                         <el-button type="primary" @click="addRoleDialogVisible=true">录入</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="configRole">编辑</el-button>
+                        <el-button type="primary" @click="configRole" :disabled="roleSelects.length!==1">编辑</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger" @click="delRole">删除</el-button>
+                        <el-button type="danger" @click="delRole" :disabled="roleSelects.length===0">删除</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="openRoleMenuConfig">权限配置</el-button>
+                        <el-button type="primary" @click="openRoleMenuConfig" :disabled="roleSelects.length!==1">权限配置</el-button>
                     </el-form-item>
                 </el-form>
                     <el-table
@@ -474,26 +474,13 @@ export default {
              this.isAuthed = []
          },
         configRole(){
-            if(this.roleSelects.length>1){
-                this.$message({
-                    type:'error',
-                    message:'一次只能编辑一个角色'
-                })
-            }else if(this.roleSelects.length ===0){
-                this.$message({
-                        type:'error',
-                        message:'请选择角色'
-                }) 
-            }else{
                 this.configRoleDialogVisible = true
-            }
         },
         delRole(){
             let that = this
             this.selectRole.forEach((item)=>{
                 if(item.id!==0){
                     let id = item.id
-                    console.log(id)
                     this.utils.delRole(id).then(()=>{
                        that.utils.getRoleList(that,that.selectOrganId) 
                     })
@@ -509,16 +496,7 @@ export default {
         },
         //权限配置
         openRoleMenuConfig(){
-            if(this.selectRoleId===0){
-                this.$message({
-                    type:'error',
-                    message:'请先选择角色'
-                })
-            }else{
                 this.MenuConfigRoleDialogVisible = true
-                
-            }
-            
         },
         menuTreeCheck(){
             let list = this.$refs.tree.getCheckedKeys()

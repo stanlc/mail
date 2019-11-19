@@ -74,7 +74,44 @@ let utils = {
             localStorage.subAccountList = JSON.stringify(res.data.paging.list)
             vm.accountList = JSON.parse(localStorage.subAccountList)
         })
+    },
+    //省市区三级
+    //获取省级
+    getProv(){
+        return Vue.prototype.$http.get('/region/firstList')
+    },
+    //获取市级
+    getCity(id){
+        return Vue.prototype.$http.get(`/region/secondList/${id}`)
+    },
+    //获取区级
+    getArea(id){
+        return Vue.prototype.$http.get(`/region/thirdList/${id}`)
+    },
+    //设备API
+    //获取设备订阅列表
+    getbindList(vm,form){
+        Vue.prototype.$http.post('/serial/pagerList',form).then(res=>{
+            localStorage.bindList = JSON.stringify(res.data.paging.list)
+            vm.bindList=JSON.parse(localStorage.bindList)
+        })
+    },
+    //绑定设备
+    bindDevice(form){
+        return Vue.prototype.$http.post('/serial/bind',form)
+    },
+    //解绑设备
+    UnBindDevice(id){
+        return Vue.prototype.$http.post(`/serial/unbind/${id}`)
+    },
+    //获取设备列表
+    getDeviceList(vm,form){
+        Vue.prototype.$http.post('/device/pagerList',form).then(res=>{
+            localStorage.deviceList = JSON.stringify(res.data.paging.list)
+            vm.deviceList = JSON.parse(localStorage.deviceList)
+        })
     }
+
 }
 
 

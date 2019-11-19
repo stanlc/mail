@@ -21,9 +21,9 @@
                 </el-form-item>                                                                           
             </el-form>
             <el-form :inline="true">
-                <el-form-item>
+                <!-- <el-form-item>
                     <el-button type="primary" @click="addOldAccountVisible=true">绑定已有订阅账号</el-button>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item>
                     <el-button type="primary" @click="addAccountDialogVisible=true">创建新的订阅账号</el-button>
                 </el-form-item>                
@@ -69,10 +69,10 @@
                 fixed="right"
                 width="auto"
                 >
-                    <template>
-                        <el-button type="info" size="small">详情</el-button>
-                        <el-button type="primary" size="mini">订阅</el-button>
-                        <el-button type="primary" size="small">同步设备</el-button>
+                    <template slot-scope="scope">
+                        <el-button type="info" size="small" @click="openInfo(scope.row)">详情</el-button>
+                        <el-button type="primary" size="mini" @click="sub(scope.row)" :disabled="scope.row.applayStatus===3">订阅</el-button>
+                        <el-button type="primary" size="small" :disabled="scope.row.applayStatus===1">同步设备</el-button>
                         <el-button type="danger" size="mini">删除</el-button>                        
                     </template>                
                 </el-table-column>                                
@@ -85,17 +85,17 @@
             :model="addAccountForm">
             <el-form :inline="true">
                 <el-form-item label="所在地区：">
-                    <el-select v-model="addAccountForm.provCode" @change="choseProvince" placeholder="省级地区">
-                        <el-option v-for="item in province" :key="item.index" :label="item.value" :value="item.id"></el-option>
+                    <el-select v-model="addAccountForm.provCode" @change="changeProvince" placeholder="省级地区">
+                        <el-option v-for="item in province" :key="item.index" :label="item.areaName" :value="item.areaCode"></el-option>
                     </el-select>
-                    <el-select v-model="cname" @change="choseCity" placeholder="市级地区">
-                        <el-option v-for="item in city" :key="item.index" :label="item.value" :value="item.id"></el-option>
+                    <el-select v-model="addAccountForm.cityCode" @change="changeCity" placeholder="市级地区">
+                        <el-option v-for="item in city" :key="item.index" :label="item.areaName" :value="item.areaCode"></el-option>
                     </el-select>
-                    <el-select v-model="bname" @change="choseBlock" placeholder="区级地区">
-                        <el-option v-for="item in block" :key="item.index" :label="item.value" :value="item.id"></el-option>
+                    <el-select v-model="addAccountForm.areaCode" @change="changeArea" placeholder="区级地区">
+                        <el-option v-for="item in area" :key="item.index" :label="item.areaName" :value="item.areaCode"></el-option>
                     </el-select>                                        
                 </el-form-item>
-            </el-form>
+            </el-form>            
             <el-form :inline="true" label-position="right" label-width="auto">
                 <el-form-item label="账号名称：">
                     <el-input v-model="addAccountForm.userName"></el-input>
@@ -123,7 +123,7 @@
             </el-dialog>            
             <!-- 新增订阅账号dialog -->
             <!-- 绑定已有订阅账号dialog -->
-            <el-dialog
+            <!-- <el-dialog
             title="绑定已有订阅账号"
             :visible.sync="addOldAccountVisible"
             width="30%"
@@ -140,8 +140,24 @@
                 <el-button type="primary" @click="addOldAccount">确定</el-button>
                 <el-button type="primary" @click="addOldAccountVisible =false">取消</el-button>
             </span>
+            </el-dialog>             -->
+            <!-- 绑定已有订阅账号dialog -->
+            <!-- 账号详情dialog -->
+            <el-dialog
+            title="账号详情"
+            :visible.sync="accountInfoVisible"
+            width="30%"
+            :model="accountInfoForm">
+                <div class="info">
+                    账号名称：{{accountInfoForm.account}}
+                    <br><br>
+                    登录名称：{{accountInfoForm.userName}} 
+                </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="accountInfoVisible =false">确定</el-button>
+            </span>
             </el-dialog>            
-            <!-- 绑定已有订阅账号dialog -->            
+            <!-- 账号详情dialog -->                        
         </div>
     </el-card>
 </template>
@@ -152,6 +168,7 @@ export default {
         return {
             addAccountDialogVisible:false,
             addOldAccountVisible:false,
+            accountInfoVisible:false,
             accountId:0,
             selectAccount:[],
             selectAccount:{},
@@ -169,11 +186,12 @@ export default {
                 'apId':'123',
                 'gender':0
             },
-            addOldAccountForm:{},
+            // addOldAccountForm:{},
+            accountInfoForm:{},
             ChineseDistricts:ChineseDistricts,
             province:[],
             city:[],
-            block:[],
+            area:[],
             shi1:[],
             qu1:[],
             city:'',
@@ -191,13 +209,17 @@ export default {
         
     },
     created(){
-        this.getCityData()
+         this.utils.getProv().then(res=>{this.province = res.data.data})
     },
     methods:{
         deviceSelect(e){ 
             this.selectAccounts = e
             this.selectAccount = e[0]
             console.log(this.selectAccounts)
+        },
+        openInfo(row){
+            this.accountInfoVisible=true
+            this.accountInfoForm = row
         },
         CheckChange(){
 
@@ -231,58 +253,28 @@ export default {
             }
                     
         },
-        //省市区
-        getCityData(){
-            let that = this;
-            that.ChineseDistricts.forEach(function(item,index){
-            //省级数据
-              that.province.push({id: item.code, value: item.name, children: item.cityList})
-            })
-        },  
-        // 选省
-
-        choseProvince:function(e) {
-            let that = this;
-            that.city = [];
-            that.block = [];
-            that.cname = '';
-            that.bname = '';
-            for (var index2 in that.province) {
-                 if (e === that.province[index2].id) {
-                    that.shi1 = that.province[index2].children
-                    that.addAccountForm.provCode = that.province[index2].id
-                    that.shi1.forEach(function(citem,cindex){
-                    that.city.push({id:citem.code,value: citem.name, children: citem.areaList})
-                    })
-                    }
-                }
-        },   
-        
-        // 选市
-
-        choseCity:function(e) {
-                let that = this;
-                that.block = [];
-                that.cname = '';
-                for (var index3 in that.city) {
-                if (e === that.city[index3].id) {
-                that.qu1 = that.city[index3].children
-                that.cname = that.city[index3].value
-                that.addAccountForm.cityCode = that.city[index3].id
-                that.E = that.qu1[0].id
-                that.qu1.forEach(function(bitem,bindex){
-                that.block.push({id:bitem.code,value: bitem.name, children: []})
-                })
-                 }
-                }
-            },
-
-             // 选区
-
-        choseBlock:function(e) {
-            this.addAccountForm.areaCode = e
-        }, 
         //添加账号
+        changeProvince(){
+            let id =0
+            if(this.addAccountForm.provCode){
+                id = this.province[this.province.findIndex((item)=>{return item.areaCode===this.addAccountForm.provCode})].id
+            }
+            this.utils.getCity(id).then(res=>{
+                this.city = res.data.data
+            })            
+        },
+        changeCity(){
+            let id =0
+            if(this.addAccountForm.cityCode){
+                id = this.city[this.city.findIndex((item)=>{return item.areaCode===this.addAccountForm.cityCode})].id
+            }            
+            this.utils.getArea(id).then(res=>{
+                this.area = res.data.data
+            }) 
+        },
+        changeArea(){
+            console.log(this.addAccountForm.areaCode)
+        },
         addAccount(){
             let that = this 
             this.$http.post('/account/apply',this.addAccountForm).then(res=>{
@@ -303,14 +295,25 @@ export default {
                 "pageSize": 8
             })            
         },
-        //绑定已有订阅账号
-        addOldAccount(){
-            this.$http.post(`/account/applyAccount/${this.addOldAccountForm.account}`).then(res=>{
-                console.log(res)
-                this.addOldAccountVisible = false
+        //订阅
+        sub(row){
+            this.$http.post(`/account/subscrip/${row.id}`).then(res=>{
+                if(res.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'订阅成功'
+                    })
+                }
             })
-            
         },
+        //绑定已有订阅账号
+        // addOldAccount(){
+        //     this.$http.post(`/account/applyAccount/${this.addOldAccountForm.account}`).then(res=>{
+        //         console.log(res)
+        //         this.addOldAccountVisible = false
+        //     })
+            
+        // },
     }
 }       
 </script>
@@ -331,6 +334,9 @@ export default {
         border-radius: 5px;
         margin: 0px auto;
     } 
+    .el-dialog__body.info{
+        color: #fff
+    }
      /* form样式 */
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;

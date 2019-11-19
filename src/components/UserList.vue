@@ -199,7 +199,7 @@ export default {
     methods:{
         userSelect(e){
             this.selectUser = e
-            console.log(e)
+            // console.log(e)
         },
         CheckChange(){
 
@@ -219,7 +219,7 @@ export default {
             if(this.addUserForm.roleId){
                 this.addUserForm.roleName = this.userRoleList[this.userRoleList.findIndex((item)=>{return item.id===this.addUserForm.roleId})].roleName
             }
-            console.log(this.addUserForm.roleName)
+            // console.log(this.addUserForm.roleName)
             this.utils.addUser(this,this.addUserForm)
             this.addUserVisible = false
             this.utils.getUserList(this,this.searchForm)
@@ -229,7 +229,7 @@ export default {
             this.selectUser.forEach((item)=>{     
                 if(item.id!==0){
                     let id = item.id
-                    console.log(id)
+                    // console.log(id)
                     this.utils.delUser(id).then(()=>{
                         that.utils.getUserList(that,that.searchForm)
                         this.$message({

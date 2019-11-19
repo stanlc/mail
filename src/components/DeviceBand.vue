@@ -5,44 +5,31 @@
         </div>
         <div>
             <el-form :inline="true" :model="searchForm">
-                <el-form-item label="设备名称：">
-                    <el-input v-model="searchForm.account"></el-input>
+                <el-form-item label="设备账号：">
+                    <el-input v-model="searchForm.deviceAccount"></el-input>
                 </el-form-item>
-                <el-form-item label="设备序列号：">
-                    <el-input v-model="searchForm.account"></el-input>
-                </el-form-item>
-                <el-form-item label="设备正品码：">
-                    <el-input v-model="searchForm.account"></el-input>
-                </el-form-item>  
-                <el-form-item label="订阅账号：">
-                    <el-input v-model="searchForm.account"></el-input>
-                </el-form-item>                                              
-                <el-form-item label="同步状态：">
-                    <el-select v-model="searchForm.applayStatus">
-                        <el-option label="已同步" value=3></el-option>
-                        <el-option label="未同步" value=2></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="设备备注：">
-                    <el-input v-model="searchForm.account"></el-input>
-                </el-form-item>                
+                <el-form-item label="设备授权码：">
+                    <el-input v-model="searchForm.deviceSerial"></el-input>
+                </el-form-item> 
+                <el-form-item label="正品码：">
+                    <el-input v-model="searchForm.genuineCode"></el-input>
+                </el-form-item>                                 
                 <el-form-item>
-                    <el-button type="primary" @click="searchAccount" size="small">查询</el-button>
+                    <el-button type="primary" @click="searchBind" size="small">查询</el-button>
                 </el-form-item>                                                                           
             </el-form>
             <el-form :inline="true">
                 <el-form-item>
-                    <el-button type="primary" @click="bindVisible=true" size="small">绑定设备</el-button>
+                    <el-button type="primary" @click="bindDeviceDialogVisible=true" size="small">绑定设备</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="unbindVisible=true" size="small">解绑设备</el-button>
+                    <el-button type="primary" @click="unBind" size="small">解绑设备</el-button>
                 </el-form-item>                
             </el-form>
             <el-table
-            :data="accountList"
+            :data="bindList"
             style="width: 100%"
-            @select="deviceSelect"
-            @check-change="CheckChange"
+            @select="accountSelect"
             >
                 <el-table-column
                 type="selection"
@@ -54,129 +41,80 @@
                 width="auto">
                 </el-table-column>
                 <el-table-column
-                label="设备名称"
-                prop="account"
-                width="150"
-                
+                label="设备账号"
+                prop="deviceAccount"
+                width="auto"
                 >
                 </el-table-column>                
                 <el-table-column
-                label="设备备注"
-                prop="applayStatus"
+                label="授权码"
+                prop="deviceSerial"
                 width="auto"
-                :formatter="status"
-                >               
+                > 
                 </el-table-column>
                 <el-table-column
-                label="设备序列号"
-                prop="applayStatus"
+                label="正品码"
+                prop="genuineCode"
                 width="auto"
-                >               
-                </el-table-column>
+                >         
+                </el-table-column>   
                 <el-table-column
-                label="设备正品码"
-                prop="applayStatus"
+                label="绑定时间"
+                prop="createTime"
                 width="auto"
-                >               
-                </el-table-column>
-                <el-table-column
-                label="订阅账号"
-                prop="applayStatus"
-                width="auto"
-                >               
-                </el-table-column>  
-                <el-table-column
-                label="同步状态"
-                prop="applayStatus"
-                width="auto"
-                >               
-                </el-table-column>               
-                <el-table-column
-                label="上一次调用更新设备时间"
-                prop="fechTime"
-                width="175"
                 :formatter="formatTime"
-                >
-                </el-table-column>  
+                >         
+                </el-table-column> 
                 <el-table-column
                 label="操作"
                 fixed="right"
-                width="390"
+                width="200"
                 >
-                    <template class="btn-box">
-                        <el-button type="info" size="mini">详情</el-button>
-                        <el-button type="primary" size="mini">编辑</el-button>
-                        <el-button type="primary" size="mini">解绑设备</el-button>
-                        <el-button type="primary" size="mini">同步设备</el-button>
-                        <el-button type="danger" size="mini">删除</el-button>                        
+                    <template class="btn-box" slot-scope="scope">
+                        <el-button type="info" size="mini" @click="openInfo(scope.row)">详情</el-button>
+                        <el-button type="primary" size="mini" @click="SingleUnBind(scope.row)">解绑设备</el-button>                      
                     </template>                
                 </el-table-column>                                
             </el-table>
-            <!-- 新增订阅账号dialog -->
+            <!-- 绑定设备dialog -->
             <el-dialog
-            title="创建新的订阅账号"
-            :visible.sync="addAccountDialogVisible"
+            title="绑定设备"
+            :visible.sync="bindDeviceDialogVisible"
             width="40%"
-            :model="addAccountForm">
-            <el-form :inline="true">
-                <el-form-item label="所在地区：">
-                    <el-select v-model="addAccountForm.provCode" @change="choseProvince" placeholder="省级地区">
-                        <el-option v-for="item in province" :key="item.index" :label="item.value" :value="item.id"></el-option>
-                    </el-select>
-                    <el-select v-model="cname" @change="choseCity" placeholder="市级地区">
-                        <el-option v-for="item in city" :key="item.index" :label="item.value" :value="item.id"></el-option>
-                    </el-select>
-                    <el-select v-model="bname" @change="choseBlock" placeholder="区级地区">
-                        <el-option v-for="item in block" :key="item.index" :label="item.value" :value="item.id"></el-option>
-                    </el-select>                                        
-                </el-form-item>
-            </el-form>
-            <el-form :inline="true" label-position="right" label-width="auto">
-                <el-form-item label="账号名称：">
-                    <el-input v-model="addAccountForm.userName"></el-input>
-                </el-form-item>
-                <el-form-item label="账号密码：">
-                    <el-input v-model="addAccountForm.password"></el-input>
-                </el-form-item>  
-                <el-form-item label="账号邮箱：">
-                    <el-input v-model="addAccountForm.email"></el-input>
-                </el-form-item>
-                <el-form-item label="身份证号：">
-                    <el-input v-model="addAccountForm.idNo"></el-input>
-                </el-form-item>   
-                <el-form-item label="手机号码：">
-                    <el-input v-model="addAccountForm.userPhone"></el-input>
-                </el-form-item>                                              
-            </el-form>
-            <el-form :inline="true">
-              
-            </el-form>            
-            <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="addAccount">确定</el-button>
-                <el-button type="primary" @click="addAccountDialogVisible =false">取消</el-button>
-            </span>
+            :model="bindDeviceForm"
+            class="bind"
+            >
+                <el-form label-position="right" label-width="auto">
+                    <el-form-item label="设备账号：">
+                        <el-select v-model="bindDeviceForm.deviceAccount" @change="choseAccount" placeholder="请选择设备账号">
+                            <el-option v-for="item in accountList" :key="item.index" :label="item.account" :value="item.account"></el-option>
+                        </el-select>                                     
+                    </el-form-item>
+                    <el-form-item label="设备授权码：">
+                        <el-input v-model="bindDeviceForm.deviceSerial" ></el-input>
+                    </el-form-item>
+                    <el-form-item label="正品码：">
+                        <el-input v-model="bindDeviceForm.genuineCode" ></el-input>
+                    </el-form-item>   
+                </el-form>
+                <el-form :inline="true">
+                    <el-button type="primary" @click="bindDevice">确定</el-button>
+                    <el-button type="primary" @click="bindDeviceDialogVisible =false">取消</el-button>
+                </el-form>  
             </el-dialog>            
-            <!-- 新增订阅账号dialog -->
-            <!-- 绑定已有订阅账号dialog -->
+            <!-- 绑定设备dialog -->
+            <!-- 详情dialog -->
             <el-dialog
-            title="绑定已有订阅账号"
-            :visible.sync="addOldAccountVisible"
-            width="30%"
-            :model="addOldAccountForm">
-            <el-form label-position="right" label-width="auto">
-                <el-form-item label="订阅账号：">
-                    <el-input v-model="addOldAccountForm.account" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="账号描述：">
-                    <el-input v-model="addOldAccountForm.userName" size="small"></el-input>
-                </el-form-item>                                            
-            </el-form>       
-            <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="addOldAccount">确定</el-button>
-                <el-button type="primary" @click="addOldAccountVisible =false">取消</el-button>
-            </span>
+            title="详情"
+            :visible.sync="infoVisible"
+            width="40%"
+            class="bind"
+            >
+            用户名：{{accountInfo.userName}}<br>
+            用户邮箱：{{accountInfo.email}}<br>
+            <el-button type="primary" @click="infoVisible=false">确定</el-button>  
             </el-dialog>            
-            <!-- 绑定已有订阅账号dialog -->            
+            <!-- 详情dialog -->                   
         </div>
     </el-card>
 </template>
@@ -185,56 +123,37 @@ import ChineseDistricts from '../js/distpicker.data'
 export default {
     data(){
         return {
-            addAccountDialogVisible:false,
-            addOldAccountVisible:false,
-            accountId:0,
-            selectAccount:[],
-            selectAccount:{},
+            bindDeviceDialogVisible:false,
+            infoVisible:false,
+            accountInfo:{},
+            bindList:[],
+            accountList:[],
+            selectAccounts:[],
+            right:'right',
             searchForm:{
-                'account':'',
-                'applayStatus':''
-            },
-            accountList:[
-                {
-                    'name':'aa',
-                    'organName':'bb'
-                }
-            ],
-            addAccountForm:{
-                'apId':'123',
-                'gender':0
+                "pageNum": 1,
+                "pageSize": 8
             },
             addOldAccountForm:{},
-            ChineseDistricts:ChineseDistricts,
-            province:[],
-            city:[],
-            block:[],
-            shi1:[],
-            qu1:[],
-            city:'',
-            block:'',
-            pname:'',
-            cname:'',
-            bname:'',
+            bindDeviceForm:{},
         }
     },
     mounted(){
-        this.utils.getSubAccount(this,{
-            "pageNum": 1,
-            "pageSize": 8
-        })
+
         
     },
     created(){
-        this.getCityData()
+        this.utils.getbindList(this,{
+            "pageNum": 1,
+            "pageSize": 8
+        }),
+        this.getAccount()  
     },
     methods:{
-        deviceSelect(e){ 
+        accountSelect(e){
             this.selectAccounts = e
-            this.selectAccount = e[0]
-            console.log(this.selectAccounts)
         },
-        CheckChange(){
+        choseAccount(){
 
         },
         //内容格式化
@@ -251,7 +170,7 @@ export default {
         },
         //时间格式化
         formatTime(row){
-            let val = row.fechTime
+            let val = row.createTime
             let date = new Date(val) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
             let Y = date.getFullYear() + '-'
             let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
@@ -266,85 +185,76 @@ export default {
             }
                     
         },
-        //省市区
-        getCityData(){
-            let that = this;
-            that.ChineseDistricts.forEach(function(item,index){
-            //省级数据
-              that.province.push({id: item.code, value: item.name, children: item.cityList})
-            })
-        },  
-        // 选省
-
-        choseProvince:function(e) {
-            let that = this;
-            that.city = [];
-            that.block = [];
-            that.cname = '';
-            that.bname = '';
-            for (var index2 in that.province) {
-                 if (e === that.province[index2].id) {
-                    that.shi1 = that.province[index2].children
-                    that.addAccountForm.provCode = that.province[index2].id
-                    that.shi1.forEach(function(citem,cindex){
-                    that.city.push({id:citem.code,value: citem.name, children: citem.areaList})
+        //详情
+        openInfo(row){
+            this.infoVisible = true
+            let that = this,account = row.deviceAccount,alist = JSON.parse(localStorage.subAccountList)
+            let infolist = alist[alist.findIndex(item=>{ return item.account===account})]
+            this.accountInfo = infolist
+        },
+        //获取订阅账号
+        getAccount(){
+            this.$http.post('/account/pagerList',{ "pageNum": 1,"pageSize": 1000}).then(res=>{this.accountList=res.data.paging.list})
+        },
+        //绑定设备
+        bindDevice(){
+            this.utils.bindDevice(this.bindDeviceForm).then(res=>{
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'绑定成功'
                     })
-                    }
                 }
-        },   
-        
-        // 选市
-
-        choseCity:function(e) {
-                let that = this;
-                that.block = [];
-                that.cname = '';
-                for (var index3 in that.city) {
-                if (e === that.city[index3].id) {
-                that.qu1 = that.city[index3].children
-                that.cname = that.city[index3].value
-                that.addAccountForm.cityCode = that.city[index3].id
-                that.E = that.qu1[0].id
-                that.qu1.forEach(function(bitem,bindex){
-                that.block.push({id:bitem.code,value: bitem.name, children: []})
+                this.bindDeviceDialogVisible = false
+                this.utils.getbindList(this,{
+                    "pageNum": 1,
+                    "pageSize": 8
                 })
-                 }
-                }
-            },
-
-             // 选区
-
-        choseBlock:function(e) {
-            this.addAccountForm.areaCode = e
-        }, 
-        //添加账号
-        addAccount(){
-            let that = this 
-            this.$http.post('/account/apply',this.addAccountForm).then(res=>{
-                        that.utils.getSubAccount(that,{
-                            "pageNum": 1,
-                            "pageSize": 8
-                        })
             })
-            this.addAccountDialogVisible =false
+        },
+        //解绑设备
+        SingleUnBind(row){
+            let that = this,account = row.deviceAccount,blist = this.bindList
+            let id = blist[blist.findIndex(item=>{ return item.deviceAccount===account})].id
+            this.utils.UnBindDevice(id).then(res=>{
+                if(res.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'解绑成功'
+                    })
+                    that.utils.getbindList(that,{
+                        "pageNum": 1,
+                        "pageSize": 8
+                    })
+                }
+            })
+        },
+        unBind(){
+            this.selectAccounts.forEach(item=>{
+                let that = this
+                if(item.id!==0){
+                    let id = item.id
+                    this.utils.UnBindDevice(id).then(res=>{
+                        if(res.code===200){
+                            this.$message({
+                                type:'success',
+                                message:'解绑成功'
+                            })
+                            that.utils.getbindList(that,{
+                                "pageNum": 1,
+                                "pageSize": 8
+                            })
+                        }
+                    })                    
+                }
+            })
         },
         //筛选
-        searchAccount(){
-            this.utils.getSubAccount(this,this.searchForm)
+        searchBind(){
+            this.utils.getbindList(this,this.searchForm)           
         },
         clear(){
-            this.utils.getSubAccount(this,{
-                "pageNum": 1,
-                "pageSize": 8
-            })            
-        },
-        //绑定已有订阅账号
-        addOldAccount(){
-            this.$http.post(`/account/applyAccount/${this.addOldAccountForm.account}`).then(res=>{
-                console.log(res)
-                this.addOldAccountVisible = false
-            })
-            
+                       
         },
     }
 }       
@@ -372,6 +282,9 @@ export default {
      }
      .el-input{
          width:150px;
+     }
+     .bind .el-input,.bind .el-select{
+         width: 200px;
      }
      .el-select{
          width: 150px;
