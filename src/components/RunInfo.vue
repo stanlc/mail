@@ -6,25 +6,25 @@
         <div>
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="小区名称：">
-                    <el-input v-model="searchForm.name"></el-input>
+                    <el-input v-model="searchForm.deviceName"></el-input>
                 </el-form-item>
                 <el-form-item label="楼栋：">
-                    <el-input v-model="searchForm.building"></el-input>
+                    <el-input v-model="searchForm.devicePosition"></el-input>
                 </el-form-item> 
                 <el-form-item label="运行状态：">
-                    <el-select v-model="searchForm.state">
-                        <el-option label="在线" value="在线"></el-option>
-                        <el-option label="离线" value="离线"></el-option>
+                    <el-select v-model="searchForm.status">
+                        <el-option label="在线" value=1></el-option>
+                        <el-option label="离线" value=2></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="设备ID：">
-                    <el-input v-model="searchForm.id"></el-input>
+                    <el-input v-model="searchForm.deviceId"></el-input>
                 </el-form-item>   
                 <el-form-item>
-                    <el-button type="primary">查询</el-button>
+                    <el-button type="primary" @click="search">查询</el-button>
                 </el-form-item> 
                 <el-form-item>
-                    <el-button type="primary">重置</el-button>
+                    <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
                     <el-button type="primary">导出</el-button>
@@ -47,7 +47,7 @@
                 </el-table-column>
                 <el-table-column
                 label="设备ID"
-                prop="id"
+                prop="deviceId"
                 >
                 </el-table-column>                
                 <el-table-column
@@ -68,18 +68,16 @@
                 <el-table-column
                 label="运作状态"
                 prop="status"
-                :formatter="formatTime"
                 >
                 </el-table-column>
                 <el-table-column
                 label="单日操作次数"
                 prop="logtime"
-                :formatter="formatTime"
                 >
                 </el-table-column>     
                 <el-table-column
                 label="操作时间"
-                prop="time"
+                prop="updateTime"
                 :formatter="formatTime"
                 >
                 </el-table-column>                                
@@ -92,15 +90,23 @@ export default {
     data(){
         return {
             searchForm:{
-                'name':'',
-                'building':'',
-                'status':'',
-                'id':''
+                'pageNum':1,
+                'pageSize':10
             },
             runInfoList:[],
 
         }
     },
+    mounted(){
+           if(localStorage.deviceList){
+               this.runInfoList = JSON.parse(localStorage.deviceList)
+           }else{
+               this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+                   localStorage.deviceList = JSON.stringify(res.data.paging.list)
+                    this.runInfoList = JSON.parse(localStorage.deviceList)
+               })  
+           }
+        },
     methods:{
         deviceSelect(){
 
@@ -108,6 +114,30 @@ export default {
         CheckChange(){
 
         },
+        formatTime(row){
+            let val = row.updateTime
+            let date = new Date(val) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+            let Y = date.getFullYear() + '-'
+            let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
+            let D = date.getDate() + ' '
+            let h = date.getHours() + ':'
+            let m = date.getMinutes() + ':'
+            let s = date.getSeconds()
+            if(Y==='1970-'){
+                return '未操作'
+            }
+            return Y+M+D+h+m+s            
+        },
+        search(){
+            this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+                this.runInfoList = res.data.paging.list
+            })
+        },  
+        clear(){
+            this.$http.post('/device/pagerList',{'pageNum':1,'pageSize':10}).then(res=>{
+                this.runInfoList = res.data.paging.list
+            })            
+        }
     }
 }
 </script>

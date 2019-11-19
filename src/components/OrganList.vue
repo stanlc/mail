@@ -246,7 +246,7 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="configRole">确认</el-button>
+                <el-button type="primary" @click="editRole">确认</el-button>
                 <el-button @click="configRoleDialogVisible =false">取 消</el-button>
             </span>
             </el-dialog>
@@ -474,7 +474,18 @@ export default {
              this.isAuthed = []
          },
         configRole(){
-                this.configRoleDialogVisible = true
+            this.configRoleDialogVisible = true
+        },
+        editRole(){
+            let that = this 
+            this.utils.editRole(that.configRoleForm).then(()=>{
+                that.utils.getRoleList(that,that.selectOrganId)
+                this.$message({
+                            type:'success',
+                            message:'编辑角色成功'
+                        })
+                that.configRoleDialogVisible = false        
+            })             
         },
         delRole(){
             let that = this

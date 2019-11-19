@@ -35,7 +35,7 @@
             </el-form>
                          
             <el-form>
-                <el-button type="primary" @click="configOrgan" :disabled="selectDevices.length!==1">配置机构</el-button>
+                <el-button type="primary" @click="configOrgan" :disabled="selectDevices.length!==1" >配置机构</el-button>
                 <el-button type="primary" @click="configPosition" :disabled="selectDevices.length!==1">配置位置</el-button>
             </el-form>
             <!-- 设备详情dialog -->
@@ -64,7 +64,7 @@
             title="编辑设备"
             :visible.sync="configDeviceDialogVisible"
             width="40%"
-            :model="bindDeviceForm"
+            :model="configDeviceForm"
             class="bind"
             >
                 <el-form label-position="right" label-width="auto">
@@ -85,7 +85,28 @@
                     <el-button type="primary" @click="configDeviceDialogVisible =false">取消</el-button>
                 </el-form>  
             </el-dialog>            
-            <!-- 编辑设备dialog -->                              
+            <!-- 编辑设备dialog --> 
+            <!-- 配置机构dialog -->
+            <el-dialog
+            title="配置机构"
+            :visible.sync="configOrganVisible"
+            width="40%"
+            :model="configOrganForm"
+            class="bind"
+            >
+                <el-form label-position="right" label-width="auto">
+                    <el-form-item label="机构名称：">
+                        <el-select v-model="configOrganForm.deviceAccount" @change="choseAccount" placeholder="请选择设备账号">
+                            <el-option v-for="item in organList" :key="item.index" :label="item.organName" :value="item.account"></el-option>
+                        </el-select>                                     
+                    </el-form-item>
+                </el-form>
+                <el-form :inline="true">
+                    <el-button type="primary" @click="configOrgan">确定</el-button>
+                    <el-button type="primary" @click="configOrganVisible =false">取消</el-button>
+                </el-form>  
+            </el-dialog>            
+            <!-- 配置机构dialog -->                                         
             <el-table
             :data="deviceList"
             style="width: 100%"
@@ -149,15 +170,28 @@ export default {
                 "pageSize": 5
             },
             deviceList:[],
+            accountList:[],
+            organList:[],
             InfoVisible:false,
             rowInfo:{},
+            configorigin:{},
             selectDevices:[],
             configDeviceForm:{},
+            configOrganForm:{},
             configDeviceDialogVisible:false,
+            configOrganVisible:false,
         }
     },
     created(){
         this.utils.getDeviceList(this,this.searchForm)
+    },
+    mounted(){
+        if(localStorage.subAccountList){
+            this.accountList = JSON.parse(localStorage.subAccountList)
+        }
+        if(localStorage.organList){
+            this.organList = JSON.parse(localStorage.organList)
+        }
     },
     methods:{
         deviceSelect(e){
@@ -185,18 +219,19 @@ export default {
         openInfo(row){
             this.InfoVisible = true
             this.rowInfo = row
-            
         },
         //编辑
         openConfig(row){
             this.configDeviceDialogVisible = true
+            this.configorigin = row
         },
         //配置设备
+        configDevice(){
+            console.log(this.configorigin)
+        },
         //配置机构
         configOrgan(){
-            if(this.selectDevices.length>1){
-                this.configBtn = false
-            }
+            this.configOrganVisible = true
         },
         //配置位置
         configPosition(){
@@ -226,6 +261,9 @@ export default {
         border-radius: 5px;
         margin: 20px auto;
     } 
+     .bind .el-input,.bind .el-select{
+         width: 200px;
+     }    
      /* form样式 */
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;

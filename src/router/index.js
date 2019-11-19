@@ -35,7 +35,7 @@ const routes = [
       },
       {
         path:'/run/info',
-        name:'run-nfo',
+        name:'runinfo',
         component:RunInfo
       },
       {

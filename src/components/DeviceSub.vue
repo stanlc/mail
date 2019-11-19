@@ -86,13 +86,13 @@
             <el-form :inline="true">
                 <el-form-item label="所在地区：">
                     <el-select v-model="addAccountForm.provCode" @change="changeProvince" placeholder="省级地区">
-                        <el-option v-for="item in province" :key="item.index" :label="item.areaName" :value="item.areaCode"></el-option>
+                        <el-option v-for="(item,$index) in province" :key="$index" :label="item.areaName" :value="item.areaCode"></el-option>
                     </el-select>
-                    <el-select v-model="addAccountForm.cityCode" @change="changeCity" placeholder="市级地区">
+                    <el-select v-model="cityName" @change="changeCity" placeholder="市级地区">
                         <el-option v-for="item in city" :key="item.index" :label="item.areaName" :value="item.areaCode"></el-option>
                     </el-select>
-                    <el-select v-model="addAccountForm.areaCode" @change="changeArea" placeholder="区级地区">
-                        <el-option v-for="item in area" :key="item.index" :label="item.areaName" :value="item.areaCode"></el-option>
+                    <el-select v-model="areaName" @change="changeArea" placeholder="区级地区">
+                        <el-option v-for="item in area" :key="item.index" :label="item.areaName" :value="item.areaName"></el-option>
                     </el-select>                                        
                 </el-form-item>
             </el-form>            
@@ -172,6 +172,8 @@ export default {
             accountId:0,
             selectAccount:[],
             selectAccount:{},
+            areaName:'',
+            cityName:'',
             searchForm:{
                 'account':'',
                 'applayStatus':''
@@ -192,13 +194,6 @@ export default {
             province:[],
             city:[],
             area:[],
-            shi1:[],
-            qu1:[],
-            city:'',
-            block:'',
-            pname:'',
-            cname:'',
-            bname:'',
         }
     },
     mounted(){
@@ -253,29 +248,30 @@ export default {
             }
                     
         },
-        //添加账号
-        changeProvince(){
-            let id =0
-            if(this.addAccountForm.provCode){
-                id = this.province[this.province.findIndex((item)=>{return item.areaCode===this.addAccountForm.provCode})].id
-            }
+        
+        changeProvince(e){   
+            this.city=[],this.area=[]
+            this.cityName = ''
+            this.areaName = ''
+            let id = this.province.filter(item=>item.areaCode===e)[0].id
             this.utils.getCity(id).then(res=>{
                 this.city = res.data.data
-            })            
+            })     
         },
-        changeCity(){
-            let id =0
-            if(this.addAccountForm.cityCode){
-                id = this.city[this.city.findIndex((item)=>{return item.areaCode===this.addAccountForm.cityCode})].id
-            }            
-            this.utils.getArea(id).then(res=>{
+        changeCity(e){
+            this.area=[]
+            this.areaName = ''
+            let c = this.city.filter(item=>item.areaCode===e)[0]
+            this.addAccountForm.cityCode = e
+            this.utils.getArea(c.id).then(res=>{
                 this.area = res.data.data
-            }) 
+            })
         },
-        changeArea(){
-            console.log(this.addAccountForm.areaCode)
+        changeArea(e){
+            this.addAccountForm.areaCode = this.area.filter(item=>item.areaName===this.areaName)[0].areaCode
         },
-        addAccount(){
+        //添加账号
+        addAccount(e){
             let that = this 
             this.$http.post('/account/apply',this.addAccountForm).then(res=>{
                         that.utils.getSubAccount(that,{

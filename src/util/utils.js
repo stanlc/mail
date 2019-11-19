@@ -50,6 +50,10 @@ let utils = {
     delRole(id){
         return Vue.prototype.$http.delete(`/role/delete/${id}`)
     }, 
+      
+    editRole(form){
+        return Vue.prototype.$http.post(`/role/edit/`,form)
+    } ,
     //用户管理
     getUserList(vm,form){
         Vue.prototype.$http.post('user/userList',form).then(res=>{
@@ -64,10 +68,7 @@ let utils = {
     }, 
     delUser(id){
         return Vue.prototype.$http.delete(`/user/delete/${id}`)
-    },  
-    editUser(form){
-        return Vue.prototype.$http.post(`/user/edit/`,form)
-    } ,
+    },
     //获取账号订阅信息
     getSubAccount(vm,form){
         Vue.prototype.$http.post('/account/pagerList',form).then(res=>{

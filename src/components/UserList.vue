@@ -99,7 +99,7 @@
             >
             <el-form label-position="right"  label-width="auto" :model="editUserForm" :inline="true">
                     <el-form-item label="机构名称：">
-                        <el-select v-model="editUserForm.organId"> 
+                        <el-select v-model="editUserForm.organId" @change="changeOrgan"> 
                             <el-option v-for="item in organList" :key="item.index" :label="item.organName" :value="item.id" ></el-option>
                         </el-select>
                     </el-form-item>
@@ -142,7 +142,7 @@
                     </el-form-item>
                     <el-form-item label="所属角色：">
                         <el-select v-model="addUserForm.roleId"> 
-                            <el-option v-for="item in userRoleList" :key="item.index" :label="item.roleName" :value="item.id"></el-option>
+                            <el-option v-for="item in userRoleList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
                         </el-select>
                     </el-form-item>      
                     <el-form-item label="用户名称：">
@@ -176,7 +176,6 @@ export default {
                 "pageNum": 1,
                 "pageSize": 10,
             },
-            
             userList:[],
             organList:[],
             userRoleList:[],
@@ -194,7 +193,6 @@ export default {
     created(){
         this.utils.getUserList(this,this.searchForm)
         this.organList = JSON.parse(localStorage.organList)
-        this.userRoleList = JSON.parse(localStorage.roleList)
     },
     methods:{
         userSelect(e){
@@ -261,7 +259,12 @@ export default {
                 this.editUserVisible= false                       
             })
         },
-        organChange(){
+        changeOrgan(e){
+            let that = this,id = e
+            this.editUserForm.roleId = '请选择'
+            this.$http.post(`role/list/${id}`).then(res=>{
+                this.userRoleList = res.data.data
+            })
 
         },
         //格式化
