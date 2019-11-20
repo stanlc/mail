@@ -119,17 +119,7 @@ let utils = {
             vm.logList = JSON.parse(localStorage.logList)
         })
     },
-    //获取所有childrenList
-    getChildren(arr){
-        for(let item of arr){
-            if(!nlist.includes(item)){
-                nlist.push(item)
-            }
-            if(item.childrenList.length>0){
-                getChildren(item.childrenList)
-            }else{return}
-        }
-    }
+    
 }
 
 

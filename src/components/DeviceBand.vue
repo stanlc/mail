@@ -15,7 +15,8 @@
                     <el-input v-model="searchForm.genuineCode"></el-input>
                 </el-form-item>                                 
                 <el-form-item>
-                    <el-button type="primary" @click="searchBind" size="small">查询</el-button>
+                    <el-button type="primary" @click="searchBind" size="small" >查询</el-button>
+                    <el-button type="primary" @click="clear" size="small" >重置</el-button>
                 </el-form-item>                                                                           
             </el-form>
             <el-form :inline="true">
@@ -130,10 +131,9 @@ export default {
             accountList:[],
             selectAccounts:[],
             right:'right',
-            searchForm:{
-                "pageNum": 1,
-                "pageSize": 8
-            },
+            searchForm:{'pageNum':this.pageNum,'pageSize':this.pageSize},
+            pageNum:1,
+            pageSize:8,
             addOldAccountForm:{},
             bindDeviceForm:{},
         }
@@ -199,7 +199,7 @@ export default {
         //绑定设备
         bindDevice(){
             this.utils.bindDevice(this.bindDeviceForm).then(res=>{
-                if(res.data.code===200){
+                if(res.code===200){
                     this.$message({
                         type:'success',
                         message:'绑定成功'
@@ -251,10 +251,12 @@ export default {
         },
         //筛选
         searchBind(){
-            this.utils.getbindList(this,this.searchForm)           
+            this.utils.getbindList(this,this.searchForm)
+            this.searchForm={'pageNum':this.pageNum,'pageSize':this.pageSize}             
         },
         clear(){
-                       
+            this.searchForm={'pageNum':this.pageNum,'pageSize':this.pageSize}  
+            this.utils.getbindList(this,this.searchForm)      
         },
     }
 }       

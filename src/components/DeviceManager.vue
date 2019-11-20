@@ -183,9 +183,11 @@ export default {
     data(){
         return {
             searchForm:{
-                "pageNum": 1,
-                "pageSize": 5
+                "pageNum": this.pageNum,
+                "pageSize": this.pageSize
             },
+            pageNum:1,
+            pageSize:5,
             deviceList:[],
             accountList:[],
             organList:[],
@@ -239,9 +241,17 @@ export default {
         //筛选
         search(){
             this.utils.getDeviceList(this,this.searchForm)
+            this.searchForm = {
+                "pageNum": this.pageNum,
+                "pageSize": this.pageSize
+            }
         },
         clear(){
-            this.utils.getDeviceList(this,{'pageNum':1,'pageSize':5})
+            this.searchForm = {
+                "pageNum": this.pageNum,
+                "pageSize": this.pageSize
+            }
+            this.utils.getDeviceList(this,this.searchForm)
         },
         //详情
         openInfo(row){
@@ -279,7 +289,6 @@ export default {
             this.valueId = value;
             this.configOrganForm.organId = value
             this.configOrganForm.organName = nlist.filter(item=>item.id===value)[0].organName
-            
         },
     }
 }

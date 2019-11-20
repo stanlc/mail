@@ -168,7 +168,7 @@
                     <el-form-item>
                         <el-button type="primary" @click="addUser">添加</el-button>
                     </el-form-item><el-form-item>
-                        <el-button type="primary" @click="addUserVisible=false">取消</el-button>
+                        <el-button type="primary" @click="cancelAdd">取消</el-button>
                     </el-form-item>
             </el-form>
             </el-dialog>
@@ -256,6 +256,10 @@ export default {
             this.utils.addUser(this,this.addUserForm)
             this.addUserVisible = false
             this.utils.getUserList(this,this.searchForm)
+        },
+        cancelAdd(){
+            this.addUserVisible=false
+            this.valueId = ''
         },
         delUser(){
             let that = this

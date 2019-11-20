@@ -174,9 +174,11 @@ export default {
             areaName:'',
             cityName:'',
             searchForm:{
-                'account':'',
-                'applayStatus':''
+                "pageNum":this.pageNum,
+                "pageSize":this.pageSize
             },
+            pageNum:1,
+            pageSize:8,
             accountList:[
                 {
                     'name':'aa',
@@ -196,9 +198,9 @@ export default {
     },
     mounted(){
         this.utils.getSubAccount(this,{
-            "pageNum": 1,
-            "pageSize": 8
-        })
+                "pageNum":this.pageNum,
+                "pageSize":this.pageSize
+            })
         
     },
     created(){
@@ -273,21 +275,27 @@ export default {
             let that = this 
             this.$http.post('/account/apply',this.addAccountForm).then(res=>{
                         that.utils.getSubAccount(that,{
-                            "pageNum": 1,
-                            "pageSize": 8
+                            "pageNum":this.pageNum,
+                            "pageSize":this.pageSize
                         })
             })
             this.addAccountDialogVisible =false
         },
         //筛选
         searchAccount(){
+            
             this.utils.getSubAccount(this,this.searchForm)
+            this.searchForm={
+                "pageNum":this.pageNum,
+                "pageSize":this.pageSize
+            }
         },
         clear(){
-            this.utils.getSubAccount(this,{
-                "pageNum": 1,
-                "pageSize": 8
-            })            
+            this.searchForm = {
+                "pageNum":this.pageNum,
+                "pageSize":this.pageSize
+            }
+            this.utils.getSubAccount(this,this.searchForm)            
         },
         //订阅
         sub(row){
