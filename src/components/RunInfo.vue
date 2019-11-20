@@ -5,27 +5,29 @@
         </div>
         <div>
             <el-form :inline="true" :model="searchForm">
-                区域选择-selct
-                <!-- <el-form-item label="小区名称：">
-                    <el-input v-model="searchForm.deviceName"></el-input>
+                <el-form-item label="机构名称：" >
+                    <select-tree
+                    :props="props"
+                    :options="organList"
+                    :value="valueId"
+                     @getValue="getValue($event)"
+                    v-model="searchForm.organId"
+                    ></select-tree>
                 </el-form-item>
-                <el-form-item label="楼栋：">
-                    <el-input v-model="searchForm.devicePosition"></el-input>
-                </el-form-item>  -->
                 <el-form-item label="运行状态：">
-                    <el-select v-model="searchForm.status">
-                        <el-option label="在线" value=1></el-option>
-                        <el-option label="离线" value=2></el-option>
+                    <el-select v-model="searchForm.openStatus">
+                        <el-option label="开" value=1></el-option>
+                        <el-option label="关" value=0></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="报警状态：">
-                    <el-select v-model="searchForm.status">
+                    <el-select v-model="searchForm.alarmStatus">
                         <el-option label="报警" value=1></el-option>
-                        <el-option label="正常" value=2></el-option>
+                        <el-option label="正常" value=0></el-option>
                     </el-select>
                 </el-form-item>                
                 <el-form-item label="设备ID：">
-                    <el-input v-model="searchForm.deviceId"></el-input>
+                    <el-input v-model="searchForm.deviceNum"></el-input>
                 </el-form-item>   
                 <el-form-item>
                     <el-button type="primary" @click="search">查询</el-button>
@@ -54,32 +56,35 @@
                 </el-table-column>
                 <el-table-column
                 label="设备ID"
-                prop="deviceId"
+                prop="deviceNum"
                 >
                 </el-table-column>                
                 <el-table-column
-                label="小区名称"
-                prop="organName"
-                >               
-                </el-table-column>
-                <el-table-column
-                label="所在楼栋"
-                prop="devicePosition"
-                >
-                </el-table-column>                 
+                label="所在区域"
+                prop="position"
+                :formatter="positionFormat"
+                >  
+                </el-table-column>             
                 <el-table-column
                 label="设备名称"
                 prop="deviceName"
                 >
                 </el-table-column>
                 <el-table-column
-                label="运作状态"
-                prop="status"
+                label="开关状态"
+                prop="openStatus"
+                :formatter="(row)=>{return row.openStatus===1?'开':'关'}"
                 >
                 </el-table-column>
                 <el-table-column
+                label="报警状态"
+                prop="alarmStatus"
+                :formatter="(row)=>{return row.alarmStatus===1?'报警':'正常'}"
+                >
+                </el-table-column>                
+                <el-table-column
                 label="单日操作次数"
-                prop="logtime"
+                prop="todayNum"
                 >
                 </el-table-column>     
                 <el-table-column
@@ -93,18 +98,37 @@
     </el-card>
 </template>
 <script>
+import SelectTree from "./SelectTree";
 export default {
     data(){
         return {
             pageNum:1,
             pageSize:7,
+            
             searchForm:{
                 'pageNum':this.pageNum,
                 'pageSize':this.pageSize,
             },
             runInfoList:[],
-
+            organList:[],
+            valueId:0,
+            props:{
+                value:'id',
+                label:'organName',
+                children:'childrenList'
+            },
         }
+    },
+    components:
+       { SelectTree,}
+    ,
+    created(){
+        if(localStorage.organList){
+            this.organList = JSON.parse(localStorage.organList)
+        }else{
+            this.utils.getOrganList(this)
+        }
+        
     },
     mounted(){
            if(localStorage.runInfoList){
@@ -112,7 +136,7 @@ export default {
            }else{
                this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
                    localStorage.runInfoList = JSON.stringify(res.data.paging.list)
-                    this.runInfoList = JSON.parse(localStorage.runInfoList)
+                   this.runInfoList = JSON.parse(localStorage.runInfoList)
                })  
            }
         },
@@ -123,6 +147,8 @@ export default {
         CheckChange(){
 
         },
+        //内容格式化
+
         formatTime(row){
             let val = row.lastDate
             let date = new Date(val) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -137,16 +163,31 @@ export default {
             }
             return Y+M+D+h+m+s            
         },
+        positionFormat(row){
+            let val = row.position
+            let varr = val.split(',')
+            return varr[1]+'-'+varr[0]
+        },
         search(){
-            this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+            this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
                 this.runInfoList = res.data.paging.list
             })
         },  
         clear(){
-            this.$http.post('/device/pagerList',{'pageNum':this.pageNum,'pageSize':this.pageSize}).then(res=>{
+            
+            this.searchForm={
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
+            },
+            this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
                 this.runInfoList = res.data.paging.list
             })            
-        }
+        },
+        // 取值
+        getValue(value) {
+        this.valueId = value;
+        this.searchForm.organId = value
+        },         
     }
 }
 </script>

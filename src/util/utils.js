@@ -111,8 +111,25 @@ let utils = {
             localStorage.deviceList = JSON.stringify(res.data.paging.list)
             vm.deviceList = JSON.parse(localStorage.deviceList)
         })
+    },
+    //获取设备操作日志
+    getLogger(vm,form){
+        Vue.prototype.$http.post('/logger/pagerList',form).then(res=>{
+            localStorage.logList = JSON.stringify(res.data.paging.list)
+            vm.logList = JSON.parse(localStorage.logList)
+        })
+    },
+    //获取所有childrenList
+    getChildren(arr){
+        for(let item of arr){
+            if(!nlist.includes(item)){
+                nlist.push(item)
+            }
+            if(item.childrenList.length>0){
+                getChildren(item.childrenList)
+            }else{return}
+        }
     }
-
 }
 
 

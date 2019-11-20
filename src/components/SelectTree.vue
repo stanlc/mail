@@ -1,10 +1,6 @@
 <template>
   <el-select :value="valueTitle" :clearable="clearable" @clear="clearHandle">
-    <el-input
-      class="selectInput"
-      :placeholder="placeholder"
-      v-model="filterText">
-    </el-input>
+    
 
     <el-option :value="valueTitle" :label="valueTitle" class="options">
       <el-tree  id="tree-option"

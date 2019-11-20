@@ -95,10 +95,14 @@
             class="bind"
             >
                 <el-form label-position="right" label-width="auto">
-                    <el-form-item label="机构名称：">
-                        <el-select v-model="configOrganForm.deviceAccount" @change="choseAccount" placeholder="请选择设备账号">
-                            <el-option v-for="item in organList" :key="item.index" :label="item.organName" :value="item.account"></el-option>
-                        </el-select>                                     
+                    <el-form-item label="机构名称：" >
+                        <select-tree
+                        :props="props"
+                        :options="organList"
+                        :value="valueId"
+                        @getValue="getValue($event)"
+                        v-model="configOrganForm.organId"
+                        ></select-tree>
                     </el-form-item>
                 </el-form>
                 <el-form :inline="true">
@@ -162,6 +166,19 @@
     </el-card>
 </template>
 <script>
+import SelectTree from "./SelectTree";
+//展开数组嵌套
+var nlist = []
+function getChildren(arr){
+    for(let item of arr){
+        if(!nlist.includes(item)){
+            nlist.push(item)
+        }
+        if(item.childrenList.length>0){
+            getChildren(item.childrenList)
+        }else{return}
+    }
+}
 export default {
     data(){
         return {
@@ -172,6 +189,12 @@ export default {
             deviceList:[],
             accountList:[],
             organList:[],
+            valueId:0,
+            props:{
+                value:'id',
+                label:'organName',
+                children:'childrenList'
+            },
             InfoVisible:false,
             rowInfo:{},
             configorigin:{},
@@ -181,6 +204,9 @@ export default {
             configDeviceDialogVisible:false,
             configOrganVisible:false,
         }
+    },
+    components:{
+        SelectTree,
     },
     created(){
         this.utils.getDeviceList(this,this.searchForm)
@@ -192,10 +218,12 @@ export default {
         if(localStorage.organList){
             this.organList = JSON.parse(localStorage.organList)
         }
+        getChildren(this.organList)
     },
     methods:{
         deviceSelect(e){
             this.selectDevices = e
+            this.configOrganForm.deviceId = e[0].id
         },
         CheckChange(){
 
@@ -233,8 +261,11 @@ export default {
         configOrgan(){
             this.configOrganVisible = true
         },
+        
+       
         editOrgan(){
-
+            
+    
         },
         //配置位置
         // configPosition(){
@@ -243,6 +274,12 @@ export default {
         //设备编辑
         choseAccount(e){
             console.log(e)
+        },
+        getValue(value) {
+            this.valueId = value;
+            this.configOrganForm.organId = value
+            this.configOrganForm.organName = nlist.filter(item=>item.id===value)[0].organName
+            
         },
     }
 }

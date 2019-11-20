@@ -108,7 +108,7 @@
                         ></select-tree>
                     </el-form-item>
                     <el-form-item label="所属角色：">
-                        <el-select v-model="editUserForm.roleId"> 
+                        <el-select v-model="editSelectRole"> 
                             <el-option v-for="item in userRoleList" :key="item.index" :label="item.roleName" :value="item.id"></el-option>
                         </el-select>
                     </el-form-item>      
@@ -195,6 +195,7 @@ export default {
             selectRole:undefined,
             valueId: 0,//树型选择初始ID
             editOrganId:0,
+            editSelectRole:{},
             selectEditOrgan:undefined,
             addUserForm:{
 

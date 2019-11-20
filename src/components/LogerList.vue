@@ -5,33 +5,42 @@
         </div>
         <div>
             <el-form :inline="true" :model="searchForm">
-                <el-form-item label="小区名称：">
-                    <el-input v-model="searchForm.deviceName"></el-input>
+                <el-form-item label="所在机构：">
+                    <select-tree
+                    :props="props"
+                    :options="organList"
+                    :value="valueId"
+                    :accordion="isAccordion"
+                     @getValue="getValue($event)"
+                    v-model="searchForm.organId"
+                    ></select-tree>                    
                 </el-form-item>
-                <el-form-item label="楼栋：">
-                    <el-input v-model="searchForm.devicePosition"></el-input>
-                </el-form-item> 
                 <el-form-item label="运行状态：">
-                    <el-select v-model="searchForm.state">
-                        <el-option label="在线" value=1></el-option>
-                        <el-option label="离线" value=2></el-option>
+                    <el-select v-model="searchForm.openStatus">
+                        <el-option label="开" value=1></el-option>
+                        <el-option label="关" value=0></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="设备ID：">
-                    <el-input v-model="searchForm.id"></el-input>
-                </el-form-item>   
+                    <el-input v-model="searchForm.deviceNum"></el-input>
+                </el-form-item>
+                <el-form-item label="最后操作时间：">
+                    <el-select v-model="searchForm.lastDate">
+                        
+                    </el-select>
+                </el-form-item>                    
                 <el-form-item>
-                    <el-button type="primary">查询</el-button>
+                    <el-button type="primary" @click="search">查询</el-button>
                 </el-form-item> 
                 <el-form-item>
-                    <el-button type="primary">重置</el-button>
+                    <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
                     <el-button type="primary">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
             <el-table
-            :data="runInfoList"
+            :data="logList"
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
@@ -47,17 +56,13 @@
                 </el-table-column>
                 <el-table-column
                 label="设备ID"
-                prop="deviceId"
+                prop="deviceNum"
                 >
-                </el-table-column>                
-                <el-table-column
-                label="小区名称"
-                prop="organName"
-                >               
                 </el-table-column>
                 <el-table-column
-                label="所在楼栋"
-                prop="devicePosition"
+                label="所在区域"
+                prop="position"
+                :formatter="positionFormat"
                 >
                 </el-table-column>                 
                 <el-table-column
@@ -67,17 +72,13 @@
                 </el-table-column>
                 <el-table-column
                 label="运作状态"
-                prop="status"
+                prop="openStatus"
+                :formatter="(row)=>{return row.openStatus===1?'开':'关'}"
                 >
-                </el-table-column>
-                <el-table-column
-                label="单日操作次数"
-                prop="logtime"
-                >
-                </el-table-column>     
+                </el-table-column>    
                 <el-table-column
                 label="操作时间"
-                prop="updateTime"
+                prop="createTime"
                 :formatter="formatTime"
                 >
                 </el-table-column>                                
@@ -86,21 +87,46 @@
     </el-card>
 </template>
 <script>
+import SelectTree from "./SelectTree";
 export default {
     data(){
         return {
             searchForm:{
-                'pageNum':1,
-                'pageSize':10
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
             },
-            runInfoList:[],
+            pageNum:1,
+            pageSize:10,
+            logList:[],
+            organList:[],
+            valueId:0,
+            isAccordion:true,
+            props:{
+                value:'id',
+                label:'organName',
+                children:'childrenList'
+            },
 
         }
     },
+    components:
+       { SelectTree,}
+    ,    
+    created(){
+        if(localStorage.organList){
+            this.organList = JSON.parse(localStorage.organList)
+        }else{
+            this.utils.getOrganList(this)
+        }
+        
+        if(localStorage.logList){
+            this.logList = JSON.parse(localStorage.logList)
+        }else{
+            this.utils.getLogger(this,this.searchForm)
+        }        
+    },    
     mounted(){
-           if(localStorage.deviceList){
-               this.runInfoList = JSON.parse(localStorage.deviceList)
-           }
+
         },
     methods:{
         deviceSelect(){
@@ -110,7 +136,7 @@ export default {
 
         },
         formatTime(row){
-            let val = row.updateTime
+            let val = row.createTime
             let date = new Date(val) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
             let Y = date.getFullYear() + '-'
             let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
@@ -122,7 +148,27 @@ export default {
                 return '未操作'
             }
             return Y+M+D+h+m+s            
-        }        
+        },
+        positionFormat(row){
+            let val = row.position
+            let varr = val.split(',')
+            return varr[1]+'-'+varr[0]
+        },        
+        // 取值
+        getValue(value) {
+        this.valueId = value;
+        this.searchForm.organId = value
+        },  
+        //查询
+        search(){
+            this.utils.getLogger(this,this.searchForm)
+        }, 
+        clear(){
+            this.utils.getLogger(this,{
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
+            })
+        }               
     }
 }
 </script>

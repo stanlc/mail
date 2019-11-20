@@ -162,7 +162,6 @@
     </el-card>
 </template>
 <script>
-import ChineseDistricts from '../js/distpicker.data'
 export default {
     data(){
         return {
@@ -190,7 +189,6 @@ export default {
             },
             // addOldAccountForm:{},
             accountInfoForm:{},
-            ChineseDistricts:ChineseDistricts,
             province:[],
             city:[],
             area:[],
