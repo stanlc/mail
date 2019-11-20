@@ -98,10 +98,14 @@
             width="35%"
             >
             <el-form label-position="right"  label-width="auto" :model="editUserForm" :inline="true">
-                    <el-form-item label="机构名称：">
-                        <el-select v-model="editUserForm.organId" @change="changeOrgan"> 
-                            <el-option v-for="item in organList" :key="item.index" :label="item.organName" :value="item.id" ></el-option>
-                        </el-select>
+                    <el-form-item label="机构名称：" >
+                        <select-tree
+                        :props="props"
+                        :options="organList"
+                        :value="editOrganId"
+                        @getValue="getEditValue($event)"
+                        v-model="selectEditOrgan"
+                        ></select-tree>
                     </el-form-item>
                     <el-form-item label="所属角色：">
                         <el-select v-model="editUserForm.roleId"> 
@@ -133,18 +137,22 @@
             title="新增用户"
             :visible.sync="addUserVisible"
             width="35%"
-            >
+            >           
             <el-form label-position="right"  label-width="auto" :model="addUserForm" :inline="true">
-                    <el-form-item label="机构名称：">
-                        <el-select v-model="addUserForm.organId"> 
-                            <el-option v-for="item in organList" :key="item.index" :label="item.organName" :value="item.id" ></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="所属角色：">
-                        <el-select v-model="addUserForm.roleId"> 
-                            <el-option v-for="item in userRoleList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
-                        </el-select>
-                    </el-form-item>      
+                <el-form-item label="机构名称：" >
+                    <select-tree
+                    :props="props"
+                    :options="organList"
+                    :value="valueId"
+                    @getValue="getValue($event)"
+                    v-model="selectOrgan"
+                    ></select-tree>
+                </el-form-item>
+                <el-form-item label="所属角色：">
+                    <el-select v-model="selectRole" @change="changeRole"> 
+                        <el-option v-for="item in userRoleList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>     
                     <el-form-item label="用户名称：">
                         <el-input v-model="addUserForm.nickName"></el-input>
                     </el-form-item>
@@ -169,27 +177,53 @@
     </el-card>
 </template>
 <script>
+import SelectTree from "./SelectTree";
 export default {
     data(){
         return {
             searchForm:{
-                "pageNum": 1,
-                "pageSize": 10,
+                pageNum:1,
+                pageSize:10,
+                "pageNum": this.pageNum,
+                "pageSize": this.pageSize,
             },
             userList:[],
             organList:[],
             userRoleList:[],
             selectUser:{},
-            selectOrgan:{},
-            selectRole:{},
+            selectOrgan:undefined,
+            selectRole:undefined,
+            valueId: 0,//树型选择初始ID
+            editOrganId:0,
+            selectEditOrgan:undefined,
             addUserForm:{
 
             },
             editUserForm:{},
             addUserVisible:false,
             editUserVisible:false,
+            props:{
+                value:'id',
+                label:'organName',
+                children:'childrenList'
+            },
         }
     },
+     computed: {
+    /* 转树形数据 */
+        // optionData() {
+        // let cloneData = JSON.parse(localStorage.organList); // 对源数据深度克隆
+        // return cloneData.filter(father => {
+        //     // 循环所有项，并添加children属性
+        //     let branchArr = cloneData.filter(child => father.id == child.parentId); // 返回每一项的子级数组
+        //     branchArr.length > 0 ? (father.children = branchArr) : ""; //给父级添加一个children属性，并赋值
+        //     return father.parentId == 0; //返回第一层
+        // });
+        // }
+    },
+    components:
+       { SelectTree,}
+    ,
     created(){
         this.utils.getUserList(this,this.searchForm)
         this.organList = JSON.parse(localStorage.organList)
@@ -206,9 +240,9 @@ export default {
             this.utils.getUserList(this,this.searchForm)
         },
         clear(){
-            this.searchForm = {"pageNum": 1,"pageSize": 10,}
-            this.utils.getUserList(this,{"pageNum": 1,
-                "pageSize": 10,})
+            this.searchForm = {"pageNum": this.pageNum,"pageSize": this.pageNum,}
+            this.utils.getUserList(this,{"pageNum": this.pageNum,
+                "pageSize": this.pageNum,})
         },
         addUser(){
             if(this.addUserForm.organId){
@@ -261,11 +295,15 @@ export default {
         },
         changeOrgan(e){
             let that = this,id = e
+            this.userRoleList = []
             this.editUserForm.roleId = '请选择'
             this.$http.post(`role/list/${id}`).then(res=>{
                 this.userRoleList = res.data.data
             })
 
+        },
+        changeRole(e){
+            this.addUserForm.roleId = e
         },
         //格式化
         phoneFormat(row){
@@ -282,7 +320,26 @@ export default {
             let m = date.getMinutes() + ':'
             let s = date.getSeconds()
             return Y+M+D+h+m+s            
-        }        
+        },
+        // 取值
+        getValue(value) {
+        this.valueId = value;
+        this.addUserForm.organId = value
+        this.userRoleList = []
+        this.selectRole = undefined
+        this.$http.post(`role/list/${value}`).then(res=>{
+                this.userRoleList = res.data.data
+            })
+        },  
+        getEditValue(value){
+            this.editOrganId = value
+            this.editUserForm.organId = value
+            this.userRoleList = []
+            this.editSelectRole = undefined
+            this.$http.post(`role/list/${value}`).then(res=>{
+                    this.userRoleList = res.data.data
+                })            
+        }           
         
     }
 }
@@ -291,6 +348,12 @@ export default {
     .el-table{
         margin-top: 20px;
     }
+    .el-dialog__body .el-input{
+        width: 130px;
+    }
+    .el-dialog__body .el-select{
+        width: 130px;
+    }    
     /* card样式 */
     .box-card /deep/ .el-card__header{
         height: 4vh;

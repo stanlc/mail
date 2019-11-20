@@ -36,7 +36,7 @@
                          
             <el-form>
                 <el-button type="primary" @click="configOrgan" :disabled="selectDevices.length!==1" >配置机构</el-button>
-                <el-button type="primary" @click="configPosition" :disabled="selectDevices.length!==1">配置位置</el-button>
+                <!-- <el-button type="primary" @click="configPosition" :disabled="selectDevices.length!==1">配置位置</el-button> -->
             </el-form>
             <!-- 设备详情dialog -->
             <el-dialog
@@ -102,7 +102,7 @@
                     </el-form-item>
                 </el-form>
                 <el-form :inline="true">
-                    <el-button type="primary" @click="configOrgan">确定</el-button>
+                    <el-button type="primary" @click="editOrgan">确定</el-button>
                     <el-button type="primary" @click="configOrganVisible =false">取消</el-button>
                 </el-form>  
             </el-dialog>            
@@ -233,13 +233,16 @@ export default {
         configOrgan(){
             this.configOrganVisible = true
         },
-        //配置位置
-        configPosition(){
+        editOrgan(){
 
         },
-        //设备编辑
-        choseAccount(){
+        //配置位置
+        // configPosition(){
 
+        // },
+        //设备编辑
+        choseAccount(e){
+            console.log(e)
         },
     }
 }

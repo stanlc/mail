@@ -5,18 +5,25 @@
         </div>
         <div>
             <el-form :inline="true" :model="searchForm">
-                <el-form-item label="小区名称：">
+                区域选择-selct
+                <!-- <el-form-item label="小区名称：">
                     <el-input v-model="searchForm.deviceName"></el-input>
                 </el-form-item>
                 <el-form-item label="楼栋：">
                     <el-input v-model="searchForm.devicePosition"></el-input>
-                </el-form-item> 
+                </el-form-item>  -->
                 <el-form-item label="运行状态：">
                     <el-select v-model="searchForm.status">
                         <el-option label="在线" value=1></el-option>
                         <el-option label="离线" value=2></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="报警状态：">
+                    <el-select v-model="searchForm.status">
+                        <el-option label="报警" value=1></el-option>
+                        <el-option label="正常" value=2></el-option>
+                    </el-select>
+                </el-form-item>                
                 <el-form-item label="设备ID：">
                     <el-input v-model="searchForm.deviceId"></el-input>
                 </el-form-item>   
@@ -89,21 +96,23 @@
 export default {
     data(){
         return {
+            pageNum:1,
+            pageSize:7,
             searchForm:{
-                'pageNum':1,
-                'pageSize':10
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
             },
             runInfoList:[],
 
         }
     },
     mounted(){
-           if(localStorage.deviceList){
-               this.runInfoList = JSON.parse(localStorage.deviceList)
+           if(localStorage.runInfoList){
+               this.runInfoList = JSON.parse(localStorage.runInfoList)
            }else{
-               this.$http.post('/device/pagerList',this.searchForm).then(res=>{
-                   localStorage.deviceList = JSON.stringify(res.data.paging.list)
-                    this.runInfoList = JSON.parse(localStorage.deviceList)
+               this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
+                   localStorage.runInfoList = JSON.stringify(res.data.paging.list)
+                    this.runInfoList = JSON.parse(localStorage.runInfoList)
                })  
            }
         },
@@ -115,7 +124,7 @@ export default {
 
         },
         formatTime(row){
-            let val = row.updateTime
+            let val = row.lastDate
             let date = new Date(val) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
             let Y = date.getFullYear() + '-'
             let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
@@ -134,7 +143,7 @@ export default {
             })
         },  
         clear(){
-            this.$http.post('/device/pagerList',{'pageNum':1,'pageSize':10}).then(res=>{
+            this.$http.post('/device/pagerList',{'pageNum':this.pageNum,'pageSize':this.pageSize}).then(res=>{
                 this.runInfoList = res.data.paging.list
             })            
         }
