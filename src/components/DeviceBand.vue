@@ -100,7 +100,7 @@
                 </el-form>
                 <el-form :inline="true">
                     <el-button type="primary" @click="bindDevice">确定</el-button>
-                    <el-button type="primary" @click="bindDeviceDialogVisible =false">取消</el-button>
+                    <el-button type="primary" @click="bindDeviceDialogVisible =false;bindDeviceForm={}">取消</el-button>
                 </el-form>  
             </el-dialog>            
             <!-- 绑定设备dialog -->
@@ -120,7 +120,7 @@
     </el-card>
 </template>
 <script>
-import ChineseDistricts from '../js/distpicker.data'
+
 export default {
     data(){
         return {
@@ -142,11 +142,8 @@ export default {
 
         
     },
-    created(){
-        this.utils.getbindList(this,{
-            "pageNum": 1,
-            "pageSize": 8
-        }),
+    mounted(){
+        this.utils.getbindList(this,this.searchForm),
         this.getAccount()  
     },
     methods:{
@@ -198,18 +195,17 @@ export default {
         },
         //绑定设备
         bindDevice(){
+            
             this.utils.bindDevice(this.bindDeviceForm).then(res=>{
-                if(res.code===200){
+                if(res.data.code===200){
                     this.$message({
                         type:'success',
                         message:'绑定成功'
                     })
                 }
                 this.bindDeviceDialogVisible = false
-                this.utils.getbindList(this,{
-                    "pageNum": 1,
-                    "pageSize": 8
-                })
+                this.bindDeviceForm={}
+                this.utils.getbindList(this,this.searchForm)
             })
         },
         //解绑设备
@@ -217,7 +213,7 @@ export default {
             let that = this,account = row.deviceAccount,blist = this.bindList
             let id = blist[blist.findIndex(item=>{ return item.deviceAccount===account})].id
             this.utils.UnBindDevice(id).then(res=>{
-                if(res.code===200){
+                if(res.data.code===200){
                     this.$message({
                         type:'success',
                         message:'解绑成功'
@@ -307,23 +303,7 @@ export default {
     .choose-btn{
         width:150px;
     }      
-        /* dialog样式 */
-    .box-card /deep/ .el-dialog__header{
-        background: #19437e;
-        padding:10px;
-    }
-    .box-card /deep/ .el-dialog__title{
-        color: #fff;
-    }
-     .box-card /deep/ .el-dialog__body{
-         background: #143666;
-     }
-     .box-card /deep/ .el-dialog__footer{
-         background: #143666;
-     }
-     .sameLevel{
-         border-radius: 5px;
-     } 
+    
      .btn-box .el-button{
          width: 5rem;
      }

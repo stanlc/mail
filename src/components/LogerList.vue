@@ -77,7 +77,7 @@
                 >
                 </el-table-column>    
                 <el-table-column
-                label="操作时间"
+                label="创建时间"
                 prop="createTime"
                 :formatter="formatTime"
                 >
@@ -96,11 +96,21 @@
             <el-dialog
             title="位置"
             :visible.sync="checkInfoVisible"
-            width="40%"
+            width="25%"
             >
-            联系人：
-            位置：
-            状态：
+            <div>
+                <p> 联系人：{{deviceInfo.organPerson}}</p>
+                <p>位置：{{deviceInfo.position}}</p>
+                <p>状态：开启{{deviceInfo.openStatusNum}}/关闭{{deviceInfo.offStatusNum}}</p>
+                <p>箱体数量：{{deviceInfo.totalNum}}</p>
+                <div class="groupBox center">
+                    <div v-for="item in groupInfoList" :key="item.index" class="groupItem">
+                        <span class="boxName">{{item.positionDetail|boxposition}}</span>
+                        <p :class="item.openStatus===1?'green':'red'">{{item.openStatus|openStat}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="center"><el-button type="primary" @click="checkInfoVisible=false">返回</el-button></div>
             </el-dialog>            
             <!-- 位置dialog结束 -->
         </div>
@@ -119,6 +129,89 @@ export default {
             pageSize:10,
             logList:[],
             organList:[],
+            deviceInfo:{},
+            groupInfoList:[
+                {
+                    'positionDetail':'101',
+                    'openStatus':1
+                },
+                {
+                    'positionDetail':'102',
+                    'openStatus':0
+                },
+                {
+                    'positionDetail':'103',
+                    'openStatus':0
+                },
+                {
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },
+                {
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },{
+                    'positionDetail':'102',
+                    'openStatus':0
+                },
+            ],
             valueId:0,
             checkInfoVisible:false,
             props:{
@@ -127,6 +220,22 @@ export default {
                 children:'childrenList'
             },
 
+        }
+    },
+    filters:{
+        openStat(e){
+            if(e===1){
+                return '开启'
+            }else{
+                return '关闭'
+            }
+        },
+        boxposition(e){
+            if(!e){
+                return '未知'
+            }else{
+                return e
+            }
         }
     },
     components:
@@ -197,8 +306,10 @@ export default {
             this.utils.getLogger(this,this.searchForm)
         },
         //查看位置
-        checkInfo(){
+        checkInfo(e){
             this.checkInfoVisible =true
+            this.utils.getDeviceGroup(this,e.deviceNum)
+            
         }               
     }
 }
@@ -241,5 +352,52 @@ export default {
     } 
     .choose-btn{
         width:150px;
-    }       
+    } 
+
+    .center{
+        text-align: center;
+    }
+    /* 组状态样式 */
+    .boxName{
+        display: block;
+        width: 38px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        background: #09aec2;
+        border-radius: 5px;
+        font-size: 10px; 
+    }  
+    .groupBox{
+        display: block;
+        width: 300px;
+        height: 170px;
+        overflow-y: scroll;
+        margin-bottom: 40px;
+        border-bottom: #fff 1px solid
+    }
+    .groupItem{
+        display: inline-block;
+        text-align: center;
+        margin:0 10px 0 0;
+    }   
+    .green{
+        color: #15b789
+    }
+    .red{
+        color: #e04b4c
+    }
+    .groupBox::-webkit-scrollbar {/*滚动条整体样式*/
+        width: 10px;     /*高宽分别对应横竖滚动条的尺寸*/
+        height: 150px;
+    }
+    .groupBox::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+            border-radius: 10px;
+            background: #0bb6cf;
+        }
+    .groupBox::-webkit-scrollbar-track {/*滚动条里面轨道*/
+            
+            border-radius: 10px;
+            background: #1b4887;
+        }
 </style>

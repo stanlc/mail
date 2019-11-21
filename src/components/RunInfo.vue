@@ -10,6 +10,7 @@
                     :props="props"
                     :options="organList"
                     :value="valueId"
+                    ref="selectTree"
                      @getValue="getValue($event)"
                     v-model="searchForm.organId"
                     ></select-tree>
@@ -88,7 +89,7 @@
                 >
                 </el-table-column>     
                 <el-table-column
-                label="操作时间"
+                label="最后操作时间"
                 prop="updateTime"
                 :formatter="formatTime"
                 >
@@ -171,10 +172,12 @@ export default {
         search(){
             this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
                 this.runInfoList = res.data.paging.list
+                this.$refs.selectTree.clearHandle()
             })
+            
         },  
         clear(){
-            
+            this.$refs.selectTree.clearHandle()
             this.searchForm={
                 'pageNum':this.pageNum,
                 'pageSize':this.pageSize,

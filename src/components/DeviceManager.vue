@@ -131,7 +131,12 @@
                 label="设备名称"
                 prop="deviceName"
                 >
-                </el-table-column>                
+                </el-table-column>
+                <el-table-column
+                label="设备别名"
+                prop="deviceNickName"
+                >
+                </el-table-column>                  
                 <el-table-column
                 label="设备状态"
                 prop="status"
@@ -152,6 +157,11 @@
                 label="所属机构"
                 prop="organName"
                 >
+                </el-table-column> 
+                <el-table-column
+                label="详细地址"
+                prop="position"
+                >
                 </el-table-column>     
                 <el-table-column
                 label="操作"
@@ -168,18 +178,6 @@
 </template>
 <script>
 import SelectTree from "./SelectTree";
-//展开数组嵌套
-var nlist = []
-function getChildren(arr){
-    for(let item of arr){
-        if(!nlist.includes(item)){
-            nlist.push(item)
-        }
-        if(item.childrenList.length>0){
-            getChildren(item.childrenList)
-        }else{return}
-    }
-}
 export default {
     data(){
         return {
@@ -192,6 +190,7 @@ export default {
             deviceList:[],
             accountList:[],
             organList:[],
+            allOrganList:[],
             valueId:0,
             props:{
                 value:'id',
@@ -213,15 +212,21 @@ export default {
     },
     created(){
         this.utils.getDeviceList(this,this.searchForm)
+        this.utils.getOrganList(this)
     },
     mounted(){
         if(localStorage.subAccountList){
             this.accountList = JSON.parse(localStorage.subAccountList)
+        }else{
+             this.utils.getSubAccount(this)
         }
         if(localStorage.organList){
             this.organList = JSON.parse(localStorage.organList)
         }
-        getChildren(this.organList)
+        
+        this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
+
+        
     },
     methods:{
         deviceSelect(e){
@@ -275,8 +280,14 @@ export default {
         
        
         editOrgan(){
-            
+            this.$http.post('device/organ/',this.configOrganForm).then(res=>{
+                if(res.data.code==200){
+                    this.$message({type:'success',message:'配置机构成功'})
+                }
+            })
             this.$refs.selectTree.clearHandle()
+            this.configOrganForm.organName = null
+            this.configOrganVisible = false
         },
         //配置位置
         // configPosition(){
@@ -290,7 +301,7 @@ export default {
             this.valueId = value;
             this.configOrganForm.organId = value
             if(value){
-                this.configOrganForm.organName = nlist.filter(item=>item.id===value)[0].organName
+                this.configOrganForm.organName = this.allOrganList.filter(item=>item.id===value)[0].organName
             }
         },
     }

@@ -72,7 +72,7 @@
                     <template slot-scope="scope">
                         <el-button type="info" size="small" @click="openInfo(scope.row)">详情</el-button>
                         <el-button type="primary" size="mini" @click="sub(scope.row)" :disabled="scope.row.applayStatus===3">订阅</el-button>
-                        <el-button type="primary" size="small" :disabled="scope.row.applayStatus===1">同步设备</el-button>
+                        <el-button type="primary" size="small" :disabled="scope.row.applayStatus===1" @click="getDevice(scope.row)">同步设备</el-button>
                         <el-button type="danger" size="mini">删除</el-button>                        
                     </template>                
                 </el-table-column>                                
@@ -215,6 +215,7 @@ export default {
         openInfo(row){
             this.accountInfoVisible=true
             this.accountInfoForm = row
+            console.log(row)
         },
         CheckChange(){
 
@@ -308,6 +309,18 @@ export default {
                 }
             })
         },
+        //同步设备
+        getDevice(e){
+            let acc = e.account
+            this.$http.post(`/device/getDevice/${acc}`).then(res=>{
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'同步设备成功'
+                    })
+                }
+            })
+        }
         //绑定已有订阅账号
         // addOldAccount(){
         //     this.$http.post(`/account/applyAccount/${this.addOldAccountForm.account}`).then(res=>{

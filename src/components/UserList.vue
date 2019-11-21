@@ -103,12 +103,13 @@
                         :props="props"
                         :options="organList"
                         :value="editOrganId"
+                        ref="editTree"
                         @getValue="getEditValue($event)"
                         v-model="selectEditOrgan"
                         ></select-tree>
                     </el-form-item>
                     <el-form-item label="所属角色：">
-                        <el-select v-model="editSelectRole"> 
+                        <el-select v-model="editSelectRole" @change="changeEditRole"> 
                             <el-option v-for="item in userRoleList" :key="item.index" :label="item.roleName" :value="item.id"></el-option>
                         </el-select>
                     </el-form-item>      
@@ -125,9 +126,9 @@
                         <el-input v-model="editUserForm.phone"></el-input>
                     </el-form-item>
                     <el-form-item>
-                            <el-button type="primary" @click="editUser()">提交</el-button>
+                            <el-button type="primary" @click="editUser">提交</el-button>
                     </el-form-item><el-form-item>
-                        <el-button type="primary" @click="editUserVisible=false">取消</el-button>
+                        <el-button type="primary" @click="editUserVisible=false;$refs.editTree.clearHandle()">取消</el-button>
                     </el-form-item>
             </el-form>
             </el-dialog>
@@ -137,6 +138,7 @@
             title="新增用户"
             :visible.sync="addUserVisible"
             width="35%"
+            class="add"
             >           
             <el-form label-position="right"  label-width="auto" :model="addUserForm" :inline="true">
                 <el-form-item label="机构名称：" >
@@ -144,6 +146,7 @@
                     :props="props"
                     :options="organList"
                     :value="valueId"
+                    ref="addTree"
                     @getValue="getValue($event)"
                     v-model="selectOrgan"
                     ></select-tree>
@@ -175,9 +178,21 @@
             <!-- 添加用户Dialog -->                          
         </div>
     </el-card>
-</template>
+</template> 
 <script>
 import SelectTree from "./SelectTree";
+//展开数组嵌套
+// var nlist = []
+// function getChildren(arr){
+//     for(let item of arr){
+//         if(!nlist.includes(item)){
+//             nlist.push(item)
+//         }
+//         if(item.childrenList.length>0){
+//             getChildren(item.childrenList)
+//         }else{return}
+//     }
+// }
 export default {
     data(){
         return {
@@ -189,6 +204,7 @@ export default {
             },
             userList:[],
             organList:[],
+            allOrganList:'',
             userRoleList:[],
             selectUser:{},
             selectOrgan:undefined,
@@ -228,6 +244,9 @@ export default {
     created(){
         this.utils.getUserList(this,this.searchForm)
         this.organList = JSON.parse(localStorage.organList)
+    },
+    mounted(){
+        this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
     },
     methods:{
         userSelect(e){
@@ -280,23 +299,27 @@ export default {
         openEdit(row){
             this.editUserVisible=true
             this.editUserForm = row
+            this.selectEditOrgan = row.organId
+            this.editSelectRole = row.roleId
+            console.log(row)
         },
         editUser(){
             let that = this
-            if(this.editUserForm.organId){
-                this.editUserForm.organName = this.organList[this.organList.findIndex((item)=>{return item.id===this.editUserForm.organId})].organName
-            }
             if(this.editUserForm.roleId){
-                this.editUserForm.roleName = this.userRoleList[this.userRoleList.findIndex((item)=>{return item.id===this.editUserForm.roleId})].roleName
+                this.editUserForm.roleName = this.userRoleList.filter(item=>item.id===this.editUserForm.roleId)[0].roleName
             }            
-            this.utils.editUser(this.editUserForm).then(()=>{
+            this.utils.editUser(this.editUserForm).then((res)=>{
                 that.utils.getUserList(that,that.searchForm)
-                        this.$message({
-                            type:'success',
-                            message:'编辑成功'
-                        }) 
-                this.editUserVisible= false                       
+                       if(res.data.code===200){
+                            this.$message({
+                                type:'success',
+                                message:'编辑成功'
+                            }) 
+                       }
+                this.editUserVisible= false
+                this.$refs.editTree.clearHandle()  
             })
+            
         },
         changeOrgan(e){
             let that = this,id = e
@@ -309,6 +332,16 @@ export default {
         },
         changeRole(e){
             this.addUserForm.roleId = e
+            if(e){
+                this.addUserForm.roleName = this.userRoleList.filter(item=>item.id===e)[0].roleName
+            }
+            
+        },
+        changeEditRole(e){
+            this.editUserForm.roleId = e
+            if(e){
+                this.editUserForm.roleName = this.userRoleList.filter(item=>item.id===this.editUserForm.roleId)[0].roleName
+            }  
         },
         //格式化
         phoneFormat(row){
@@ -336,17 +369,25 @@ export default {
             this.$http.post(`role/list/${value}`).then(res=>{
                 this.userRoleList = res.data.data
             })
+            this.addUserForm.organName = this.allOrganList.filter(item=>item.id===value)[0].organName
         }
-        
         },  
         getEditValue(value){
             this.editOrganId = value
             this.editUserForm.organId = value
+            if(this.editUserForm.organId){
+                this.editUserForm.organName = this.allOrganList.filter(item=>item.id===this.editUserForm.organId)[0].organName
+            }
             this.userRoleList = []
-            this.editSelectRole = undefined
-            this.$http.post(`role/list/${value}`).then(res=>{
+            this.editSelectRole = null
+            this.editUserForm.roleId = null
+            this.editUserForm.roleName = null
+            if(value){
+                 this.$http.post(`role/list/${value}`).then(res=>{
                     this.userRoleList = res.data.data
-                })            
+                }) 
+            }
+                      
         }           
         
     }
@@ -379,6 +420,7 @@ export default {
         margin: 0 auto;
     } 
      /* form样式 */
+
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
      }

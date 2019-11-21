@@ -69,11 +69,14 @@ let utils = {
     delUser(id){
         return Vue.prototype.$http.delete(`/user/delete/${id}`)
     },
+    editUser(form){
+        return Vue.prototype.$http.post('/user/edit',form)
+    },
     //获取账号订阅信息
     getSubAccount(vm,form){
         Vue.prototype.$http.post('/account/pagerList',form).then(res=>{
-            localStorage.subAccountList = JSON.stringify(res.data.paging.list)
-            vm.accountList = JSON.parse(localStorage.subAccountList)
+           localStorage.subAccountList = JSON.stringify(res.data.paging.list)
+           vm.accountList = JSON.parse(localStorage.subAccountList)
         })
     },
     //省市区三级
@@ -119,7 +122,36 @@ let utils = {
             vm.logList = JSON.parse(localStorage.logList)
         })
     },
-    
+    //获取设备组信息
+    getDeviceGroup(vm,num){
+        Vue.prototype.$http.post(`/device/deviceGroup/${num}`).then(res=>{
+            vm.deviceInfo = res.data.data
+            //vm.groupInfoList = vm.deviceInfo.groupInfoList
+        })
+    },
+    //获取树型数据的指定属性集合
+    getAllNode(arr,childName){
+        
+        const arrs = []
+        if (!arr) {
+          return
+        }
+        if (!childName) {
+          childName = 'children'
+        }
+        const getChild = (arr) => {
+          for (let i = 0; i < arr.length; i++) {
+            arrs.push(arr[i])
+            if (arr[i][childName] && arr[i][childName].length > 0) {
+              getChild(arr[i][childName])
+            }
+          }
+          
+          return arrs
+        }
+        return getChild(arr)
+      }
+      
 }
 
 

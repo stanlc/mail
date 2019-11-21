@@ -11,13 +11,13 @@
                         <el-button type="primary" v-if="userLevel===1 && selectParentId === null ?true:false" @click="sameDialogVisible=true" >录入同级</el-button>       
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="openAddSub">录入下级</el-button>
+                        <el-button type="primary" @click="openAddSub" :disabled="selectOrganId===0">录入下级</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="openConfig">编辑</el-button>
+                        <el-button type="primary" @click="openConfig" :disabled="selectOrganId===0">编辑</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger" @click="delOrgan">删除</el-button>
+                        <el-button type="danger" @click="delOrgan" :disabled="selectOrganId===0">删除</el-button>
                     </el-form-item>
                 </el-form>
             <el-tree :data="organList" :props="organProps" @node-click="handleNodeClick"></el-tree>
@@ -34,7 +34,7 @@
             append-to-body>
             </el-dialog>
             <span class="blue">添加同级组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="sameLevelForm" ref="sameLevelForm">
+            <el-form label-position="right" :inline="true" label-width="auto" :model="sameLevelForm" ref="sameLevelForm" >
                 <el-form-item label="机构名称:" prop="name">
                     <el-input v-model="sameLevelForm.organName"></el-input>
                 </el-form-item>
@@ -76,7 +76,7 @@
             append-to-body>
             </el-dialog>
             <span class="blue">添加下级组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="subLevelForm">
+            <el-form label-position="right" :inline="true" label-width="auto" :model="subLevelForm" >
                 <el-form-item label="机构名称:" >
                     <el-input v-model="subLevelForm.organName"></el-input>
                 </el-form-item>
@@ -105,7 +105,7 @@
             </span>
             </el-dialog>
             <!-- 录入下级Dialog -->
-            <!-- 编辑Dialog -->
+            <!-- 编辑组织Dialog -->
             <el-dialog
             title="编辑"
             :visible.sync="configDialogVisible"
@@ -118,7 +118,7 @@
             append-to-body>
             </el-dialog>
             <span class="blue">编辑组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="configForm" @submit.prevent="ConfigOrgan" >
+            <el-form label-position="right" :inline="true" label-width="auto" :model="configForm" >
                 <el-form-item label="机构名称:" >
                     <el-input v-model="configForm.organName"></el-input>
                 </el-form-item>
@@ -142,11 +142,11 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="configDialogVisible=false" native-type="submit">确认</el-button>
+                <el-button type="primary" @click="editOrgan">确认</el-button>
                 <el-button @click="configDialogVisible =false">取 消</el-button>
             </span>
             </el-dialog>
-            <!-- 编辑Dialog -->
+            <!-- 编辑组织Dialog -->
             </div>
         </el-card>
         <el-card class="box-card right">
@@ -173,6 +173,7 @@
                     style="width: 100%"
                     @select="roleSelect"
                     @check-change="RoleCheckChange"
+                    height="250"
                     >
                         <el-table-column
                         type="selection"
@@ -196,6 +197,7 @@
                         label="创建时间"
                         prop="createTime"
                         :formatter="formatTime"
+                        width="200"
                         >
                         </el-table-column>
                     </el-table>
@@ -368,10 +370,8 @@ export default {
         addSameOrgan(){
             this.$http.post('/organ/add',this.sameLevelForm).then(res=>{
                 if(res.data.code===200){
-                    this.$message('添加成功')
+                    this.$message({type:'success',message:'添加成功'})
                     this.utils.getOrganList(this)
-                }else{
-                    this.$message('添加失败') 
                 }
                 this.sameDialogVisible = false
             })
@@ -398,6 +398,14 @@ export default {
                 this.configDialogVisible=true
             }            
         },
+        editOrgan(){
+            this.configDialogVisible=false
+            this.$http.post('/organ/edit',this.configForm).then(res=>{
+                if(res.data.code===200){
+                    this.$message({type:'success',message:'编辑组织成功'})
+                }
+            })
+        },
         delOrgan(){
             if(this.selectOrganId===0){
                 this.$message({
@@ -407,13 +415,8 @@ export default {
             }else{
                 this.$http.delete(`/organ/delete/${this.selectOrganId}`).then(res=>{
                     if(res.data.code===200){
-                        this.$message('删除成功')
+                        this.$message({type:'success',message:'删除成功'})
                         this.utils.getOrganList(this)
-                    }else{
-                        this.$message({
-                            type:'error',
-                            message:'删除失败，请重试'
-                        })
                     }
                 })
             }             
@@ -421,10 +424,8 @@ export default {
         addSubOrgan(){
              this.$http.post('/organ/add',this.subLevelForm).then(res=>{
                 if(res.data.code===200){
-                    this.$message('添加成功')
+                    this.$message({type:'success',message:'添加成功'})
                     this.utils.getOrganList(this)
-                }else{
-                    this.$message('添加失败') 
                 }
                 this.subDialogVisible = false
             })
@@ -478,12 +479,14 @@ export default {
         },
         editRole(){
             let that = this 
-            this.utils.editRole(that.configRoleForm).then(()=>{
+            this.utils.editRole(that.configRoleForm).then((res)=>{
                 that.utils.getRoleList(that,that.selectOrganId)
-                this.$message({
+                if(res.data.code===200){
+                    this.$message({
                             type:'success',
                             message:'编辑角色成功'
                         })
+                }
                 that.configRoleDialogVisible = false        
             })             
         },
@@ -522,6 +525,10 @@ export default {
             }else{
                 this.$http.post(`/resource/auth/${this.selectRoleId}/?resourceIds=${this.selectConfigMenu.toString()}`).then(res=>{
                     if(res.data.code===200){
+                        this.$message({
+                            type:'success',
+                            message:'权限配置成功'
+                        })
                         this.MenuConfigRoleDialogVisible = false
                     }
                 })
