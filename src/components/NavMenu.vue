@@ -3,7 +3,6 @@
         <el-menu 
           class="el-menu-demo" 
           mode="horizontal" 
-          background-color = "#1c4072"
           :default-active="$route.path"
           text-color="#fff"
           router
@@ -27,9 +26,9 @@ export default {
 </script>
 <style scoped lang="scss">
   .nav-head{
-    opacity: 0.8;
     .el-menu.el-menu--horizontal {
       border-bottom: none;
+      background: rgba(14,59,128,0.3)
     }
     .el-menu--horizontal>.el-menu-item{
       border:none;            //去除导航单个选项边框

@@ -10,8 +10,8 @@
                     :props="props"
                     :options="organList"
                     :value="valueId"
-                    :accordion="isAccordion"
-                     @getValue="getValue($event)"
+                    ref="selectTree"
+                    @getValue="getValue($event)"
                     v-model="searchForm.organId"
                     ></select-tree>                    
                 </el-form-item>
@@ -81,8 +81,28 @@
                 prop="createTime"
                 :formatter="formatTime"
                 >
-                </el-table-column>                                
+                </el-table-column> 
+                <el-table-column
+                label="操作"
+                fixed="right"
+                width="200"
+                >
+                    <template class="btn-box" slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="checkInfo(scope.row)">查看</el-button>                     
+                    </template>                
+                </el-table-column>                                                 
             </el-table>
+            <!-- 位置dialog开始 -->
+            <el-dialog
+            title="位置"
+            :visible.sync="checkInfoVisible"
+            width="40%"
+            >
+            联系人：
+            位置：
+            状态：
+            </el-dialog>            
+            <!-- 位置dialog结束 -->
         </div>
     </el-card>
 </template>
@@ -100,7 +120,7 @@ export default {
             logList:[],
             organList:[],
             valueId:0,
-            isAccordion:true,
+            checkInfoVisible:false,
             props:{
                 value:'id',
                 label:'organName',
@@ -158,16 +178,27 @@ export default {
         getValue(value) {
         this.valueId = value;
         this.searchForm.organId = value
-        },  
+        },
         //查询
         search(){
             this.utils.getLogger(this,this.searchForm)
-        }, 
-        clear(){
-            this.utils.getLogger(this,{
+            this.searchForm = {
                 'pageNum':this.pageNum,
                 'pageSize':this.pageSize,
-            })
+            } 
+            this.$refs.selectTree.clearHandle()           
+        }, 
+        clear(){
+            this.$refs.selectTree.clearHandle()//清空selectTree选项
+            this.searchForm = {
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
+            }
+            this.utils.getLogger(this,this.searchForm)
+        },
+        //查看位置
+        checkInfo(){
+            this.checkInfoVisible =true
         }               
     }
 }

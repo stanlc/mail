@@ -332,7 +332,6 @@ export default {
     .box-card {
         width: 82vw;
         height: 78vh;
-        background: #06253d;
         border-radius: 5px;
         margin: 0px auto;
     } 

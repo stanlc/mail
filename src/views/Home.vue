@@ -35,5 +35,31 @@ export default {
   .home{
     overflow: hidden;
     height: 100vh;
+    background: url(..\assets\img\bc.png);
+    background-size: 100%;
   }
+  .home /deep/ .el-card{
+    border: none
+  }
+  .home /deep/ .el-menu{
+    border: none
+  }
+  .home /deep/ .box-card{
+    background: rgba(11,53,115,0.2);
+  }
+        /* dialog样式 */
+  .home /deep/ .box-card /deep/ .el-dialog__header{
+      background: #19437e;
+      padding:10px;
+  }
+  .home /deep/ .box-card /deep/ .el-dialog__title{
+      color: #fff;
+  }
+    .home /deep/ .box-card /deep/ .el-dialog__body{
+        background: #143666;
+        color: #fff;
+    }
+    .home /deep/ .box-card /deep/ .el-dialog__footer{
+        background: #143666;
+    }   
 </style>

@@ -11,7 +11,8 @@
         :node-key="props.value"    
         :default-expanded-keys="defaultExpandedKey"
         :filter-node-method="filterNode"
-        @node-click="handleNodeClick">
+        @node-click="handleNodeClick"
+        >
       </el-tree>
     </el-option>
   </el-select>

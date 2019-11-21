@@ -332,9 +332,12 @@ export default {
         this.addUserForm.organId = value
         this.userRoleList = []
         this.selectRole = undefined
-        this.$http.post(`role/list/${value}`).then(res=>{
+        if(value){
+            this.$http.post(`role/list/${value}`).then(res=>{
                 this.userRoleList = res.data.data
             })
+        }
+        
         },  
         getEditValue(value){
             this.editOrganId = value
@@ -397,21 +400,5 @@ export default {
     .choose-btn{
         width:150px;
     } 
-    /* dialog样式 */
-    .box-card /deep/ .el-dialog__header{
-        background: #19437e;
-        padding:10px;
-    }
-    .box-card /deep/ .el-dialog__title{
-        color: #fff;
-    }
-     .box-card /deep/ .el-dialog__body{
-         background: #143666;
-     }
-     .box-card /deep/ .el-dialog__footer{
-         background: #143666;
-     }
-     .sameLevel{
-         border-radius: 5px;
-     }          
+       
 </style>

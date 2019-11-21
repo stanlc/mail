@@ -1,8 +1,9 @@
 <template>
   <div class="headContainer">
           <div class="left clearfix">
-            <div class="logo"></div>
-            <div>信报箱监测平台</div>
+            <!-- <div class="logo"></div>
+            <div class="title">信报箱监测平台</div> -->
+            <p><img class="middle" src="..\assets\img\logo.png"/>信报箱监测平台</p>
           </div>
           <div class="right clearfix">
             <div class="user">
@@ -55,7 +56,7 @@ export default {
   .headContainer{
       width: 100%;
       height: 60px;
-      background-color: #052746;
+      background-color: transparent;
       color: #fff;
       text-align: center;
       .right{
@@ -82,12 +83,12 @@ export default {
           font-weight:bold;
           display: flex;
           align-items: center;
-          .logo{
-            width: 145px;
-            height: 30px;
-            background:#06dfe3;
-            margin:0 10px 0 20px;
-          }
+          
+          margin-left: 40px; 
         }
+    }
+    .middle{
+      vertical-align: middle;
+      margin-right:18px;
     }
 </style>

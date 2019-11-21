@@ -100,6 +100,7 @@
                         :props="props"
                         :options="organList"
                         :value="valueId"
+                        ref="selectTree"
                         @getValue="getValue($event)"
                         v-model="configOrganForm.organId"
                         ></select-tree>
@@ -107,7 +108,7 @@
                 </el-form>
                 <el-form :inline="true">
                     <el-button type="primary" @click="editOrgan">确定</el-button>
-                    <el-button type="primary" @click="configOrganVisible =false">取消</el-button>
+                    <el-button type="primary" @click="configOrganVisible =false;$refs.selectTree.clearHandle()">取消</el-button>
                 </el-form>  
             </el-dialog>            
             <!-- 配置机构dialog -->                                         
@@ -275,7 +276,7 @@ export default {
        
         editOrgan(){
             
-    
+            this.$refs.selectTree.clearHandle()
         },
         //配置位置
         // configPosition(){
@@ -288,7 +289,9 @@ export default {
         getValue(value) {
             this.valueId = value;
             this.configOrganForm.organId = value
-            this.configOrganForm.organName = nlist.filter(item=>item.id===value)[0].organName
+            if(value){
+                this.configOrganForm.organName = nlist.filter(item=>item.id===value)[0].organName
+            }
         },
     }
 }
@@ -335,18 +338,5 @@ export default {
     .choose-btn{
         width:150px;
     }      
-        /* dialog样式 */
-    .box-card /deep/ .el-dialog__header{
-        background: #19437e;
-        padding:10px;
-    }
-    .box-card /deep/ .el-dialog__title{
-        color: #fff;
-    }
-     .box-card /deep/ .el-dialog__body{
-         background: #143666;
-     }
-     .box-card /deep/ .el-dialog__footer{
-         background: #143666;
-     }     
+  
 </style>
