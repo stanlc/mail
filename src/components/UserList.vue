@@ -97,7 +97,7 @@
             :visible.sync="editUserVisible"
             width="35%"
             >
-            <el-form label-position="right"  label-width="auto" :model="editUserForm" :inline="true">
+            <el-form label-position="right"  label-width="auto" :inline="true">
                     <el-form-item label="机构名称：" >
                         <select-tree
                         :props="props"
@@ -105,12 +105,12 @@
                         :value="editOrganId"
                         ref="editTree"
                         @getValue="getEditValue($event)"
-                        v-model="selectEditOrgan"
+                        v-model="editUserForm.organId"
                         ></select-tree>
                     </el-form-item>
                     <el-form-item label="所属角色：">
-                        <el-select v-model="editSelectRole" @change="changeEditRole"> 
-                            <el-option v-for="item in userRoleList" :key="item.index" :label="item.roleName" :value="item.id"></el-option>
+                        <el-select v-model="editUserForm.roleName" @change="changeEditRole"> 
+                            <el-option v-for="item in userRoleList" :key="item.index" :label="item.roleName" :value="item.roleName"></el-option>
                         </el-select>
                     </el-form-item>      
                     <el-form-item label="用户名称：">
@@ -148,7 +148,7 @@
                     :value="valueId"
                     ref="addTree"
                     @getValue="getValue($event)"
-                    v-model="selectOrgan"
+                    v-model="editUserForm.organId"
                     ></select-tree>
                 </el-form-item>
                 <el-form-item label="所属角色：">
@@ -207,16 +207,17 @@ export default {
             allOrganList:'',
             userRoleList:[],
             selectUser:{},
-            selectOrgan:undefined,
-            selectRole:undefined,
+
             valueId: 0,//树型选择初始ID
+            //编辑用户开始
             editOrganId:0,
+            editRoleName:'',
+            editUserForm:{},
             editSelectRole:{},
             selectEditOrgan:undefined,
             addUserForm:{
 
             },
-            editUserForm:{},
             addUserVisible:false,
             editUserVisible:false,
             props:{
@@ -247,6 +248,7 @@ export default {
     },
     mounted(){
         this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
+        
     },
     methods:{
         userSelect(e){
@@ -275,10 +277,11 @@ export default {
             this.utils.addUser(this,this.addUserForm)
             this.addUserVisible = false
             this.utils.getUserList(this,this.searchForm)
+            this.$refs.addTree.clearHandle()
         },
         cancelAdd(){
             this.addUserVisible=false
-            this.valueId = ''
+            this.$refs.addTree.clearHandle()
         },
         delUser(){
             let that = this
@@ -297,16 +300,17 @@ export default {
             })    
         },
         openEdit(row){
-            this.editUserVisible=true
-            this.editUserForm = row
-            this.selectEditOrgan = row.organId
-            this.editSelectRole = row.roleId
+            this.editUserVisible = true
+            this.editUserForm = Object.assign({},row)
+            this.$http.post(`role/list/${row.organId}`).then(res=>{
+                    this.userRoleList = res.data.data
+                }) 
             console.log(row)
         },
         editUser(){
             let that = this
-            if(this.editUserForm.roleId){
-                this.editUserForm.roleName = this.userRoleList.filter(item=>item.id===this.editUserForm.roleId)[0].roleName
+            if(this.editUserForm.roleName){
+                this.editUserForm.roleId = this.userRoleList.filter(item=>item.roleName===this.editUserForm.roleName)[0].roleId
             }            
             this.utils.editUser(this.editUserForm).then((res)=>{
                 that.utils.getUserList(that,that.searchForm)
@@ -338,9 +342,9 @@ export default {
             
         },
         changeEditRole(e){
-            this.editUserForm.roleId = e
+            this.editUserForm.roleName = e
             if(e){
-                this.editUserForm.roleName = this.userRoleList.filter(item=>item.id===this.editUserForm.roleId)[0].roleName
+                this.editUserForm.roleId = this.userRoleList.filter(item=>item.roleName===e)[0].id
             }  
         },
         //格式化
@@ -361,16 +365,16 @@ export default {
         },
         // 取值
         getValue(value) {
-        this.valueId = value;
-        this.addUserForm.organId = value
-        this.userRoleList = []
-        this.selectRole = undefined
-        if(value){
-            this.$http.post(`role/list/${value}`).then(res=>{
-                this.userRoleList = res.data.data
-            })
-            this.addUserForm.organName = this.allOrganList.filter(item=>item.id===value)[0].organName
-        }
+            this.valueId = value;
+            this.addUserForm.organId = value
+            this.userRoleList = []
+            this.selectRole = undefined
+            if(value){
+                this.$http.post(`role/list/${value}`).then(res=>{
+                    this.userRoleList = res.data.data
+                })
+                this.addUserForm.organName = this.allOrganList.filter(item=>item.id===value)[0].organName
+            }
         },  
         getEditValue(value){
             this.editOrganId = value
@@ -379,7 +383,7 @@ export default {
                 this.editUserForm.organName = this.allOrganList.filter(item=>item.id===this.editUserForm.organId)[0].organName
             }
             this.userRoleList = []
-            this.editSelectRole = null
+            this.selectRoleName = null
             this.editUserForm.roleId = null
             this.editUserForm.roleName = null
             if(value){

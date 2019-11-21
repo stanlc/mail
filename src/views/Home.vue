@@ -64,5 +64,8 @@ export default {
     } 
     .home /deep/ .el-dialog__body .el-form{
       text-align: center;
-    }  
+    } 
+    .home /deep/ .el-form /deep/ .el-input__inner{
+      color: #fff
+    } 
 </style>

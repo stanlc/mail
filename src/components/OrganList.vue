@@ -159,13 +159,13 @@
                         <el-button type="primary" @click="addRoleDialogVisible=true">录入</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="configRole" :disabled="roleSelects.length!==1">编辑</el-button>
+                        <el-button type="primary" @click="configRole" :disabled="selectRole.length!==1">编辑</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger" @click="delRole" :disabled="roleSelects.length===0">删除</el-button>
+                        <el-button type="danger" @click="delRole" :disabled="selectRole.length===0">删除</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="openRoleMenuConfig" :disabled="roleSelects.length!==1">权限配置</el-button>
+                        <el-button type="primary" @click="openRoleMenuConfig" :disabled="selectRole.length!==1">权限配置</el-button>
                     </el-form-item>
                 </el-form>
                     <el-table
@@ -268,7 +268,7 @@
             node-key="id"
             ref="tree"
             default-expand-all
-            :default-checked-keys="isAuthed">
+            >
             </el-tree>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="MenuConfigRole">提交</el-button>
@@ -290,6 +290,7 @@ export default {
             roleList:[],
             selectConfigMenu:[],//权限配置的已选择权限项
             isAuthed:[],//角色已经配置的权限
+            Autheds:[],
             selectOrganId:0,
             selectRoleId:0,
             selectRole:[],
@@ -364,7 +365,7 @@ export default {
         handleNodeClick(e){
             this.selectOrganId = e.id
             this.selectParentId = e.parentId
-            this.configForm = e
+            this.configForm = Object.assign({},e)
             this.utils.getRoleList(this,e.id)
         },
         addSameOrgan(){
@@ -447,32 +448,21 @@ export default {
         },
         roleSelect(e){
             this.selectRole = e
-            if(e.length===1){
-                this.configRoleForm = e[0]
-                this.selectRoleId = e[0].id
-                this.$http.get(`/resource/list/${this.selectRoleId}`).then(res=>{
-                    let list = res.data.data
-                    let idlist = []
-                    list.forEach(item => {
-                        if(item.isAuth===1){
-                            idlist.push(item.id)
-                        }
-                        if(item.childrenList.length>0){
-                            item.childrenList.map(item=>{
-                                if(item.isAuth===1){
-                                    idlist.push(item.id)
-                                }
-                            })
-                        }
-                        return idlist
-                    });
-                    this.isAuthed = idlist
-                })
-            }
-            this.roleSelects = e
+            let id = e[0].id
+            this.configRoleForm = Object.assign({},e[0])
+            let list = []
+            this.$http.get(`/resource/list/${id}`).then(res=>{
+                list = res.data.data
+                let nlist = this.utils.getAllNode(list,'childrenList')
+                this.isAuthed = nlist.filter(item=>item.isAuth===1)
+                for(let item of this.isAuthed){
+                    this.Autheds.push(item.id)
+                } 
+            })
+            
          },
          RoleCheckChange(){
-             this.isAuthed = []
+            
          },
         configRole(){
             this.configRoleDialogVisible = true
@@ -511,9 +501,10 @@ export default {
         //权限配置
         openRoleMenuConfig(){
                 this.MenuConfigRoleDialogVisible = true
+                this.$refs.tree.setCheckedKeys(this.Autheds)
         },
         menuTreeCheck(){
-            let list = this.$refs.tree.getCheckedKeys()
+            // let list = this.$refs.tree.getCheckedKeys()
             this.selectConfigMenu = list
         },
         MenuConfigRole(){

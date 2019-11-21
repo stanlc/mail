@@ -47,12 +47,12 @@ const routes = [
         path:'/device/serial',
         name:'DeviceSerial',
         component:DeviceSerial,
-        redirect:'/device/sub',
         children:[
           {
-            path:'/device/sub',
+            path:'',
             name:'DeviceSub',
             component:DeviceSub,
+            alias:'/device/sub'
           },
           {
             path:'/device/band',
@@ -70,13 +70,14 @@ const routes = [
         path:'/sys/manager',
         name:'SysManager',
         component:SysManager,
-        redirect:'/organ/list',
+        //redirect:'/organ/list',
         children:
         [
           {
-            path:'/organ/list',
+            path:'',
             name:'OrganList',
-            component:OrganList
+            component:OrganList,
+            alias:'/organ/list'
           },
           {
             path:'/user/list',
