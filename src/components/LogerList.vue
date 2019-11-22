@@ -22,13 +22,35 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="设备ID：">
-                    <el-input v-model="searchForm.deviceNum"></el-input>
+                        <el-autocomplete
+                        class="inline-input"
+                        v-model="searchForm.deviceNum"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入设备ID"
+                        :trigger-on-focus="false"
+                        @select="handleSelect"
+                        ></el-autocomplete>
                 </el-form-item>
-                <el-form-item label="最后操作时间：">
-                    <el-select v-model="searchForm.lastDate">
-                        
+                <el-form-item label="开始时间：">
+                    <el-select v-model="searchForm.startTime">
+                        <el-option
+                        v-for="item in Dates"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        @change="changeT(e)"></el-option>
                     </el-select>
-                </el-form-item>                    
+                </el-form-item> 
+                <el-form-item label="结束时间：">
+                    <el-select v-model="searchForm.endTime">
+                        <el-option
+                        v-for="item in Dates"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                        @change="changeT(e)"></el-option>
+                    </el-select>
+                </el-form-item>                                     
                 <el-form-item>
                     <el-button type="primary" @click="search">查询</el-button>
                 </el-form-item> 
@@ -130,6 +152,8 @@ export default {
             logList:[],
             organList:[],
             deviceInfo:{},
+            deviceNumList:[],
+            Dates:[],
             groupInfoList:[
                 {
                     'positionDetail':'101',
@@ -222,6 +246,7 @@ export default {
 
         }
     },
+    
     filters:{
         openStat(e){
             if(e===1){
@@ -255,7 +280,17 @@ export default {
         }        
     },    
     mounted(){
-
+            if(this.logList){
+                let numList = [],timeList = []
+                this.logList.map(item=>numList.push(item.deviceNum))   //获取设备Num数组
+                this.logList.map(item=>timeList.push(item.createTime))
+                let uniNumList = Array.from(new Set([...numList]))   //去重
+                let uniTimeList = Array.from(new Set([...timeList]))   //去重
+                uniTimeList.map(item=> this.Dates.push({'value':item}))
+                uniNumList.map(item=> this.deviceNumList.push({'value':item}))
+            }
+            this.Dates.map(item=>item.label=this.createTime(item.value))
+            
         },
     methods:{
         deviceSelect(){
@@ -263,6 +298,9 @@ export default {
         },
         CheckChange(){
 
+        },
+        changeT(e){
+            this.searchForm.endTime = e.value
         },
         formatTime(row){
             let val = row.createTime
@@ -278,10 +316,27 @@ export default {
             }
             return Y+M+D+h+m+s            
         },
+        createTime(e){
+            let date = new Date(e) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+            let Y = date.getFullYear() + '-'
+            let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-'
+            let D = date.getDate() + ' '
+            let h = date.getHours() + ':'
+            let m = date.getMinutes() + ':'
+            let s = date.getSeconds()
+            if(Y==='1970-'){
+                return '未操作'
+            }
+            return Y+M+D+h+m+s              
+        },
         positionFormat(row){
             let val = row.position
             let varr = val.split(',')
-            return varr[1]+'-'+varr[0]
+            if(varr[1]){
+                return varr[1]+'-'+varr[0]
+            }else{
+                return varr[0]
+            }
         },        
         // 取值
         getValue(value) {
@@ -310,6 +365,22 @@ export default {
             this.checkInfoVisible =true
             this.utils.getDeviceGroup(this,e.deviceNum)
             
+        },
+        //输入建议
+        querySearch(queryString, cb){
+            var deviceNumList = this.deviceNumList;
+            let unilist = Array.from(new Set(deviceNumList.filter(this.createFilter(queryString))))  
+            var results = queryString ? unilist : deviceNumList;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },
+        createFilter(queryString) {
+            return (deviceNumList) => {
+            return (deviceNumList.value.indexOf(queryString) === 0);
+            };
+        },        
+        handleSelect(item) {
+            console.log(item);
         }               
     }
 }
@@ -335,13 +406,18 @@ export default {
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
      }
-     .el-input,.el-select{
+     .el-input,.el-select,.el-autocomplete{
          width:150px;
      }
     .el-form /deep/ .el-form-item__label{
         color: #fff ;
     }
     .el-input /deep/ .el-input__inner{
+        background: none;
+        height: 30px;
+        color: #fff;
+    }
+    .el-autocomplete /deep/ .el-input__inner{
         background: none;
         height: 30px;
         color: #fff;

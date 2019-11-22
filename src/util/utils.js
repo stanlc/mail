@@ -79,6 +79,7 @@ let utils = {
            vm.accountList = JSON.parse(localStorage.subAccountList)
         })
     },
+    //获取已有订阅账号列表
     //省市区三级
     //获取省级
     getProv(){
@@ -120,6 +121,9 @@ let utils = {
         Vue.prototype.$http.post('/logger/pagerList',form).then(res=>{
             localStorage.logList = JSON.stringify(res.data.paging.list)
             vm.logList = JSON.parse(localStorage.logList)
+            if(res.data.code===200){
+                vm.$message({type:'success',message:'查询成功'})
+            }
         })
     },
     //获取设备组信息

@@ -28,7 +28,14 @@
                     </el-select>
                 </el-form-item>                
                 <el-form-item label="设备ID：">
-                    <el-input v-model="searchForm.deviceNum"></el-input>
+                    <el-autocomplete
+                    class="inline-input"
+                    v-model="searchForm.deviceNum"
+                    :fetch-suggestions="querySearch"
+                    placeholder="请输入设备ID"
+                    :trigger-on-focus="false"
+                    @select="handleSelect"
+                    ></el-autocomplete>                      
                 </el-form-item>   
                 <el-form-item>
                     <el-button type="primary" @click="search">查询</el-button>
@@ -105,7 +112,7 @@ export default {
         return {
             pageNum:1,
             pageSize:7,
-            
+            idList:[],
             searchForm:{
                 'pageNum':this.pageNum,
                 'pageSize':this.pageSize,
@@ -138,8 +145,20 @@ export default {
                this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
                    localStorage.runInfoList = JSON.stringify(res.data.paging.list)
                    this.runInfoList = JSON.parse(localStorage.runInfoList)
+                   
                })  
            }
+           //获取所有设备Id
+            this.$http.post('/monitoring/pagerList',{
+                    "pageNum":1,
+                    "pageSize":1000
+                }).then(res=>{
+                    let aList = [],list = res.data.paging.list
+                    list.map(item=>aList.push(item.deviceNum))   //获取设备id数组
+                    let uniList = Array.from(new Set([...aList]))   //去重
+                    uniList.map(item=> this.idList.push({'value':item}))       
+            })            
+
         },
     methods:{
         deviceSelect(){
@@ -167,11 +186,21 @@ export default {
         positionFormat(row){
             let val = row.position
             let varr = val.split(',')
-            return varr[1]+'-'+varr[0]
+            if(varr[1]){
+                return varr[1]+'-'+varr[0]
+            }else{
+                return varr[0]
+            }
+            
         },
         search(){
             this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
                 this.runInfoList = res.data.paging.list
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',message:'查询成功'
+                    })
+                }
                 this.$refs.selectTree.clearHandle()
             })
             
@@ -190,7 +219,22 @@ export default {
         getValue(value) {
         this.valueId = value;
         this.searchForm.organId = value
-        },         
+        }, 
+        //输入建议
+        querySearch(queryString, cb){
+            var list =  this.idList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },
+        createFilter(queryString) {
+            return (list) => {
+            return (list.value.indexOf(queryString) === 0);
+            };
+        },        
+        handleSelect(item) {
+            //console.log(item);
+        },                   
     }
 }
 </script>
@@ -215,12 +259,17 @@ export default {
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
      }
-     .el-input,.el-select{
+     .el-input,.el-select,.el-autocomplete{
          width:150px;
      }
     .el-form /deep/ .el-form-item__label{
         color: #fff ;
     }
+    .el-autocomplete /deep/ .el-input__inner{
+        background: none;
+        height: 30px;
+        color: #fff;
+    }  
     .el-input /deep/ .el-input__inner{
         background: none;
         height: 30px;

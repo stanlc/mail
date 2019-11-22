@@ -18,7 +18,14 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="订阅账号：">
-                    <el-input v-model="searchForm.deviceAccount"></el-input>
+                    <el-autocomplete
+                    class="inline-input"
+                    v-model="searchForm.deviceAccount"
+                    :fetch-suggestions="querySearch"
+                    placeholder="请输入订阅账号"
+                    :trigger-on-focus="false"
+                    @select="handleSelect"
+                    ></el-autocomplete>                     
                 </el-form-item>  
                 <el-form-item label="所属机构：">
                         <el-input v-model="searchForm.organName"></el-input>
@@ -191,6 +198,7 @@ export default {
             accountList:[],
             organList:[],
             allOrganList:[],
+            accList:[],
             valueId:0,
             props:{
                 value:'id',
@@ -225,6 +233,16 @@ export default {
         }
         
         this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
+
+        this.$http.post('/device/pagerList',{
+                "pageNum":1,
+                "pageSize":1000
+            }).then(res=>{
+                let aList = [],list = res.data.paging.list
+                list.map(item=>aList.push(item.deviceAccount))   //获取account数组
+                let uniList = Array.from(new Set([...aList]))   //去重
+                uniList.map(item=> this.accList.push({'value':item}))       
+        })         
 
         
     },
@@ -283,11 +301,13 @@ export default {
             this.$http.post('device/organ/',this.configOrganForm).then(res=>{
                 if(res.data.code==200){
                     this.$message({type:'success',message:'配置机构成功'})
+                    this.$refs.selectTree.clearHandle()
+                    this.configOrganForm.organName = null
+                    this.configOrganVisible = false
+                    this.utils.getDeviceList(this,this.searchForm)
                 }
             })
-            this.$refs.selectTree.clearHandle()
-            this.configOrganForm.organName = null
-            this.configOrganVisible = false
+            
         },
         //配置位置
         // configPosition(){
@@ -304,6 +324,21 @@ export default {
                 this.configOrganForm.organName = this.allOrganList.filter(item=>item.id===value)[0].organName
             }
         },
+        //输入建议
+        querySearch(queryString, cb){
+            var list =  this.accList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },
+        createFilter(queryString) {
+            return (list) => {
+            return (list.value.indexOf(queryString) === 0);
+            };
+        },        
+        handleSelect(item) {
+            //console.log(item);
+        },        
     }
 }
 </script>
@@ -331,12 +366,17 @@ export default {
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
      }
-     .el-input,.el-select{
+     .el-input,.el-select,.el-autocomplete{
          width:150px;
      }
     .el-form /deep/ .el-form-item__label{
         color: #fff ;
     }
+    .el-autocomplete /deep/ .el-input__inner{
+        background: none;
+        height: 30px;
+        color: #fff;
+    }     
     .el-input /deep/ .el-input__inner{
         background: none;
         height: 30px;

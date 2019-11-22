@@ -14,9 +14,13 @@ Router.prototype.push = function push(location) {
 Vue.use(ElementUI)
 Vue.prototype.utils = utils
 Vue.prototype.$http = axios.create({
-  baseURL:'http://beonelife.cn:6001/',//'http://192.168.60.190:11000/',http://beonelife.cn:6001/
+  baseURL:'http://192.168.60.190:11000/',//'http://192.168.60.190:11000/',http://beonelife.cn:6001/
   timeout:5000
 })
+
+//引入echarts
+var echarts = require('echarts');
+Vue.prototype.$echarts = echarts;
 
 //响应拦截
 Vue.prototype.$http.interceptors.response.use(res=>{

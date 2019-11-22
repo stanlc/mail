@@ -6,10 +6,24 @@
         <div>
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="设备账号：">
-                    <el-input v-model="searchForm.deviceAccount"></el-input>
+                    <el-autocomplete
+                    class="inline-input"
+                    v-model="searchForm.deviceAccount"
+                    :fetch-suggestions="querySearch"
+                    placeholder="请输入设备账号"
+                    :trigger-on-focus="false"
+                    @select="handleSelect"
+                    ></el-autocomplete>   
                 </el-form-item>
                 <el-form-item label="设备授权码：">
-                    <el-input v-model="searchForm.deviceSerial"></el-input>
+                    <el-autocomplete
+                    class="inline-input"
+                    v-model="searchForm.deviceSerial"
+                    :fetch-suggestions="SerialquerySearch"
+                    placeholder="请输入设备授权码"
+                    :trigger-on-focus="false"
+                    @select="SerialhandleSelect"
+                    ></el-autocomplete>
                 </el-form-item> 
                 <el-form-item label="正品码：">
                     <el-input v-model="searchForm.genuineCode"></el-input>
@@ -136,15 +150,25 @@ export default {
             pageSize:8,
             addOldAccountForm:{},
             bindDeviceForm:{},
+            accList:[],
+            serList:[],
         }
     },
     mounted(){
-
-        
-    },
-    mounted(){
-        this.utils.getbindList(this,this.searchForm),
-        this.getAccount()  
+        this.utils.getbindList(this,this.searchForm)
+        this.getAccount()
+        this.$http.post('/serial/pagerList',{
+                "pageNum":1,
+                "pageSize":1000
+            }).then(res=>{
+                let aList = [],sList = [],list = res.data.paging.list
+                list.map(item=>aList.push(item.deviceAccount))   //获取account数组
+                list.map(item=>sList.push(item.deviceSerial))   //获取account数组
+                let uniList = Array.from(new Set([...aList]))   //去重
+                let unisList = Array.from(new Set([...sList])) 
+                uniList.map(item=> this.accList.push({'value':item}))    
+                unisList.map(item=> this.serList.push({'value':item}))         
+        })            
     },
     methods:{
         accountSelect(e){
@@ -247,13 +271,51 @@ export default {
         },
         //筛选
         searchBind(){
-            this.utils.getbindList(this,this.searchForm)
+            this.$http.post('/serial/pagerList',this.searchForm).then(res=>{
+                this.bindList = res.data.paging.list
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'查询成功'
+                    })
+                }
+            })
             this.searchForm={'pageNum':this.pageNum,'pageSize':this.pageSize}             
         },
         clear(){
             this.searchForm={'pageNum':this.pageNum,'pageSize':this.pageSize}  
             this.utils.getbindList(this,this.searchForm)      
         },
+        //输入建议
+        querySearch(queryString, cb){
+            var list =  this.accList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },
+        createFilter(queryString) {
+            return (list) => {
+            return (list.value.indexOf(queryString) === 0);
+            };
+        },        
+        handleSelect(item) {
+            //console.log(item);
+        },
+        //正品码输入建议
+        SerialquerySearch(queryString, cb){
+            var list =  this.serList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },
+        SerialcreateFilter(queryString) {
+            return (list) => {
+            return (list.value.indexOf(queryString) === 0);
+            };
+        },        
+        SerialhandleSelect(item) {
+            //console.log(item);
+        }                      
     }
 }       
 </script>
@@ -278,7 +340,7 @@ export default {
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
      }
-     .el-input{
+     .el-input,.el-autocomplete{
          width:150px;
      }
      .bind .el-input,.bind .el-select{
@@ -291,6 +353,11 @@ export default {
     .el-form /deep/ .el-form-item__label{
         color: #fff ;
     }
+    .el-autocomplete /deep/ .el-input__inner{
+        background: none;
+        height: 30px;
+        color: #fff;
+    }    
     .el-input /deep/ .el-input__inner{
         background: none;
         height: 30px;

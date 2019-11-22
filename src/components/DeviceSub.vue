@@ -6,7 +6,14 @@
         <div>
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="订阅账号：">
-                    <el-input v-model="searchForm.account"></el-input>
+                        <el-autocomplete
+                        class="inline-input"
+                        v-model="searchForm.account"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入订阅账号"
+                        :trigger-on-focus="false"
+                        @select="handleSelect"
+                        ></el-autocomplete>                    
                 </el-form-item>
                 <el-form-item label="设备状态：">
                     <el-select v-model="searchForm.applayStatus">
@@ -46,8 +53,7 @@
                 <el-table-column
                 label="订阅账号"
                 prop="account"
-                width="200"
-                
+                width="200" 
                 >
                 </el-table-column>                
                 <el-table-column
@@ -180,11 +186,8 @@ export default {
             pageNum:1,
             pageSize:8,
             accountList:[
-                {
-                    'name':'aa',
-                    'organName':'bb'
-                }
             ],
+            accList:[],
             addAccountForm:{
                 'apId':'123',
                 'gender':0
@@ -201,7 +204,15 @@ export default {
                 "pageNum":this.pageNum,
                 "pageSize":this.pageSize
             })
-        
+        this.$http.post('/account/pagerList',{
+                "pageNum":1,
+                "pageSize":1000
+            }).then(res=>{
+                let aList = [],list = res.data.paging.list
+                list.map(item=>aList.push(item.account))   //获取account数组
+                let uniList = Array.from(new Set([...aList]))   //去重
+                uniList.map(item=> this.accList.push({'value':item}))           
+        })    
     },
     created(){
          this.utils.getProv().then(res=>{this.province = res.data.data})
@@ -320,7 +331,7 @@ export default {
                     })
                 }
             })
-        }
+        },
         //绑定已有订阅账号
         // addOldAccount(){
         //     this.$http.post(`/account/applyAccount/${this.addOldAccountForm.account}`).then(res=>{
@@ -329,6 +340,21 @@ export default {
         //     })
             
         // },
+        //输入建议
+        querySearch(queryString, cb){
+            var list =  this.accList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },
+        createFilter(queryString) {
+            return (list) => {
+            return (list.value.indexOf(queryString) === 0);
+            };
+        },        
+        handleSelect(item) {
+            //console.log(item);
+        }        
     }
 }       
 </script>
@@ -355,7 +381,7 @@ export default {
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
      }
-     .el-input{
+     .el-input,.el-autocomplete{
          width:150px;
      }
      .el-select{
@@ -366,6 +392,11 @@ export default {
         color: #fff ;
     }
     .el-input /deep/ .el-input__inner{
+        background: none;
+        height: 30px;
+        color: #fff;
+    }
+    .el-autocomplete /deep/ .el-input__inner{
         background: none;
         height: 30px;
         color: #fff;
