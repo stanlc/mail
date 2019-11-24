@@ -63,7 +63,11 @@ let utils = {
     },
     addUser(vm,form){
         Vue.prototype.$http.post('user/add',form).then(res=>{
-            console.log(res.data)
+            vm.$refs.addTree.clearHandle()
+            vm.addUserForm={}
+            if(res.data.code===200){
+                vm.$message({type:'success',message:'添加用户成功'})
+            }
         })
     }, 
     delUser(id){

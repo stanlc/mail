@@ -504,7 +504,7 @@ export default {
                 this.$refs.tree.setCheckedKeys(this.Autheds)
         },
         menuTreeCheck(){
-            // let list = this.$refs.tree.getCheckedKeys()
+            let list = this.$refs.tree.getCheckedKeys()
             this.selectConfigMenu = list
         },
         MenuConfigRole(){

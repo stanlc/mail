@@ -1,5 +1,5 @@
 <template>
-    <el-row :gutter="30" >
+    <el-row :gutter="20" >
         <el-col :span="6">
             <div class="grid-content bg-purple">
                 <div class="status">
@@ -9,21 +9,27 @@
                 <div class="count">
                     <device-count></device-count>
                 </div>
-                <div class="monitor"></div>
+                <div class="monitor">
+                  <log-count></log-count>
+                </div>
             </div>
         </el-col>
         <el-col :span="12">
             <div class="grid-content bg-purple-light">
-                <span>222</span>
+                <div class="map">
+                  <china-map></china-map>
+                </div>
             </div>
         </el-col>
-        <el-col :span="6"><div class="grid-content bg-purple">3</div></el-col>
+        <el-col :span="6"><div class="grid-content bg-purple-light">3</div></el-col>
     </el-row>
 </template>
 
 <script>
 import deviceStatus from '../echarts/DeviceStatus'
 import deviceCount from '../echarts/DeviceCount'
+import LogCount from '../echarts/LogCount'
+import ChinaMap from '../echarts/ChinaMap'
 
 export default {
   data(){return{
@@ -32,6 +38,8 @@ export default {
   components:{
     deviceStatus,
     deviceCount,
+    ChinaMap,
+    LogCount,
   },
   
 }
@@ -47,14 +55,16 @@ export default {
     border-radius: 4px;
     
   }
+  .bg-purple{
+    margin-top: -10px;
+  }
   .bg-purple-dark {
     background: #99a9bf;
   }
-  .bg-purple {
-    background: #d3dce6;
-  }
+  
   .bg-purple-light {
     background: #e5e9f2;
+   
   }
   .grid-content {
     border-radius: 4px;
@@ -63,31 +73,40 @@ export default {
   }
   .status{
     background: url(..\assets\img\deviceStatus.png) no-repeat;
-    background-size:100%;
-    width: 24vw;
-    height: 12vw; 
+    background-size:contain;
+    width: 20vw;
+    height: 10vw; 
     display:flex;
     justify-content: center;
     align-items: center;
-    margin-left: -6px;
-    margin-bottom:10px; 
     position: relative;
     padding-top: 5px;
   }
   .status .cav{
-    margin-left: 60px;
+    margin-left: 70px;
   }
   .count{
     background: url(..\assets\img\deviceCount.png) no-repeat;
     background-size:100%;
-    width: 24vw;
-    height: 16vw; 
+    width: 20vw;
+    height: 14vw;
     display:flex;
     justify-content: center;
     align-items: center; 
-    margin-left: -6px;  
     position: relative; 
+    margin-top: 10px;
   }
+  .monitor{
+    background: url(..\assets\img\logCount.png) no-repeat;
+    background-size:100%;
+    width: 20vw;
+    height: 13vw; 
+    display:flex;
+    justify-content: center;
+    align-items: center; 
+    position: relative; 
+    margin-top: 10px;
+  }  
   .more{
     position: absolute;
     top:22px;
@@ -96,4 +115,5 @@ export default {
     color: #00ffff;
     z-index: 2;
   }
+  
 </style>

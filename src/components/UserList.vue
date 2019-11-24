@@ -207,7 +207,7 @@ export default {
             allOrganList:'',
             userRoleList:[],
             selectUser:{},
-
+            selectRole:{},
             valueId: 0,//树型选择初始ID
             //编辑用户开始
             editOrganId:0,
@@ -267,21 +267,22 @@ export default {
                 "pageSize": this.pageNum,})
         },
         addUser(){
-            if(this.addUserForm.organId){
-                this.addUserForm.organName = this.organList[this.organList.findIndex((item)=>{return item.id===this.addUserForm.organId})].organName
-            }
-            if(this.addUserForm.roleId){
-                this.addUserForm.roleName = this.userRoleList[this.userRoleList.findIndex((item)=>{return item.id===this.addUserForm.roleId})].roleName
-            }
+            // if(this.addUserForm.organId){
+            //     this.addUserForm.organName = this.organList[this.organList.findIndex((item)=>{return item.id===this.addUserForm.organId})].organName
+            // }
+            // if(this.addUserForm.roleId){
+            //     this.addUserForm.roleName = this.userRoleList[this.userRoleList.findIndex((item)=>{return item.id===this.addUserForm.roleId})].roleName
+            // }
             // console.log(this.addUserForm.roleName)
             this.utils.addUser(this,this.addUserForm)
             this.addUserVisible = false
             this.utils.getUserList(this,this.searchForm)
-            this.$refs.addTree.clearHandle()
+            
         },
         cancelAdd(){
             this.addUserVisible=false
             this.$refs.addTree.clearHandle()
+            this.addUserForm= {}
         },
         delUser(){
             let that = this
@@ -299,19 +300,23 @@ export default {
                 }
             })    
         },
+        //操作栏的删除
+        delUserC(v){
+            console.log(e)
+        },
         openEdit(row){
             this.editUserVisible = true
             this.editUserForm = Object.assign({},row)
             this.$http.post(`role/list/${row.organId}`).then(res=>{
                     this.userRoleList = res.data.data
                 }) 
-            console.log(row)
+            // console.log(row)
         },
         editUser(){
             let that = this
-            if(this.editUserForm.roleName){
-                this.editUserForm.roleId = this.userRoleList.filter(item=>item.roleName===this.editUserForm.roleName)[0].roleId
-            }            
+            // if(this.editUserForm.roleName){
+            //     this.editUserForm.roleId = this.userRoleList.filter(item=>item.roleName===this.editUserForm.roleName)[0].roleId
+            // }            
             this.utils.editUser(this.editUserForm).then((res)=>{
                 that.utils.getUserList(that,that.searchForm)
                        if(res.data.code===200){
@@ -336,16 +341,13 @@ export default {
         },
         changeRole(e){
             this.addUserForm.roleId = e
-            if(e){
-                this.addUserForm.roleName = this.userRoleList.filter(item=>item.id===e)[0].roleName
-            }
-            
+            this.addUserForm.roleName = this.userRoleList.filter(item=>item.id===e)[0].roleName
+           
         },
         changeEditRole(e){
             this.editUserForm.roleName = e
-            if(e){
-                this.editUserForm.roleId = this.userRoleList.filter(item=>item.roleName===e)[0].id
-            }  
+            this.editUserForm.roleId = this.userList.filter(item=>item.roleName===e)[0].roleId
+          
         },
         //格式化
         phoneFormat(row){

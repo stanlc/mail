@@ -1,7 +1,7 @@
 <template>
     <div>
         <span class="total"><b>{{count}}</b>总设备（台）</span>
-        <div id="count" style="width: 400px;height:100px;"></div>
+        <div id="count" style="width: 400px;height:200px;"></div>
     </div>
 </template>
 <script>
@@ -41,96 +41,32 @@ export default {
         draw(){
             let that = this
             let myChart = this.$echarts.init(document.getElementById('count'))
-                var data = [
-                {
-                    name: '花园小区',
-                    value: 300
-                },{
-                    name: '光明小区',
-                    value: 204
-                },{
-                    name: '幸福小区',
-                    value: 300
-                },{
-                    name: '小区2',
-                    value: 200
-                }]
-                var titleArr= [], seriesArr=[];
-                var colors=[['#35ddf0','#176273' ],['#ff8c37', '#ffdcc3'],['#ffc257', '#ffedcc'], ['#fd6f97', '#fed4e0'],['#a181fc', '#e3d9fe']]
-                data.forEach(function(item, index){
-                    titleArr.push(
-                        {
-                            text:item.name,
-                            left: index * 20 + 8.5 +'%',
-                            top: '76%',
+            myChart.setOption({
+                    title:{
+                        text:'1000',
+                        top:'50%',
+                        left:'40%',
+                        textStyle:{
+                            fontWeight: 'normal',
+                            fontSize: '14',
+                            color: '#fff',
                             textAlign: 'center',
-                            textStyle: {
-                                fontWeight: 'normal',
-                                fontSize: '12',
-                                color: colors[index][0],
-                                textAlign: 'center',
-                            },
-                        }        
-                    );
-                    seriesArr.push(
-                        {
-                            name: item.name,
-                            type: 'pie',
-                            clockWise: false,
-                            radius: [20, 25],
-                            itemStyle:  {
-                                normal: {
-                                    color: colors[index][0],
-                                    shadowColor: colors[index][0],
-                                    shadowBlur: 0,
-                                    label: {
-                                        show: false
-                                    },
-                                    labelLine: {
-                                        show: false
-                                    },
-                                }
-                            },
-                            hoverAnimation: false,
-                            center: [index * 20 + 10 +'%', '50%'],
-                            data: [{
-                                value: item.value,
-                                name:item.value,
-                                label: {
-                                    formatter: function(params){
-                                        return params.value;
-                                    },
-                                    normal: {
-                                        position: 'center',
-                                        show: true,
-                                        textStyle: {
-                                            fontSize: '14',
-                                            color: '#fff'
-                                        }
-                                    }
-                                },
-                            }, {
-                                value: that.count-item.value,  
-                                name: 'invisible',
-                                itemStyle: {
-                                    normal: {
-                                        color: colors[index][1]
-                                    },
-                                    emphasis: {
-                                        color: colors[index][1]
-                                    }
-                                }
-                            }]
-                        }    
-                    )
-                });
-            
-                
-            let option = {
-                title:titleArr,
-                series: seriesArr
-            }
-            myChart.setOption(option)
+                        }
+                    },
+                    series : [
+                    {
+                        type: 'pie',
+                        radius: [20,35],
+                        data:[
+                            {value:235, name:'花园小区',itemStyle:{normal:{color:'#00ffff'}}},
+                            {value:274, name:'楼山小区',itemStyle:{normal:{color:'#d5d147'}}},
+                            {value:310, name:'东阳小区',itemStyle:{normal:{color:'#25c05f'}}},
+                            {value:335, name:'其他',itemStyle:{normal:{color:'#1e82ef'}}},
+                            {value:400, name:'南风小区',itemStyle:{normal:{color:'#d55521'}}},
+                        ]
+                    }
+                ]
+            })
         }
     }
 }

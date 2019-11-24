@@ -4,7 +4,7 @@
             <span>设备绑定</span>
         </div>
         <div>
-            <el-form :inline="true" :model="searchForm">
+            <el-form :inline="true" :model="searchForm" >
                 <el-form-item label="设备账号：">
                     <el-autocomplete
                     class="inline-input"

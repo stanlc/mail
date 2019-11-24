@@ -62,9 +62,9 @@ export default {
     .home /deep/ .box-card /deep/ .el-dialog__footer{
         background: #143666;
     } 
-    .home /deep/ .el-dialog__body .el-form{
+    /* .home /deep/ .el-dialog__body .el-form{
       text-align: center;
-    } 
+    }  */
     .home /deep/ .el-form /deep/ .el-input__inner{
       color: #fff
     } 

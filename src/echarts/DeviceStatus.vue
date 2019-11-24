@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="main" style="width: 400px;height:100px;"></div>
+        <div id="main" style="width: 350px;height:100px;"></div>
     </div>
 </template>
 <script>
@@ -60,7 +60,7 @@ export default {
                         {
                             text:item.name,
                             left: index * 20 + 8.5 +'%',
-                            top: '76%',
+                            top: '80%',
                             textAlign: 'center',
                             textStyle: {
                                 fontWeight: 'normal',

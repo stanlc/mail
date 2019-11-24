@@ -102,21 +102,21 @@
                     </el-select>                                        
                 </el-form-item>
             </el-form>            
-            <el-form :inline="true" label-position="right" label-width="auto">
-                <el-form-item label="账号名称：">
+            <el-form :inline="true" label-position="right" label-width="auto" :rules="rules" ref="ruleForm" :model="addAccountForm">
+                <el-form-item label="账号名称：" prop="userName">
                     <el-input v-model="addAccountForm.userName"></el-input>
                 </el-form-item>
-                <el-form-item label="账号密码：">
-                    <el-input v-model="addAccountForm.password"></el-input>
+                <el-form-item label="账号密码：" prop="password">
+                    <el-input v-model="addAccountForm.password" type="password" auto-complete="new-password"></el-input>
                 </el-form-item>  
-                <el-form-item label="账号邮箱：">
-                    <el-input v-model="addAccountForm.email"></el-input>
+                <el-form-item label="账号邮箱：" prop="email">
+                    <el-input v-model="addAccountForm.email" ></el-input>
                 </el-form-item>
-                <el-form-item label="身份证号：">
+                <el-form-item label="身份证号：" prop="idNo">
                     <el-input v-model="addAccountForm.idNo"></el-input>
                 </el-form-item>   
-                <el-form-item label="手机号码：">
-                    <el-input v-model="addAccountForm.userPhone"></el-input>
+                <el-form-item label="手机号码：" prop="userPhone">
+                    <el-input v-model="addAccountForm.userPhone" ></el-input>
                 </el-form-item>                                              
             </el-form>
             <el-form :inline="true">
@@ -168,8 +168,12 @@
     </el-card>
 </template>
 <script>
+import { callbackify } from 'util'
+
 export default {
+    
     data(){
+        
         return {
             addAccountDialogVisible:false,
             addOldAccountVisible:false,
@@ -197,6 +201,39 @@ export default {
             province:[],
             city:[],
             area:[],
+            // ruleForm: {
+            //     userName:'',
+            //     email:'',
+            //     userPhone:'',
+            //     password:'',
+            //     idNo:'',
+            //     },
+                rules: {
+                    userName:[
+                        { required: true, message: '请输入账号名称', trigger: ['blur', 'change'] }
+                    ],
+                    password:[
+                        { required: true, message: '请输入密码', trigger: ['blur', 'change'] }
+                    ],
+                    idNo:[{ required: true, message: '请输入身份证号码', trigger: ['blur', 'change'] },
+                    {
+                        pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
+                        message: '请输入正确的证件号码！',
+                        trigger: ['blur', 'change']
+                    }
+                    ],
+                    email:[
+                        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                    ],
+                    userPhone: [
+                        { required: true, trigger: ['blur', 'change'],message: '请输入手机号码'  },
+                        {pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+                        message: '请输入正确的手机号',
+                        trigger: ['blur', 'change']}
+                    ]
+                }
+
         }
     },
     mounted(){
@@ -354,7 +391,10 @@ export default {
         },        
         handleSelect(item) {
             //console.log(item);
-        }        
+        },
+        //输入验证
+        
+       
     }
 }       
 </script>
