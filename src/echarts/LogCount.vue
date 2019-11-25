@@ -42,8 +42,12 @@ export default {
             
                 xAxis: {
                     type:'category',
+                    boundaryGap: false,
+                    
+                    data:['0','4:00','8:00','12:00','16:00','20:00','24:00'],
                     axisLabel: {
-                       color:'#fff'
+                       color:'#fff',
+                       interval:0,  //刻度间隔为0
                     },
                     axisLine:{
                         lineStyle:{
@@ -52,7 +56,6 @@ export default {
                     },
                     axisTick:{
                         inside:true,
-                    
                     }
                 },
                 yAxis: {
@@ -78,7 +81,7 @@ export default {
                    
                 },
                 series: [{
-                    data: this.valueList,
+                    data: [['0:00',1],['4:00',2]],
                     type: 'line',
                     itemStyle:{
                         normal:{

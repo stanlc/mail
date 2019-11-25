@@ -18,59 +18,13 @@
                 </div>
             </div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="18">
             <div class="grid-content bg-purple-light">
                 <div class="map">
                   <china-map></china-map>
-                  <!-- <div class="groupbox">
-                        <div>
-                          <p> 联系人：{{deviceInfo.organPerson}}</p>
-                          <p>位置：{{deviceInfo.position}}</p>
-                          <p>状态：开启{{deviceInfo.openStatusNum}}/关闭{{deviceInfo.offStatusNum}}</p>
-                          <p>箱体数量：{{deviceInfo.totalNum}}</p>
-                          <div class="groupBox center">
-                              <div v-for="item in deviceInfo.groupInfoList" :key="item.index" class="groupItem">
-                                  <span class="boxName">{{item.positionDetail|boxposition}}</span>
-                                  <p :class="item.openStatus===1?'green':'red'">{{item.openStatus|openStat}}</p>
-                              </div>
-                          </div>
-                      </div>
-                  </div> -->
                 </div>
             </div>
         </el-col>
-        <el-col :span="6"><div class="grid-content bg-purple-light">
-            <el-table
-            :data="deviceList"
-            style="width: 100%"
-            >
-                <el-table-column
-                label="设备ID"
-                prop="deviceId"
-                width="200"
-                >
-                </el-table-column>
-                <el-table-column
-                label="位置"
-                prop="devicePosition"
-                >
-                </el-table-column>                 
-                <el-table-column
-                label="运作状态"
-                prop="status"
-                :formatter="(row)=>{return row.status===1?'开':'关'}"
-                >
-                </el-table-column>
-                <el-table-column
-                label="操作"
-                fixed="right"
-                >
-                    <template class="btn-box" slot-scope="scope">
-                        <el-button type="primary" size="mini" @click="checkInfo(scope.row)">查看</el-button>                     
-                    </template>                
-                </el-table-column>                                                 
-            </el-table>
-          </div></el-col>
     </el-row>
 </template>
 

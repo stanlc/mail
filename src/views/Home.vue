@@ -69,10 +69,5 @@ export default {
       color: #fff
     } 
 
-      .echart-tooltip-wrap{
-    background:brown !important;
-  }
-  .echart-tooltip-body {
-    background:brown !important;
-  }
+ 
 </style>

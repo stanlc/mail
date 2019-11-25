@@ -6,7 +6,15 @@ import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
 import utils from './util/utils'
 import Router from 'vue-router'
+import VueAMap from 'vue-amap';
 
+Vue.use(VueAMap);
+VueAMap.initAMapApiLoader({
+  key: '632fc907671acd23df063076928b7747',
+  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+  // 默认高德 sdk 版本为 1.4.4
+  v: '1.4.4'
+});
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
