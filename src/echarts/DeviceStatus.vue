@@ -7,8 +7,10 @@
 export default {
     data(){
         return {
-            count :100,
-            normal:0,
+            count :0,
+            alarmNum:0,
+            openNum:0,
+            closeNum:0,
         }
     },
     computed:{
@@ -20,42 +22,42 @@ export default {
         
     },
     mounted(){
-        //this.getValue();   //获取设备数据
-        this.draw();
+        this.getValue();   //获取设备数据
+        
     },
     methods:{
         getValue(){
             let that = this 
-            this.$http.post('/device/pagerList',{}).then(res=>{
-                this.count = res.data.paging.list.length
-                let list = res.data.paging.list
-                list.forEach(e => {
-                    if(e.status===1){
-                        that.normal++
-                    }
-                });
+            this.$http.get('/index/deviceInfo').then(res=>{
+                this.count = res.data.data.deviceNum
+                this.alarmNum = res.data.data.alarmNum
+                this.openNum = res.data.data.openNum
+                this.closeNum = res.data.data.closeNum
+                this.draw();
             })
         },
         draw(){
-            let that = this
+            
             let myChart = this.$echarts.init(document.getElementById('main'))
                 var data = [
                 {
-                    name: '正常',
-                    value: 10
+                    name: '打开',
+                    value: this.openNum
                 },{
-                    name: '在线',
-                    value: 44
+                    name: '关闭',
+                    value: this.closeNum
                 },{
-                    name: '故障',
-                    value: 35
+                    name: '报警',
+                    value: this.alarmNum
                 },{
-                    name: '离线',
-                    value: 30
+                    name: '总数',
+                    value:  this.count
                 }]
                 var titleArr= [], seriesArr=[];
+                let count = this.count
                 var colors=[['#35ddf0','#176273' ],['#ff8c37', '#ffdcc3'],['#ffc257', '#ffedcc'], ['#fd6f97', '#fed4e0'],['#a181fc', '#e3d9fe']]
                 data.forEach(function(item, index){
+                    
                     titleArr.push(
                         {
                             text:item.name,
@@ -93,12 +95,12 @@ export default {
                             center: [index * 20 + 10 +'%', '50%'],
                             data: [{
                                 value: item.value,
-                                name:item.value,
                                 label: {
-                                    formatter: function(params){
-                                        return params.value;
-                                    },
+                                    
                                     normal: {
+                                        formatter: function(params){
+                                            return params.value;
+                                        },
                                         position: 'center',
                                         show: true,
                                         textStyle: {
@@ -108,7 +110,7 @@ export default {
                                     }
                                 },
                             }, {
-                                value: that.count-item.value,  
+                                value: count-item.value,  
                                 name: 'invisible',
                                 itemStyle: {
                                     normal: {

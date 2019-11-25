@@ -126,7 +126,7 @@
                 <p>状态：开启{{deviceInfo.openStatusNum}}/关闭{{deviceInfo.offStatusNum}}</p>
                 <p>箱体数量：{{deviceInfo.totalNum}}</p>
                 <div class="groupBox center">
-                    <div v-for="item in groupInfoList" :key="item.index" class="groupItem">
+                    <div v-for="item in deviceInfo.groupInfoList" :key="item.index" class="groupItem">
                         <span class="boxName">{{item.positionDetail|boxposition}}</span>
                         <p :class="item.openStatus===1?'green':'red'">{{item.openStatus|openStat}}</p>
                     </div>
@@ -154,88 +154,6 @@ export default {
             deviceInfo:{},
             deviceNumList:[],
             Dates:[],
-            groupInfoList:[
-                {
-                    'positionDetail':'101',
-                    'openStatus':1
-                },
-                {
-                    'positionDetail':'102',
-                    'openStatus':0
-                },
-                {
-                    'positionDetail':'103',
-                    'openStatus':0
-                },
-                {
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },
-                {
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },{
-                    'positionDetail':'102',
-                    'openStatus':0
-                },
-            ],
             valueId:0,
             checkInfoVisible:false,
             props:{

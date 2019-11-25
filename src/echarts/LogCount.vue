@@ -7,7 +7,9 @@
 export default {
     data(){
         return {
-            
+            list : [],
+            timeList:[],
+            valueList:[],
             
         }
     },
@@ -18,18 +20,28 @@ export default {
         
     },
     mounted(){
-        //this.getValue();   //获取设备数据
+        this.getValue();   //获取设备数据
         this.draw();
     },
     methods:{
+        getValue(){
+            this.$http.get('/index/timeInfo/').then(res=>{
+                this.list = res.data.data
+                this.list.map(item=>{
+                    this.timeList.push(item.hour)
+                    this.valueList.push([item.hour,item.openNum])
+                })
+                console.log(this.valueList)
+            })
+            
+        },
         draw(){
             let that = this
             let myChart = this.$echarts.init(document.getElementById('log'))
             let option={
             
                 xAxis: {
-                    type:"category",
-                    data:['4:00','8：00','12:00','16:00','20:00'],
+                    type:'category',
                     axisLabel: {
                        color:'#fff'
                     },
@@ -66,9 +78,8 @@ export default {
                    
                 },
                 series: [{
-                    data: [200, 700, 400, 500,600,300],
+                    data: this.valueList,
                     type: 'line',
-                    
                     itemStyle:{
                         normal:{
                             color:'#00ffff'

@@ -11,16 +11,16 @@
                         <el-button type="primary" v-if="userLevel===1 && selectParentId === null ?true:false" @click="sameDialogVisible=true" >录入同级</el-button>       
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="openAddSub" :disabled="selectOrganId===0">录入下级</el-button>
+                        <el-button type="primary" @click="openAddSub" :disabled="addSubBtn">录入下级</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="openConfig" :disabled="selectOrganId===0">编辑</el-button>
+                        <el-button type="primary" @click="openConfig" :disabled="editOrgBtn">编辑</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger" @click="delOrgan" :disabled="selectOrganId===0">删除</el-button>
+                        <el-button type="danger" @click="delOrgan" :disabled="delOrgBtn">删除</el-button>
                     </el-form-item>
                 </el-form>
-            <el-tree :data="organList" :props="organProps" @node-click="handleNodeClick"></el-tree>
+            <el-tree :data="organList" :props="organProps" @node-click="handleNodeClick" default-expand-all></el-tree>
             <!-- 录入同级Dialog -->
             <el-dialog
             title="录入同级"
@@ -34,23 +34,23 @@
             append-to-body>
             </el-dialog>
             <span class="blue">添加同级组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="sameLevelForm" ref="sameLevelForm" >
-                <el-form-item label="机构名称:" prop="name">
+            <el-form label-position="right" :inline="true" label-width="auto" :model="sameLevelForm" ref="sameLevelForm" :rules="rules">
+                <el-form-item label="机构名称:" prop="organName">
                     <el-input v-model="sameLevelForm.organName"></el-input>
                 </el-form-item>
-                <el-form-item label="机构描述:">
+                <el-form-item label="机构描述:" prop="organDesc">
                     <el-input v-model="sameLevelForm.organDesc"></el-input>
                 </el-form-item>
-                <el-form-item label="负责人:">
+                <el-form-item label="负责人:" prop="organPerson">
                     <el-input v-model="sameLevelForm.organPerson"></el-input>
                 </el-form-item>
-                <el-form-item label="联系电话:">
+                <el-form-item label="联系电话:" prop="phone">
                     <el-input v-model="sameLevelForm.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="机构精度:">
+                <el-form-item label="机构精度:" >
                     <el-input v-model="sameLevelForm.organLatitude"></el-input>
                 </el-form-item>
-                <el-form-item label="机构纬度:">
+                <el-form-item label="机构纬度:" >
                     <el-input v-model="sameLevelForm.organLongitude"></el-input>
                 </el-form-item>
                 <el-form-item label="地图定点:">
@@ -59,7 +59,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addSameOrgan">确认</el-button>
-                <el-button @click="sameDialogVisible =false">取 消</el-button>
+                <el-button @click="sameDialogVisible =false" type="primary">取 消</el-button>
             </span>
             </el-dialog>
             <!-- 录入同级Dialog -->
@@ -76,17 +76,17 @@
             append-to-body>
             </el-dialog>
             <span class="blue">添加下级组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="subLevelForm" >
-                <el-form-item label="机构名称:" >
+            <el-form label-position="right" :inline="true" label-width="auto" :model="subLevelForm" :rules="rules">
+                <el-form-item label="机构名称:" prop="organName">
                     <el-input v-model="subLevelForm.organName"></el-input>
                 </el-form-item>
-                <el-form-item label="机构描述:">
+                <el-form-item label="机构描述:" prop="organDesc">
                     <el-input v-model="subLevelForm.organDesc"></el-input>
                 </el-form-item>
-                <el-form-item label="负责人:">
+                <el-form-item label="负责人:" prop="organPerson">
                     <el-input v-model="subLevelForm.organPerson"></el-input>
                 </el-form-item>
-                <el-form-item label="联系电话:">
+                <el-form-item label="联系电话:" prop="phone">
                     <el-input v-model="subLevelForm.phone"></el-input>
                 </el-form-item>
                 <el-form-item label="机构精度:">
@@ -156,16 +156,16 @@
             <div>
                 <el-form :inline="true">
                     <el-form-item>
-                        <el-button type="primary" @click="addRoleDialogVisible=true">录入</el-button>
+                        <el-button type="primary" @click="addRoleDialogVisible=true" :disabled="addUserBtn">录入</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="configRole" :disabled="selectRole.length!==1">编辑</el-button>
+                        <el-button type="primary" @click="configRole" :disabled="editUserBtn">编辑</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger" @click="delRole" :disabled="selectRole.length===0">删除</el-button>
+                        <el-button type="danger" @click="delRole" :disabled="delUserBtn">删除</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="openRoleMenuConfig" :disabled="selectRole.length!==1">权限配置</el-button>
+                        <el-button type="primary" @click="openRoleMenuConfig" :disabled="configUserBtn">权限配置</el-button>
                     </el-form-item>
                 </el-form>
                     <el-table
@@ -213,17 +213,17 @@
             :visible.sync="addRoleinnerVisible"
             append-to-body>
             </el-dialog>
-            <el-form label-position="right"  label-width="auto" :model="addRoleForm">
-                <el-form-item label="角色名称:">
+            <el-form label-position="right"  label-width="auto" :model="addRoleForm" :rules="rules">
+                <el-form-item label="角色名称:" prop="roleName">
                     <el-input v-model="addRoleForm.roleName"></el-input>
                 </el-form-item>
-                <el-form-item label="角色描述:">
+                <el-form-item label="角色描述:" prop="roleDesc">
                     <el-input v-model="addRoleForm.roleDesc"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addRole">确认</el-button>
-                <el-button @click="addRoleDialogVisible =false">取 消</el-button>
+                <el-button @click="addRoleDialogVisible =false" type="primary">取 消</el-button>
             </span>
             </el-dialog>
             <!-- 添加角色Dialog --> 
@@ -297,6 +297,7 @@ export default {
             menuConfigList:[],
             selectParentId:null,
             userLevel:JSON.parse(localStorage.userInfo).level,
+            userOrganId:JSON.parse(localStorage.userInfo).organId,
             sameDialogVisible: false,
             sameinnerVisible:false,
             subDialogVisible:false,
@@ -354,7 +355,85 @@ export default {
                 children: 'childrenList',
                 label: 'resourceName',
                 id:'id'
+            },
+           rules: {
+                organName:[
+                    { required: true, message: '请输入机构名称', trigger: ['blur', 'change'] }
+                ],
+                organDesc:[
+                    { required: true, message: '请输入机构描述', trigger: ['blur', 'change'] }
+                ],
+                roleName:[
+                    { required: true, message: '请输入角色名称', trigger: ['blur', 'change'] }
+                ],
+                roleDesc:[
+                    { required: true, message: '请输入角色描述', trigger: ['blur', 'change'] }
+                ],                
+                organPerson:[
+                    { required: true, message: '请输入负责人', trigger: 'blur' },
+                ],
+                phone: [
+                    { required: true, trigger: ['blur', 'change'],message: '请输入手机号码'  },
+                    {pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+                    message: '请输入正确的手机号',
+                    trigger: ['blur', 'change']}
+                ]
+            }              
+        }
+    },
+    computed:{
+        //机构管理按钮
+        addSubBtn(){
+            if(this.userLevel===1){
+                return false
+            }else{
+                return this.selectOrganId!==this.userOrganId || this.selectOrganId===0 
             }
+            
+        },
+        editOrgBtn(){
+            if(this.userLevel===1){
+                return false
+            }else{
+                return this.selectOrganId===this.userOrganId ||this.selectOrganId===0 || this.selectParentId!==this.userOrganId
+            }
+        },
+        delOrgBtn(){
+            if(this.userLevel===1){
+                return false
+            }else{
+                return this.selectOrganId===this.userOrganId ||this.selectOrganId===0 || this.selectParentId!==this.userOrganId
+            }
+        },
+        //角色管理按钮     
+        addUserBtn(){
+            if(this.userLevel===1){
+                return false
+            }else{
+                return this.selectOrganId===this.userOrganId || this.selectParentId!==this.userOrganId
+            }
+        },
+        editUserBtn(){
+            if(this.userLevel===1){
+                return this.selectRole.length===0||this.selectRole.length>1
+            }else{
+                return this.selectOrganId===this.userOrganId||this.selectRole.length===0||this.selectRole.length>1 || this.selectParentId!==this.userOrganId
+            }
+            
+        },
+        delUserBtn(){
+            if(this.userLevel===1){
+                return this.selectRole.length===0
+            }else{
+                return this.selectOrganId===this.userOrganId||this.selectRole.length===0 || this.selectParentId!==this.userOrganId
+            }
+        },
+        configUserBtn(){
+            if(this.userLevel===1){
+                return this.selectRole.length===0||this.selectRole.length>1
+            }else{
+                return this.selectOrganId===this.userOrganId||this.selectRole.length===0||this.selectRole.length>1 || this.selectParentId!==this.userOrganId
+            }            
         }
     },
     created(){
@@ -451,14 +530,7 @@ export default {
             let id = e[0].id
             this.configRoleForm = Object.assign({},e[0])
             let list = []
-            this.$http.get(`/resource/list/${id}`).then(res=>{
-                list = res.data.data
-                let nlist = this.utils.getAllNode(list,'childrenList')
-                this.isAuthed = nlist.filter(item=>item.isAuth===1)
-                for(let item of this.isAuthed){
-                    this.Autheds.push(item.id)
-                } 
-            })
+
             
          },
          RoleCheckChange(){
@@ -501,6 +573,14 @@ export default {
         //权限配置
         openRoleMenuConfig(){
                 this.MenuConfigRoleDialogVisible = true
+                this.$http.get(`/resource/list/${id}`).then(res=>{
+                    list = res.data.data
+                    let nlist = this.utils.getAllNode(list,'childrenList')
+                    this.isAuthed = nlist.filter(item=>item.isAuth===1)
+                    for(let item of this.isAuthed){
+                        this.Autheds.push(item.id)
+                    } 
+                })
                 this.$refs.tree.setCheckedKeys(this.Autheds)
         },
         menuTreeCheck(){

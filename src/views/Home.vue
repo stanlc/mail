@@ -68,4 +68,11 @@ export default {
     .home /deep/ .el-form /deep/ .el-input__inner{
       color: #fff
     } 
+
+      .echart-tooltip-wrap{
+    background:brown !important;
+  }
+  .echart-tooltip-body {
+    background:brown !important;
+  }
 </style>

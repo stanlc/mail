@@ -8,9 +8,11 @@
 export default {
     data(){
         return {
-            count :100,
-            normal:0,
-            
+            count :0,
+            organList:[],
+            countlist:[
+            ],
+            colors:['#00ffff','#d5d147','#25c05f','#1e83f2','#d55521']
         }
     },
     computed:{
@@ -19,23 +21,28 @@ export default {
         }
     },
     created(){
+        // this.utils.getOrganList(this)
         
     },
     mounted(){
-        //this.getValue();   //获取设备数据
-        this.draw();
+           //获取设备数据
+        this.getValue();
+        
     },
     methods:{
         getValue(){
             let that = this 
-            this.$http.post('/device/pagerList',{}).then(res=>{
-                this.count = res.data.paging.list.length
-                let list = res.data.paging.list
-                list.forEach(e => {
-                    if(e.status===1){
-                        that.normal++
-                    }
-                });
+            this.$http.get('/index/deviceInfo').then(res=>{
+                this.count = res.data.data.deviceNum
+               let list = res.data.data.childrenInfo
+               list.map(item=>{
+                   this.countlist.push({name:item.childOrganName,value:item.childDeviceNum,itemStyle:{normal:{color:''}},label:{normal:{formatter:function(params){
+                                return params.name+'-'+((params.value/that.count)*100).toFixed(2)+'%'+' \n '+params.value+'(台)';
+                            }}}})
+               })
+                this.countlist.map((item,index)=>{item.itemStyle.normal.color=that.colors[index]})
+                console.log(this.countlist)
+                this.draw()
             })
         },
         draw(){
@@ -43,9 +50,9 @@ export default {
             let myChart = this.$echarts.init(document.getElementById('count'))
             myChart.setOption({
                     title:{
-                        text:'1000',
-                        top:'50%',
-                        left:'40%',
+                        text:that.count,
+                        top:'45%',
+                        left:'47.5%',
                         textStyle:{
                             fontWeight: 'normal',
                             fontSize: '14',
@@ -56,14 +63,11 @@ export default {
                     series : [
                     {
                         type: 'pie',
-                        radius: [20,35],
-                        data:[
-                            {value:235, name:'花园小区',itemStyle:{normal:{color:'#00ffff'}}},
-                            {value:274, name:'楼山小区',itemStyle:{normal:{color:'#d5d147'}}},
-                            {value:310, name:'东阳小区',itemStyle:{normal:{color:'#25c05f'}}},
-                            {value:335, name:'其他',itemStyle:{normal:{color:'#1e82ef'}}},
-                            {value:400, name:'南风小区',itemStyle:{normal:{color:'#d55521'}}},
-                        ]
+                        radius: [20,30],
+                        data:that.countlist,
+                        itemStyle:{normal:{
+                            
+                        }}
                     }
                 ]
             })
@@ -74,7 +78,7 @@ export default {
 <style scoped>
   .total{
     position: absolute;
-    top: 30px;
+    top: 25px;
     left: 40px;
     color: #fff;
     font-size: 12px;
@@ -84,5 +88,8 @@ export default {
     font-size: 16px;
     font-weight: normal;
     margin-right: 4px;
+  }
+  #count{
+      margin-top: 15px;
   }
 </style>

@@ -87,7 +87,7 @@
                 >
                     <template slot-scope="scope">
                         <el-button type="primary" size="small" @click="openEdit(scope.row)">编辑</el-button>
-                        <el-button type="danger" size="small" @click="delUser">删除</el-button>
+                        <el-button type="danger" size="small" @click="delUserC(scope.row)">删除</el-button>
                     </template>                
                 </el-table-column>                                
             </el-table>
@@ -140,7 +140,7 @@
             width="35%"
             class="add"
             >           
-            <el-form label-position="right"  label-width="auto" :model="addUserForm" :inline="true">
+            <el-form label-position="right"  label-width="auto" :model="addUserForm" :inline="true" :rules="rules">
                 <el-form-item label="机构名称：" >
                     <select-tree
                     :props="props"
@@ -156,16 +156,16 @@
                         <el-option v-for="item in userRoleList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>     
-                    <el-form-item label="用户名称：">
+                    <el-form-item label="用户名称：" prop="nickName">
                         <el-input v-model="addUserForm.nickName"></el-input>
                     </el-form-item>
-                    <el-form-item label="登录名称：">
+                    <el-form-item label="登录名称：" prop="userName">
                         <el-input v-model="addUserForm.userName"></el-input>
                     </el-form-item>
-                    <el-form-item label="电子邮件：">
+                    <el-form-item label="电子邮件：" prop="email">
                         <el-input v-model="addUserForm.email"></el-input>
                     </el-form-item>
-                    <el-form-item label="手机号码：">
+                    <el-form-item label="手机号码：" prop="phone">
                         <el-input v-model="addUserForm.phone"></el-input>
                     </el-form-item>
                     <el-form-item>
@@ -225,6 +225,24 @@ export default {
                 label:'organName',
                 children:'childrenList'
             },
+            rules: {
+                userName:[
+                    { required: true, message: '请输入用户名称', trigger: ['blur', 'change'] }
+                ],
+                nickName:[
+                    { required: true, message: '请输入登录名称', trigger: ['blur', 'change'] }
+                ],
+                email:[
+                    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                ],
+                phone: [
+                    { required: true, trigger: ['blur', 'change'],message: '请输入手机号码'  },
+                    {pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+                    message: '请输入正确的手机号',
+                    trigger: ['blur', 'change']}
+                ]
+            }            
         }
     },
      computed: {
@@ -276,7 +294,7 @@ export default {
             // console.log(this.addUserForm.roleName)
             this.utils.addUser(this,this.addUserForm)
             this.addUserVisible = false
-            this.utils.getUserList(this,this.searchForm)
+            
             
         },
         cancelAdd(){
@@ -302,7 +320,17 @@ export default {
         },
         //操作栏的删除
         delUserC(v){
-            console.log(e)
+            let id = v.id
+            this.$http.delete(`/user/delete/${id}`).then(res=>{
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'删除成功'
+                    })
+                this.utils.getUserList(this,{"pageNum": this.pageNum,
+                    "pageSize": this.pageNum,})
+                    }
+            })
         },
         openEdit(row){
             this.editUserVisible = true
@@ -404,10 +432,10 @@ export default {
         margin-top: 20px;
     }
     .el-dialog__body .el-input{
-        width: 130px;
+        width: 120px;
     }
     .el-dialog__body .el-select{
-        width: 130px;
+        width: 120px;
     }    
     /* card样式 */
     .box-card /deep/ .el-card__header{

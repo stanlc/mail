@@ -201,38 +201,31 @@ export default {
             province:[],
             city:[],
             area:[],
-            // ruleForm: {
-            //     userName:'',
-            //     email:'',
-            //     userPhone:'',
-            //     password:'',
-            //     idNo:'',
-            //     },
-                rules: {
-                    userName:[
-                        { required: true, message: '请输入账号名称', trigger: ['blur', 'change'] }
-                    ],
-                    password:[
-                        { required: true, message: '请输入密码', trigger: ['blur', 'change'] }
-                    ],
-                    idNo:[{ required: true, message: '请输入身份证号码', trigger: ['blur', 'change'] },
-                    {
-                        pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
-                        message: '请输入正确的证件号码！',
-                        trigger: ['blur', 'change']
-                    }
-                    ],
-                    email:[
-                        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-                        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
-                    ],
-                    userPhone: [
-                        { required: true, trigger: ['blur', 'change'],message: '请输入手机号码'  },
-                        {pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
-                        message: '请输入正确的手机号',
-                        trigger: ['blur', 'change']}
-                    ]
+            rules: {
+                userName:[
+                    { required: true, message: '请输入账号名称', trigger: ['blur', 'change'] }
+                ],
+                password:[
+                    { required: true, message: '请输入密码', trigger: ['blur', 'change'] }
+                ],
+                idNo:[{ required: true, message: '请输入身份证号码', trigger: ['blur', 'change'] },
+                {
+                    pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
+                    message: '请输入正确的证件号码！',
+                    trigger: ['blur', 'change']
                 }
+                ],
+                email:[
+                    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                ],
+                userPhone: [
+                    { required: true, trigger: ['blur', 'change'],message: '请输入手机号码'  },
+                    {pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+                    message: '请输入正确的手机号',
+                    trigger: ['blur', 'change']}
+                ]
+            }
 
         }
     },
