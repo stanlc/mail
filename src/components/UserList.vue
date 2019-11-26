@@ -82,7 +82,6 @@
                 </el-table-column>                                  
                 <el-table-column
                 label="操作"
-                fixed="right"
                 width="200"
                 >
                     <template slot-scope="scope">
@@ -177,6 +176,17 @@
             </el-dialog>
             <!-- 添加用户Dialog -->                          
         </div>
+        <div class="page">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next, jumper"
+            background
+            :total="totalCount">
+            </el-pagination>
+        </div>        
     </el-card>
 </template> 
 <script>
@@ -202,6 +212,12 @@ export default {
                 "pageNum": this.pageNum,
                 "pageSize": this.pageSize,
             },
+            pageInfo:{},
+            currentPage: 1,
+            pagesize:10,
+            totalCount:0,
+            totalPage:0,
+            tabelList:[],
             userList:[],
             organList:[],
             allOrganList:'',
@@ -262,7 +278,7 @@ export default {
     ,
     created(){
         this.utils.getUserList(this,this.searchForm)
-        this.organList = JSON.parse(localStorage.organList)
+        this.utils.getOrganList(this)
     },
     mounted(){
         this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
@@ -276,6 +292,32 @@ export default {
         CheckChange(){
 
         },
+        //分页
+        handleSizeChange(val) {
+            this.pagesize = val
+            this.searchForm.pageSize = val 
+            this.$http.post('user/userList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.searchForm.pageNum = val
+            this.$http.post('user/userList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },        
+        getList(form){
+            this.$http.post('user/userList',form
+            ).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
+                this.pagesize = this.pageInfo.pageSize
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
+        },        
         searchUser(){
             this.utils.getUserList(this,this.searchForm)
         },
@@ -449,7 +491,7 @@ export default {
     .box-card {
         width: 82vw;
         height: 78vh;
-        background: #06253d;
+        /* background: #06253d; */
         border-radius: 5px;
         margin: 0 auto;
     } 

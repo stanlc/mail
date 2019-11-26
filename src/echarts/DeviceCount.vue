@@ -37,7 +37,13 @@ export default {
                let list = res.data.data.childrenInfo
                list.map(item=>{
                    this.countlist.push({name:item.childOrganName,value:item.childDeviceNum,itemStyle:{normal:{color:''}},label:{normal:{formatter:function(params){
-                                return params.name+'-'+((params.value/that.count)*100).toFixed(2)+'%'+' \n '+params.value+'(台)';
+                                let per = 0
+                                if(params.value===0 && that.count===0){
+                                    per = 0
+                                }else{
+                                    per = ((params.value/that.count)*100).toFixed(2)
+                                }
+                                return params.name+'-'+per+'%'+' \n '+params.value+'(台)';
                             }}}})
                })
                 this.countlist.map((item,index)=>{item.itemStyle.normal.color=that.colors[index]})

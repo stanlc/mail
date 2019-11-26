@@ -82,7 +82,6 @@
                 </el-table-column> 
                 <el-table-column
                 label="操作"
-                fixed="right"
                 width="200"
                 >
                     <template class="btn-box" slot-scope="scope">
@@ -379,7 +378,7 @@ export default {
     .box-card {
         width: 82vw;
         height: 78vh;
-        background: #06253d;
+        /* background: #06253d; */
         border-radius: 5px;
         margin: 0px auto;
         position: relative;

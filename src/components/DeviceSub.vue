@@ -32,7 +32,7 @@
                     <el-button type="primary" @click="addOldAccountVisible=true">绑定已有订阅账号</el-button>
                 </el-form-item> -->
                 <el-form-item>
-                    <el-button type="primary" @click="addAccountDialogVisible=true">创建新的订阅账号</el-button>
+                    <el-button type="primary" @click="addAccountDialogVisible=true;addAccountForm={}">创建新的订阅账号</el-button>
                 </el-form-item>                
             </el-form>
             <el-table
@@ -72,14 +72,13 @@
                 </el-table-column>  
                 <el-table-column
                 label="操作"
-                fixed="right"
                 width="auto"
                 >
                     <template slot-scope="scope">
                         <el-button type="info" size="small" @click="openInfo(scope.row)">详情</el-button>
                         <el-button type="primary" size="mini" @click="sub(scope.row)" :disabled="scope.row.applayStatus===3">订阅</el-button>
                         <el-button type="primary" size="small" :disabled="scope.row.applayStatus===1" @click="getDevice(scope.row)">同步设备</el-button>
-                        <el-button type="danger" size="mini">删除</el-button>                        
+                        <!-- <el-button type="danger" size="mini" @click="delAccount">删除</el-button>                         -->
                     </template>                
                 </el-table-column>                                
             </el-table>
@@ -365,6 +364,8 @@ export default {
                             "pageSize":this.pageSize
                         })
             })
+            this.getList(this.searchForm)
+            this.addAccountForm={}
             this.addAccountDialogVisible =false
         },
         //筛选

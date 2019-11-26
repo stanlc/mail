@@ -31,43 +31,43 @@ export default {
   },
 }
 </script>
-<style scoped>
-  .home{
-    overflow: hidden;
-    height: 100vh;
-    background: url(..\assets\img\bc.png);
-    background-size: 100%;
-  }
-  .home /deep/ .el-card{
-    border: none
-  }
-  .home /deep/ .el-menu{
-    border: none
-  }
-  .home /deep/ .box-card{
-    background: rgba(11,53,115,0.2);
-  }
-        /* dialog样式 */
-  .home /deep/ .box-card /deep/ .el-dialog__header{
-      background: #19437e;
-      padding:10px;
-  }
-  .home /deep/ .box-card /deep/ .el-dialog__title{
-      color: #fff;
-  }
-    .home /deep/ .box-card /deep/ .el-dialog__body{
-        background: #143666;
-        color: #fff;
-    }
-    .home /deep/ .box-card /deep/ .el-dialog__footer{
-        background: #143666;
-    } 
-    /* .home /deep/ .el-dialog__body .el-form{
-      text-align: center;
-    }  */
-    .home /deep/ .el-form /deep/ .el-input__inner{
-      color: #fff
-    } 
+<style lang='scss'>
     
- 
+    //Table样式
+body .el-table th.gutter{
+  display: table-cell!important;  //浏览器缩放表头出现白边
+}
+.el-table {
+  background: transparent !important; //表格背景色
+  tr th{
+    background: transparent !important;    //表头背景色
+    border: none !important;  //表头下边框
+    text-align: center;
+  }
+  thead tr{
+    background: transparent
+  }
+  tbody tr{
+    &:nth-child(odd){
+      background: rgba(14,59,128,0.3);    
+    }
+   
+    &:nth-child(even){
+      background: transparent;
+    }
+    td{
+      border: none;
+      text-align: center;
+    }
+  }
+}  
+.el-table::before{
+  height: 0px !important;   //表格下边框
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover>td{
+background-color: #212e3e !important;    //hover项背景颜色
+}
+
+@import '../assets/common.css'
 </style>

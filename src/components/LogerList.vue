@@ -58,7 +58,7 @@
                     <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
-                    <el-button type="primary" @click="exportExcel">导出</el-button>
+                    <el-button type="primary" @click="exportEx">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
             <el-table
@@ -66,7 +66,6 @@
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
-            id="LogTable"
             >
                 <el-table-column
                 type="selection"
@@ -107,7 +106,6 @@
                 </el-table-column> 
                 <el-table-column
                 label="操作"
-                fixed="right"
                 width="200"
                 >
                     <template class="btn-box" slot-scope="scope">
@@ -115,6 +113,64 @@
                     </template>                
                 </el-table-column>                                                 
             </el-table>
+            <!-- 导出xlx表格开始 -->
+            <el-table
+            :data="exportTabelList"
+            style="width: 100%"
+            @select="deviceSelect"
+            @check-change="CheckChange"
+            id="LogTable"
+            v-show="hide"
+            >
+                <el-table-column
+                type="selection"
+                width="55">
+                </el-table-column>
+                <el-table-column
+                label="序号"
+                type="index"
+                width="50">
+                </el-table-column>
+                <el-table-column
+                label="设备ID"
+                prop="deviceNum"
+                >
+                </el-table-column>
+                <el-table-column
+                label="所在区域"
+                prop="position"
+                :formatter="positionFormat"
+                >
+                </el-table-column>                 
+                <el-table-column
+                label="设备名称"
+                prop="deviceName"
+                >
+                </el-table-column>
+                <el-table-column
+                label="运作状态"
+                prop="openStatus"
+                :formatter="(row)=>{return row.openStatus===1?'开':'关'}"
+                >
+                </el-table-column>    
+                <el-table-column
+                label="创建时间"
+                prop="createTime"
+                :formatter="formatTime"
+                >
+                </el-table-column> 
+                <el-table-column
+                label="操作"
+                width="200"
+                >
+                    <template class="btn-box" slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="checkInfo(scope.row)">查看</el-button>                     
+                    </template>                
+                </el-table-column>                                                 
+            </el-table>          
+              
+            
+            <!-- 导出xlx表格结束             -->            
             <!-- 位置dialog开始 -->
             <el-dialog
             title="位置"
@@ -169,6 +225,7 @@ export default {
             pageNum:1,
             pageSize:5,
             tabelList:[],
+            exportTabelList:[],
             logList:[],
             organList:[],
             deviceInfo:{},
@@ -181,7 +238,7 @@ export default {
                 label:'organName',
                 children:'childrenList'
             },
-
+            hide:false,
         }
     },
     
@@ -351,6 +408,15 @@ export default {
         handleSelect(item) {
             console.log(item);
         },
+        exportEx(){
+            let form = Object.assign({},this.searchForm)
+            form.pageNum = 1
+            form.pageSize = 1000
+             this.$http.post('/logger/export',form).then(res=>{
+                this.exportTabelList = res.data.paging.list
+                this.exportExcel()
+            })
+        },        
         exportExcel () {
         /* generate workbook object from table */
         let wb = XLSX.utils.table_to_book(document.querySelector('#LogTable'));
@@ -381,7 +447,7 @@ export default {
     .box-card {
         width: 97vw;
         height: 78vh;
-        background: #06253d;
+        /* background: #06253d; */
         border-radius: 5px;
         margin: 20px auto;
         position: relative;

@@ -44,7 +44,7 @@
                     <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
-                    <el-button type="primary" @click="exportExcel">导出</el-button>
+                    <el-button type="primary" @click="exportEx">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
             <el-table
@@ -52,7 +52,6 @@
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
-            id="RunTable"
             >
                 <el-table-column
                 type="selection"
@@ -103,6 +102,68 @@
                 >
                 </el-table-column>                                
             </el-table>
+
+            <!-- 导出xlx表格开始 -->
+          
+                <el-table
+                :data="exportTabelList "
+                style="width: 100%"
+                @select="deviceSelect"
+                @check-change="CheckChange"
+                id="RunTable"
+                v-show="hide"
+                >
+                    <el-table-column
+                    type="selection"
+                    width="55">
+                    </el-table-column>
+                    <el-table-column
+                    label="序号"
+                    type="index"
+                    width="50">
+                    </el-table-column>
+                    <el-table-column
+                    label="设备ID"
+                    prop="deviceNum"
+                    >
+                    </el-table-column>                
+                    <el-table-column
+                    label="所在区域"
+                    prop="position"
+                    :formatter="positionFormat"
+                    >  
+                    </el-table-column>             
+                    <el-table-column
+                    label="设备名称"
+                    prop="deviceName"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                    label="开关状态"
+                    prop="openStatus"
+                    :formatter="(row)=>{return row.openStatus===1?'开':'关'}"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                    label="报警状态"
+                    prop="alarmStatus"
+                    :formatter="(row)=>{return row.alarmStatus===1?'报警':'正常'}"
+                    >
+                    </el-table-column>                
+                    <el-table-column
+                    label="单日操作次数"
+                    prop="todayNum"
+                    >
+                    </el-table-column>     
+                    <el-table-column
+                    label="最后操作时间"
+                    prop="updateTime"
+                    :formatter="formatTime"
+                    >
+                    </el-table-column>                                
+                </el-table>
+            
+            <!-- 导出xlx表格结束             -->
         </div>
         <div class="page">
             <el-pagination
@@ -129,6 +190,7 @@ export default {
             pageInfo:{},
             idList:[],
             tabelList:[],
+            exportTabelList:[],
             runInfoList:[],
             organList:[],
             valueId:0,
@@ -144,6 +206,7 @@ export default {
                 label:'organName',
                 children:'childrenList'
             },
+            hide:false,
         }
     },
     components:
@@ -288,6 +351,15 @@ export default {
         handleSelect(item) {
             //console.log(item);
         },  
+        exportEx(){
+            let form = Object.assign({},this.searchForm)
+            form.pageNum = 1
+            form.pageSize = 1000
+             this.$http.post('/monitoring/export',form).then(res=>{
+                this.exportTabelList = res.data.paging.list
+                this.exportExcel()
+            })
+        },
         exportExcel () {
                 /* generate workbook object from table */
                 let wb = XLSX.utils.table_to_book(document.querySelector('#RunTable'));
@@ -318,7 +390,7 @@ export default {
     .box-card {
         width: 97vw;
         height: 78vh;
-        background: #06253d;
+        /* background: #06253d; */
         border-radius: 5px;
         margin: 20px auto;
         position: relative;

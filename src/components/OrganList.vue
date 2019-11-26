@@ -272,7 +272,7 @@
             </el-tree>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="MenuConfigRole">提交</el-button>
-                <el-button @click="MenuConfigRoleDialogVisible =false">取消</el-button>
+                <el-button @click="MenuConfigRoleDialogVisible =false;$refs.tree.setCheckedKeys([])">取消</el-button>
             </span>
             </el-dialog>
             <!-- 权限配置Dialog -->                                 
@@ -528,6 +528,10 @@ export default {
         roleSelect(e){
             this.selectRole = e
             let id = e[0].id
+            if(id){
+               this.selectRoleId = id 
+            }
+            
             this.configRoleForm = Object.assign({},e[0])
             let list = []
 
@@ -573,15 +577,16 @@ export default {
         //权限配置
         openRoleMenuConfig(){
                 this.MenuConfigRoleDialogVisible = true
+                let id = this.selectRoleId
                 this.$http.get(`/resource/list/${id}`).then(res=>{
-                    list = res.data.data
+                    let list = res.data.data
                     let nlist = this.utils.getAllNode(list,'childrenList')
                     this.isAuthed = nlist.filter(item=>item.isAuth===1)
                     for(let item of this.isAuthed){
                         this.Autheds.push(item.id)
+                        this.$refs.tree.setCheckedKeys(this.Autheds)
                     } 
                 })
-                this.$refs.tree.setCheckedKeys(this.Autheds)
         },
         menuTreeCheck(){
             let list = this.$refs.tree.getCheckedKeys()
@@ -603,6 +608,7 @@ export default {
                         this.MenuConfigRoleDialogVisible = false
                     }
                 })
+                this.$refs.tree.setCheckedKeys([])
             }
         },
         //内容格式化
@@ -624,7 +630,7 @@ export default {
     .box-card {
         width: 40vw;
         height: 54vh;
-        background: #06253d;
+        /* background: #06253d; */
         border-radius: 5px;
         float: left;
     }
