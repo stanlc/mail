@@ -266,7 +266,8 @@
             title="权限编辑"
             :visible.sync="MenuConfigRoleDialogVisible"
             width="35%"
-            custom-class="sameLevel">
+            custom-class="sameLevel"
+            @close="Autheds = [];$refs.tree.setCheckedKeys(Autheds)">
             <span class="blue">菜单权限</span>
             <div class="organTree">
                 <el-tree
@@ -282,7 +283,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="MenuConfigRole">提交</el-button>
-                <el-button @click="MenuConfigRoleDialogVisible =false;$refs.tree.setCheckedKeys([])">取消</el-button>
+                <el-button @click="MenuConfigRoleDialogVisible =false;Autheds = [];$refs.tree.setCheckedKeys(Autheds)">取消</el-button>
             </span>
             </el-dialog>
             <!-- 权限配置Dialog -->                                 
@@ -541,11 +542,10 @@ export default {
         },
         roleSelect(e){
             this.selectRole = e
-            let id = e[0].id
-            if(id){
-               this.selectRoleId = id 
+            if(e.length>0){
+                let id = e[0].id 
+                this.selectRoleId = id 
             }
-            
             this.configRoleForm = Object.assign({},e[0])
             let list = []
 
@@ -590,6 +590,7 @@ export default {
         },
         //权限配置
         openRoleMenuConfig(){
+                this.Autheds = []
                 this.MenuConfigRoleDialogVisible = true
                 let id = this.selectRoleId
                 this.$http.get(`/resource/list/${id}`).then(res=>{

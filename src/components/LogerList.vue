@@ -59,7 +59,7 @@
                 </el-form-item>  
                 <el-form-item>
                     <a href="http://103.239.204.52:12204/logger/export">aaa</a>
-                    <el-button type="primary" @click="exportEx">导出</el-button>
+                    <el-button type="primary" @click="fetchExportBill('/logger/export')">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
             <el-table
@@ -421,8 +421,23 @@ export default {
             console.log(item);
         },
         exportEx(){
-             this.$http.get('/logger/export',{})
-        },        
+             window.open('http://103.239.204.52:12204/logger/export')
+        }, 
+        fetchExportBill(url, data = {}) {
+            return new Promise((resolve, reject) => {
+            this.$http.post(url,data,{ responseType: 'arraybuffer'}).then(res => {
+            //resolve(res)
+            let blob = new Blob([res], {type: "application/vnd.ms-excel"}); 
+        　　let objectUrl = URL.createObjectURL(blob); 
+        　　 window.location.href = objectUrl; 
+            }).catch(error => {
+                if (data.Vue) {
+                data.Vue.$message.error('系统异常');
+                }
+                reject(null, error);
+            })
+            })
+        },       
     //     exportExcel () {
     //     /* generate workbook object from table */
     //     let wb = XLSX.utils.table_to_book(document.querySelector('#LogTable'));
