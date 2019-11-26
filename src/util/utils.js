@@ -122,6 +122,11 @@ let utils = {
             vm.deviceList = JSON.parse(localStorage.deviceList)
         })
     },
+    searchDeviceList(vm,form){
+        Vue.prototype.$http.post('/device/pagerList',form).then(res=>{
+            vm.tabelList=res.data.paging.list
+        })
+    },
     //获取设备操作日志
     getLogger(vm,form){
         Vue.prototype.$http.post('/logger/pagerList',form).then(res=>{

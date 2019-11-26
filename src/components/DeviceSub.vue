@@ -36,7 +36,7 @@
                 </el-form-item>                
             </el-form>
             <el-table
-            :data="accountList"
+            :data="tabelList"
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
@@ -165,6 +165,17 @@
             </el-dialog>            
             <!-- 账号详情dialog -->                        
         </div>
+        <div class="page">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next, jumper"
+            background
+            :total="totalCount">
+            </el-pagination>
+        </div>        
     </el-card>
 </template>
 <script>
@@ -187,8 +198,14 @@ export default {
                 "pageNum":this.pageNum,
                 "pageSize":this.pageSize
             },
+            pageInfo:{},
+            currentPage: 1,
+            pagesize:8,
+            totalCount:0,
+            totalPage:0,
             pageNum:1,
             pageSize:8,
+            tabelList:[],
             accountList:[
             ],
             accList:[],
@@ -242,7 +259,8 @@ export default {
                 list.map(item=>aList.push(item.account))   //获取account数组
                 let uniList = Array.from(new Set([...aList]))   //去重
                 uniList.map(item=> this.accList.push({'value':item}))           
-        })    
+        })  
+        this.getList(this.searchForm)  
     },
     created(){
          this.utils.getProv().then(res=>{this.province = res.data.data})
@@ -261,6 +279,32 @@ export default {
         CheckChange(){
 
         },
+        //分页
+        handleSizeChange(val) {
+            this.pagesize = val
+            this.searchForm.pageSize = val 
+            this.$http.post('/account/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.searchForm.pageNum = val
+            this.$http.post('/account/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },        
+        getList(form){
+            this.$http.post('/account/pagerList',form
+            ).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
+                this.pagesize = this.pageInfo.pageSize
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
+        },        
         //内容格式化
         //状态格式化
         status(row){
@@ -325,19 +369,23 @@ export default {
         },
         //筛选
         searchAccount(){
-            
-            this.utils.getSubAccount(this,this.searchForm)
-            this.searchForm={
-                "pageNum":this.pageNum,
-                "pageSize":this.pageSize
+            this.$http.post('/account/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
+            this.searchForm = {
+                "pageNum": 1,
+                "pageSize": 4
             }
         },
         clear(){
             this.searchForm = {
-                "pageNum":this.pageNum,
-                "pageSize":this.pageSize
+                "pageNum": 1,
+                "pageSize": 8
             }
-            this.utils.getSubAccount(this,this.searchForm)            
+            this.getList(this.searchForm)         
         },
         //订阅
         sub(row){
@@ -406,7 +454,12 @@ export default {
         height: 78vh;
         border-radius: 5px;
         margin: 0px auto;
+        position: relative;
     } 
+    .page{
+        position: absolute;
+        bottom: 20px;
+    }
     .el-dialog__body.info{
         color: #fff
     }

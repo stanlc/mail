@@ -1,14 +1,33 @@
 <template>
     <div>
         <div id="map" style="width:600px;height:500px;"></div>
-        <div id="message" v-show="showmes"></div>
+        <div id="message" v-show="showmes">
+            <span>设备定位</span><br>
+            <span>联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
+            <span>位置：{{deviceGroup.position}}{{deviceGroup.positionDetail}}</span><br>
+            <span>状态：开启{{deviceGroup.openStatusNum}}/关闭{{deviceGroup.offStatusNum}}</span><br> 
+            <a href="javascript:;" @click="groupShow=!groupShow">>组状态查看</a>
+            <div v-if="groupShow" class="group">
+                <span> 组状态</span><br>
+                <span>{{deviceGroup.position}}-{{deviceGroup.positionDetail}}</span>
+                <span>{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
+                <div class="groupBox center">
+                    <div v-for="item in deviceGroup.groupInfoList" :key="item.index" class="groupItem">
+                        <span class="boxName">{{item.positionDetail|boxposition}}</span>
+                        <p :class="item.openStatus===1?'green':'red'">{{item.openStatus|openStat}}</p>
+                    </div>
+                </div>                
+            </div>
+        </div>
         <div class="table">
             <el-table
             :data='deviceList'
-            style="width: 100%">
+            style="width: 100%"
+            height="550">
                 <el-table-column
                 label="设备ID"
                 prop="deviceId"
+                
                 >
                 </el-table-column>
                 <el-table-column
@@ -48,18 +67,11 @@ export default {
             boxy:0,
             showmes:false,
             deviceList:[],
-            deviceGroup:{},
-            dotList:[
-                                {
-                                    name:'111',
-                                    value:[119.0918, 36.524],
-                                    num:111
-                                },{
-                                    name:'222',
-                                    value:[84.77,45.59,0],
-                                    num:222
-                                }
-                            ]
+            geoDeviceList:[],
+            deviceGroup:{
+            },
+            option:{},
+            groupShow:false,
         }
     },
     components:{
@@ -76,29 +88,41 @@ export default {
     mounted(){
         this.utils.getDeviceList(this,{});   //获取设备数据
         this.draw();
-        let that = this
-        this.myChart.on('click',function(params){
-            that.boxx= params.event.event.layerX  -143       //获取点击位置
-            that.boxy = params.event.event.layerY-170
-            console.log(params)
-            if(params.data.name){
-                that.openInfo() 
-                
-            }
-            
-        });
+       
         
+    },
+    filters:{
+        openStat(e){
+            if(e===1){
+                return '开启'
+            }else{
+                return '关闭'
+            }
+        },
+        boxposition(e){
+            if(!e){
+                return '未知'
+            }else{
+                return e
+            }
+        }
     },
     methods:{
         show(row){
             this.$http.post(`/device/deviceGroup/${row.deviceNum}`).then(res=>{
                 this.deviceGroup = res.data.data
+
+                //显示弹出框
                 let tude = [parseFloat(this.deviceGroup.organLongitude),parseFloat(this.deviceGroup.organLatitude)]
+                //地图标点
+                this.geoDeviceList.push({value:tude,info:this.deviceGroup})  //待去重
+                console.log(this.geoDeviceList)
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
                 let a = document.getElementById('message')
-                a.style.top =c[1]-170+'px'                
-                a.style.left=c[0]-143+'px'
+                a.style.top =c[1]-188+'px'                
+                a.style.left=c[0]-165+'px'
                 this.showmes = true
+                this.myChart.setOption(this.option)
             })
         },
         openInfo(){
@@ -111,7 +135,7 @@ export default {
         },
         draw(){
             this.myChart = this.$echarts.init(document.getElementById('map'))
-            let option = {
+            this.option = {
            
             geo: [
                 {
@@ -131,7 +155,7 @@ export default {
                         }
                         },
                     ],
-                    roam:true,
+                    roam:false,        //禁止拖拽
                     label: {
                         normal: {
                             show: false
@@ -184,13 +208,23 @@ export default {
                                     }
                                 }
                             },
-                            data:this.dotList
+                            data:this.geoDeviceList
                         },
                         
                     ]
                     }
-                    this.myChart.setOption(option)
-                    
+                    this.myChart.setOption(this.option)
+                     let that = this
+                        this.myChart.on('click',function(params){
+                            that.boxx= params.event.event.layerX  -143       //获取点击位置
+                            that.boxy = params.event.event.layerY-170
+                            console.log(params)
+                            if(params.data.name){
+                                that.openInfo() 
+                                
+                            }
+                            
+                        });
                     }
             }
 }
@@ -212,12 +246,16 @@ export default {
  #map{
      position: relative;
  }
+ #message span,#message a{
+     color: #fff;
+ }
 #message{
     background: url(../assets/img/position.png) no-repeat;
     background-size: contain;
     width: 300px;
     height: 160px;
     display: block; 
+    padding: 15px;
     position: absolute;
 }
 .table{
@@ -225,5 +263,49 @@ export default {
     top:0;
     left: 47vw;
 }
-
+    /* 组状态样式 */
+    .group{
+        margin-top:60px;
+    }
+    .boxName{
+        display: block;
+        width: 38px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        background: #09aec2;
+        border-radius: 5px;
+        font-size: 10px; 
+    }  
+    .groupBox{
+        display: block;
+        width: 300px;
+        height: 170px;
+        overflow-y: scroll;
+        margin-bottom: 40px;
+    }
+    .groupItem{
+        display: inline-block;
+        text-align: center;
+        margin:0 10px 0 0;
+    }   
+    .green{
+        color: #15b789
+    }
+    .red{
+        color: #e04b4c
+    }
+    .groupBox::-webkit-scrollbar {/*滚动条整体样式*/
+        width: 10px;     /*高宽分别对应横竖滚动条的尺寸*/
+        height: 150px;
+    }
+    .groupBox::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+            border-radius: 10px;
+            background: #0bb6cf;
+        }
+    .groupBox::-webkit-scrollbar-track {/*滚动条里面轨道*/
+            
+            border-radius: 10px;
+            background: #1b4887;
+        }
 </style>

@@ -42,7 +42,7 @@
                 </el-form-item>                
             </el-form>
             <el-table
-            :data="bindList"
+            :data="tabelList"
             style="width: 100%"
             @select="accountSelect"
             >
@@ -131,6 +131,17 @@
             </el-dialog>            
             <!-- 详情dialog -->                   
         </div>
+        <div class="page">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next, jumper"
+            background
+            :total="totalCount">
+            </el-pagination>
+        </div>        
     </el-card>
 </template>
 <script>
@@ -146,8 +157,14 @@ export default {
             selectAccounts:[],
             right:'right',
             searchForm:{'pageNum':this.pageNum,'pageSize':this.pageSize},
+            pageInfo:{},
+            currentPage: 1,
+            pagesize:4,
+            totalCount:0,
+            totalPage:0,
+            tabelList:[],
             pageNum:1,
-            pageSize:8,
+            pageSize:4,
             addOldAccountForm:{},
             bindDeviceForm:{},
             accList:[],
@@ -157,6 +174,7 @@ export default {
     mounted(){
         this.utils.getbindList(this,this.searchForm)
         this.getAccount()
+        this.getList(this.searchForm)
         this.$http.post('/serial/pagerList',{
                 "pageNum":1,
                 "pageSize":1000
@@ -176,6 +194,32 @@ export default {
         },
         choseAccount(){
 
+        },
+        //分页
+        handleSizeChange(val) {
+            this.pagesize = val
+            this.searchForm.pageSize = val 
+            this.$http.post('/serial/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.searchForm.pageNum = val
+            this.$http.post('/serial/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },        
+        getList(form){
+            this.$http.post('/serial/pagerList',form
+            ).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
+                this.pagesize = this.pageInfo.pageSize
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
         },
         //内容格式化
         //状态格式化
@@ -244,7 +288,7 @@ export default {
                     })
                     that.utils.getbindList(that,{
                         "pageNum": 1,
-                        "pageSize": 8
+                        "pageSize": 4
                     })
                 }
             })
@@ -272,19 +316,22 @@ export default {
         //筛选
         searchBind(){
             this.$http.post('/serial/pagerList',this.searchForm).then(res=>{
-                this.bindList = res.data.paging.list
-                if(res.data.code===200){
-                    this.$message({
-                        type:'success',
-                        message:'查询成功'
-                    })
-                }
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
             })
-            this.searchForm={'pageNum':this.pageNum,'pageSize':this.pageSize}             
+            this.searchForm = {
+                "pageNum": 1,
+                "pageSize": 4
+            }                        
         },
         clear(){
-            this.searchForm={'pageNum':this.pageNum,'pageSize':this.pageSize}  
-            this.utils.getbindList(this,this.searchForm)      
+            this.searchForm = {
+                "pageNum": 1,
+                "pageSize": 4
+            }
+            this.getList(this.searchForm)    
         },
         //输入建议
         querySearch(queryString, cb){
@@ -335,7 +382,12 @@ export default {
         background: #06253d;
         border-radius: 5px;
         margin: 0px auto;
+        position: relative;
     } 
+    .page{
+        position: absolute;
+        bottom: 20px;
+    }
      /* form样式 */
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;

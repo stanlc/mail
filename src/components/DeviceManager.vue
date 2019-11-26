@@ -75,21 +75,16 @@
             class="bind"
             >
                 <el-form label-position="right" label-width="auto">
-                    <el-form-item label="设备账号：">
-                        <el-select v-model="configDeviceForm.deviceAccount" @change="choseAccount" placeholder="请选择设备账号">
-                            <el-option v-for="item in accountList" :key="item.index" :label="item.account" :value="item.account"></el-option>
-                        </el-select>                                     
+                    <el-form-item label="设备别名：">
+                        <el-input v-model="configDeviceForm.aliasName" ></el-input>
                     </el-form-item>
-                    <el-form-item label="设备授权码：">
-                        <el-input v-model="configDeviceForm.deviceSerial" ></el-input>
-                    </el-form-item>
-                    <el-form-item label="正品码：">
-                        <el-input v-model="configDeviceForm.genuineCode" ></el-input>
+                    <el-form-item label="详细地址：">
+                        <el-input v-model="configDeviceForm.devicePosition" ></el-input>
                     </el-form-item>   
                 </el-form>
                 <el-form :inline="true">
                     <el-button type="primary" @click="configDevice">确定</el-button>
-                    <el-button type="primary" @click="configDeviceDialogVisible =false">取消</el-button>
+                    <el-button type="primary" @click="configDeviceDialogVisible =false;configDeviceForm={}">取消</el-button>
                 </el-form>  
             </el-dialog>            
             <!-- 编辑设备dialog --> 
@@ -120,7 +115,7 @@
             </el-dialog>            
             <!-- 配置机构dialog -->                                         
             <el-table
-            :data="deviceList"
+            :data="tabelList"
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
@@ -141,7 +136,7 @@
                 </el-table-column>
                 <el-table-column
                 label="设备别名"
-                prop="deviceNickName"
+                prop="aliasName"
                 >
                 </el-table-column>                  
                 <el-table-column
@@ -167,7 +162,7 @@
                 </el-table-column> 
                 <el-table-column
                 label="详细地址"
-                prop="position"
+                prop="devicePosition"
                 >
                 </el-table-column>     
                 <el-table-column
@@ -181,6 +176,17 @@
                 </el-table-column>                                
             </el-table>
         </div>
+        <div class="page">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next, jumper"
+            background
+            :total="totalCount">
+            </el-pagination>
+        </div>
     </el-card>
 </template>
 <script>
@@ -188,18 +194,25 @@ import SelectTree from "./SelectTree";
 export default {
     data(){
         return {
-            searchForm:{
-                "pageNum": this.pageNum,
-                "pageSize": this.pageSize
-            },
+           
             pageNum:1,
-            pageSize:5,
+            pageSize:4,
             deviceList:[],
             accountList:[],
             organList:[],
+            tabelList:[],
             allOrganList:[],
             accList:[],
             valueId:0,
+            pageInfo:{},
+            currentPage: 1,
+            pagesize:4,
+            totalCount:0,
+            totalPage:0,
+            searchForm:{
+                "pageNum": 1,
+                "pageSize": 4
+            },
             props:{
                 value:'id',
                 label:'organName',
@@ -233,6 +246,8 @@ export default {
         }
         
         this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
+        
+        this.getList(this.searchForm)
 
         this.$http.post('/device/pagerList',{
                 "pageNum":1,
@@ -241,7 +256,8 @@ export default {
                 let aList = [],list = res.data.paging.list
                 list.map(item=>aList.push(item.deviceAccount))   //获取account数组
                 let uniList = Array.from(new Set([...aList]))   //去重
-                uniList.map(item=> this.accList.push({'value':item}))       
+                uniList.map(item=> this.accList.push({'value':item}))  
+                    
         })         
 
         
@@ -254,6 +270,32 @@ export default {
         CheckChange(){
 
         },
+        //分页
+        handleSizeChange(val) {
+            this.pagesize = val
+            this.searchForm.pageSize = val 
+            this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.searchForm.pageNum = val
+            this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },        
+        getList(form){
+            this.$http.post('/device/pagerList',form
+            ).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
+                this.pagesize = this.pageInfo.pageSize
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
+        },
         status(row){
             let s = row.status
             if(s===1){
@@ -264,18 +306,23 @@ export default {
         },
         //筛选
         search(){
-            this.utils.getDeviceList(this,this.searchForm)
+            this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
             this.searchForm = {
-                "pageNum": this.pageNum,
-                "pageSize": this.pageSize
+                "pageNum": 1,
+                "pageSize": 4
             }
         },
         clear(){
             this.searchForm = {
-                "pageNum": this.pageNum,
-                "pageSize": this.pageSize
+                "pageNum": 1,
+                "pageSize": 4
             }
-            this.utils.getDeviceList(this,this.searchForm)
+            this.getList(this.searchForm)
         },
         //详情
         openInfo(row){
@@ -286,10 +333,20 @@ export default {
         openConfig(row){
             this.configDeviceDialogVisible = true
             this.configorigin = row
+            this.configDeviceForm = Object.assign({},row)
+            // this.configDeviceForm.aliasName = row.aliasName
+            // this.configDeviceForm.devicePosition = row.devicePosition
+            // this.configDeviceForm.id = row.id
         },
         //配置设备
         configDevice(){
-            console.log(this.configorigin)
+
+            this.$http.post('device/update/',this.configDeviceForm).then(
+                ()=>{
+                    this.getList(this.searchForm)
+                    this.configDeviceDialogVisible = false
+                }
+            )
         },
         //配置机构
         configOrgan(){
@@ -304,7 +361,7 @@ export default {
                     this.$refs.selectTree.clearHandle()
                     this.configOrganForm.organName = null
                     this.configOrganVisible = false
-                    this.utils.getDeviceList(this,this.searchForm)
+                    this.getList(this.searchForm)
                 }
             })
             
@@ -358,10 +415,15 @@ export default {
         background: #06253d;
         border-radius: 5px;
         margin: 20px auto;
+        position: relative;
     } 
      .bind .el-input,.bind .el-select{
          width: 200px;
      }    
+    .page{
+        position: absolute;
+        bottom: 20px;
+    }
      /* form样式 */
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;

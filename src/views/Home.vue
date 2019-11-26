@@ -68,6 +68,6 @@ export default {
     .home /deep/ .el-form /deep/ .el-input__inner{
       color: #fff
     } 
-
+    
  
 </style>

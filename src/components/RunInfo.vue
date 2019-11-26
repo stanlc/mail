@@ -44,14 +44,15 @@
                     <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
-                    <el-button type="primary">导出</el-button>
+                    <el-button type="primary" @click="exportExcel">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
             <el-table
-            :data="runInfoList"
+            :data="tabelList "
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
+            id="RunTable"
             >
                 <el-table-column
                 type="selection"
@@ -103,23 +104,41 @@
                 </el-table-column>                                
             </el-table>
         </div>
+        <div class="page">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-size="pagesize"
+            layout="total,prev, pager, next, jumper"
+            background
+            :total="totalCount">
+            </el-pagination>
+        </div>
     </el-card>
 </template>
 <script>
 import SelectTree from "./SelectTree";
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 export default {
     data(){
         return {
             pageNum:1,
-            pageSize:7,
+            pageSize:5,
+            pageInfo:{},
             idList:[],
-            searchForm:{
-                'pageNum':this.pageNum,
-                'pageSize':this.pageSize,
-            },
+            tabelList:[],
             runInfoList:[],
             organList:[],
             valueId:0,
+            currentPage: 1,
+            pagesize:4,
+            totalCount:0,
+             searchForm:{
+                'pageNum':1,
+                'pageSize':4,
+            },
             props:{
                 value:'id',
                 label:'organName',
@@ -139,10 +158,22 @@ export default {
         
     },
     mounted(){
+            //获取分页信息
+            this.$http.post('/monitoring/pagerList',{
+                'pageNum':1,
+                'pageSize':4,
+            }).then(res=>{
+                this.tabelList =res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
+                this.pagesize = this.pageInfo.pageSize
+                this.totalCount = this.pageInfo.totalCount
+            })
            if(localStorage.runInfoList){
                this.runInfoList = JSON.parse(localStorage.runInfoList)
            }else{
                this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
+                   
                    localStorage.runInfoList = JSON.stringify(res.data.paging.list)
                    this.runInfoList = JSON.parse(localStorage.runInfoList)
                    
@@ -166,6 +197,20 @@ export default {
         },
         CheckChange(){
 
+        },
+        //分页
+        handleSizeChange(val) {
+            this.searchForm.pageSize = val
+            this.getList(this.searchForm)
+        },
+        handleCurrentChange(val) {
+            this.searchForm.pageNum = val
+            this.getList(this.searchForm)
+        },
+        getList(form){
+            this.$http.post('/monitoring/pagerList',form).then(res=>{
+                    this.runInfoList = res.data.paging.list
+                })
         },
         //内容格式化
 
@@ -195,14 +240,22 @@ export default {
         },
         search(){
             this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
-                this.runInfoList = res.data.paging.list
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
                 if(res.data.code===200){
                     this.$message({
                         type:'success',message:'查询成功'
                     })
                 }
+
                 this.$refs.selectTree.clearHandle()
             })
+            this.searchForm=  {
+                "pageNum": this.pageNum,
+                "pageSize": this.pageSize
+            }
             
         },  
         clear(){
@@ -212,7 +265,7 @@ export default {
                 'pageSize':this.pageSize,
             },
             this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
-                this.runInfoList = res.data.paging.list
+                this.tabelList = res.data.paging.list
             })            
         },
         // 取值
@@ -234,7 +287,21 @@ export default {
         },        
         handleSelect(item) {
             //console.log(item);
-        },                   
+        },  
+        exportExcel () {
+                /* generate workbook object from table */
+                let wb = XLSX.utils.table_to_book(document.querySelector('#RunTable'));
+                /* get binary string as output */
+                let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
+                try {
+                    FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '运行监测表.xlsx');
+                } catch (e)
+                {
+                    if (typeof console !== 'undefined')
+                        console.log(e, wbout)
+                }
+                return wbout
+            },                 
     }
 }
 </script>
@@ -254,7 +321,12 @@ export default {
         background: #06253d;
         border-radius: 5px;
         margin: 20px auto;
+        position: relative;
     } 
+    .page{
+        position: absolute;
+        bottom: 20px;
+    }
      /* form样式 */
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;

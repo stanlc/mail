@@ -58,14 +58,15 @@
                     <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
-                    <el-button type="primary">导出</el-button>
+                    <el-button type="primary" @click="exportExcel">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
             <el-table
-            :data="logList"
+            :data="tabelList"
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
+            id="LogTable"
             >
                 <el-table-column
                 type="selection"
@@ -136,19 +137,38 @@
             </el-dialog>            
             <!-- 位置dialog结束 -->
         </div>
+        <div class="page">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-size="pagesize"
+            layout="total, prev, pager, next, jumper"
+            background
+            :total="totalCount">
+            </el-pagination>
+        </div>
     </el-card>
 </template>
 <script>
 import SelectTree from "./SelectTree";
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 export default {
     data(){
         return {
             searchForm:{
-                'pageNum':this.pageNum,
-                'pageSize':this.pageSize,
+                'pageNum':1,
+                'pageSize':5,
             },
+            pageInfo:{},
+            currentPage: 1,
+            pagesize:5,
+            totalCount:0,
+            totalPage:0,
             pageNum:1,
-            pageSize:10,
+            pageSize:5,
+            tabelList:[],
             logList:[],
             organList:[],
             deviceInfo:{},
@@ -208,7 +228,7 @@ export default {
                 uniNumList.map(item=> this.deviceNumList.push({'value':item}))
             }
             this.Dates.map(item=>item.label=this.createTime(item.value))
-            
+            this.getList(this.searchForm)
         },
     methods:{
         deviceSelect(){
@@ -220,6 +240,32 @@ export default {
         changeT(e){
             this.searchForm.endTime = e.value
         },
+        //分页
+        handleSizeChange(val) {
+            this.pagesize = val
+            this.searchForm.pageSize = val 
+            this.$http.post('/logger/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.searchForm.pageNum = val
+            this.$http.post('/logger/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
+        },        
+        getList(form){
+            this.$http.post('/logger/pagerList',form
+            ).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
+                this.pagesize = this.pageInfo.pageSize
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
+        },        
         formatTime(row){
             let val = row.createTime
             let date = new Date(val) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -263,20 +309,25 @@ export default {
         },
         //查询
         search(){
-            this.utils.getLogger(this,this.searchForm)
-            this.searchForm = {
-                'pageNum':this.pageNum,
-                'pageSize':this.pageSize,
-            } 
-            this.$refs.selectTree.clearHandle()           
-        }, 
-        clear(){
-            this.$refs.selectTree.clearHandle()//清空selectTree选项
-            this.searchForm = {
+            this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
+            this.searchForm={
                 'pageNum':this.pageNum,
                 'pageSize':this.pageSize,
             }
-            this.utils.getLogger(this,this.searchForm)
+            this.$refs.selectTree.clearHandle()                    
+        }, 
+        clear(){
+            this.$refs.selectTree.clearHandle()//清空selectTree选项
+            this.searchForm={
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
+            }
+            this.getList(this.searchForm)
         },
         //查看位置
         checkInfo(e){
@@ -299,7 +350,21 @@ export default {
         },        
         handleSelect(item) {
             console.log(item);
-        }               
+        },
+        exportExcel () {
+        /* generate workbook object from table */
+        let wb = XLSX.utils.table_to_book(document.querySelector('#LogTable'));
+        /* get binary string as output */
+        let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
+        try {
+            FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '操作日志表.xlsx');
+        } catch (e)
+        {
+            if (typeof console !== 'undefined')
+                console.log(e, wbout)
+        }
+        return wbout
+    },                 
     }
 }
 </script>
@@ -319,7 +384,12 @@ export default {
         background: #06253d;
         border-radius: 5px;
         margin: 20px auto;
+        position: relative;
     } 
+    .page{
+        position: absolute;
+        bottom: 20px;
+    }
      /* form样式 */
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
