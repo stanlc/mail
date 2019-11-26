@@ -29,7 +29,7 @@ export default {
                 this.list = res.data.data
                 this.list.map(item=>{
                     this.timeList.push(item.hour)
-                    this.valueList.push([item.hour,item.openNum])
+                    this.valueList.push(item.openNum)
                 })
                 console.log(this.valueList)
             })
@@ -81,7 +81,7 @@ export default {
                    
                 },
                 series: [{
-                    data: [['0:00',1],['4:00',2]],
+                    data: this.valueList,
                     type: 'line',
                     itemStyle:{
                         normal:{

@@ -4,7 +4,7 @@
         <div id="message" v-show="showmes"></div>
         <div class="table">
             <el-table
-            :data='dotList'
+            :data='deviceList'
             style="width: 100%">
                 <el-table-column
                 label="设备ID"
@@ -17,7 +17,7 @@
                 >
                 </el-table-column>                 
                 <el-table-column
-                label="运作状态"
+                label="状态"
                 prop="status"
                 :formatter="(row)=>{return row.status===1?'开':'关'}"
                 >
@@ -47,6 +47,8 @@ export default {
             boxx:0,
             boxy:0,
             showmes:false,
+            deviceList:[],
+            deviceGroup:{},
             dotList:[
                                 {
                                     name:'111',
@@ -72,7 +74,7 @@ export default {
         
     },
     mounted(){
-        //this.getValue();   //获取设备数据
+        this.utils.getDeviceList(this,{});   //获取设备数据
         this.draw();
         let that = this
         this.myChart.on('click',function(params){
@@ -89,11 +91,15 @@ export default {
     },
     methods:{
         show(row){
-            let c = this.myChart.convertToPixel('geo', row.value);   //把经纬度转为坐标
-            let a = document.getElementById('message')
-            a.style.top =c[1]-170+'px'                
-            a.style.left=c[0]-143+'px'
-            this.showmes = true
+            this.$http.post(`/device/deviceGroup/${row.deviceNum}`).then(res=>{
+                this.deviceGroup = res.data.data
+                let tude = [parseFloat(this.deviceGroup.organLongitude),parseFloat(this.deviceGroup.organLatitude)]
+                let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
+                let a = document.getElementById('message')
+                a.style.top =c[1]-170+'px'                
+                a.style.left=c[0]-143+'px'
+                this.showmes = true
+            })
         },
         openInfo(){
             
@@ -106,20 +112,7 @@ export default {
         draw(){
             this.myChart = this.$echarts.init(document.getElementById('map'))
             let option = {
-            
-            tooltip:[
-                {   trigger: 'item',
-                    
-                    formatter(params){
-                    return ``
-                    },
-                    
-                },
-            
-            ],
-
-          
-
+           
             geo: [
                 {
                     map:'china',
@@ -230,7 +223,7 @@ export default {
 .table{
     position: absolute;
     top:0;
-    left: 780px;
+    left: 47vw;
 }
 
 </style>

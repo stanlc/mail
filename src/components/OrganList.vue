@@ -25,7 +25,7 @@
             <el-dialog
             title="录入同级"
             :visible.sync="sameDialogVisible"
-            width="35%"
+            width="40%"
             custom-class="sameLevel">
             <el-dialog
             width="30%"
@@ -47,7 +47,7 @@
                 <el-form-item label="联系电话:" prop="phone">
                     <el-input v-model="sameLevelForm.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="机构精度:" >
+                <el-form-item label="机构经度:" >
                     <el-input v-model="sameLevelForm.organLatitude"></el-input>
                 </el-form-item>
                 <el-form-item label="机构纬度:" >
@@ -67,7 +67,7 @@
             <el-dialog
             title="录入下级"
             :visible.sync="subDialogVisible"
-            width="35%"
+            width="40%"
             custom-class="subLevel">
             <el-dialog
             width="30%"
@@ -89,7 +89,7 @@
                 <el-form-item label="联系电话:" prop="phone">
                     <el-input v-model="subLevelForm.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="机构精度:">
+                <el-form-item label="机构经度:">
                     <el-input v-model="subLevelForm.organLatitude"></el-input>
                 </el-form-item>
                 <el-form-item label="机构纬度:">
@@ -131,11 +131,11 @@
                 <el-form-item label="联系电话:">
                     <el-input v-model="configForm.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="机构精度:">
-                    <el-input v-model="configForm.organLatitude"></el-input>
+                <el-form-item label="机构经度:">
+                    <el-input v-model="configForm.organLongitude"></el-input>
                 </el-form-item>
                 <el-form-item label="机构纬度:">
-                    <el-input v-model="configForm.organLongitude"></el-input>
+                    <el-input v-model="configForm.organLatitude"></el-input>
                 </el-form-item>
                 <el-form-item label="地图定点:">
                     <el-button type="success" icon="el-icon-map-location" @click="configinnerVisible=true" class="choose-btn">选择经纬度</el-button>
