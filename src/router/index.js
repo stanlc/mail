@@ -12,6 +12,7 @@ import LogerList from '../components/LogerList'
 import OrganList from '../components/OrganList'
 import SysManager from '../components/SysManager'
 import UserList from '../components/UserList'
+import VueAmap from '../components/VueAmap'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     name: 'login',
     component: Login,
     meta:{isPubilc:true}
+  },
+  {
+    path: '/map',
+    name: 'map',
+    component: VueAmap
   },
   {
     path: '/',

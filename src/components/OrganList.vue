@@ -20,18 +20,22 @@
                         <el-button type="danger" @click="delOrgan" :disabled="delOrgBtn">删除</el-button>
                     </el-form-item>
                 </el-form>
-            <el-tree :data="organList" :props="organProps" @node-click="handleNodeClick" default-expand-all></el-tree>
+            <div  class="organTree">
+                <el-tree :data="organList" :props="organProps" @node-click="handleNodeClick" default-expand-all></el-tree>
+            </div>
             <!-- 录入同级Dialog -->
             <el-dialog
             title="录入同级"
             :visible.sync="sameDialogVisible"
             width="40%"
-            custom-class="sameLevel">
+            custom-class="sameLevel"
+            @close="clearValidate('sameLevelForm')">
             <el-dialog
-            width="30%"
+            width="40%"
             title="请选择经纬度"
             :visible.sync="sameinnerVisible"
             append-to-body>
+            <vue-amap @func="getLng" @closefunc="closeMap"></vue-amap>
             </el-dialog>
             <span class="blue">添加同级组织机构</span>
             <el-form label-position="right" :inline="true" label-width="auto" :model="sameLevelForm" ref="sameLevelForm" :rules="rules">
@@ -48,10 +52,10 @@
                     <el-input v-model="sameLevelForm.phone"></el-input>
                 </el-form-item>
                 <el-form-item label="机构经度:" >
-                    <el-input v-model="sameLevelForm.organLatitude"></el-input>
+                    <el-input v-model="sameLevelForm.organLatitude" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="机构纬度:" >
-                    <el-input v-model="sameLevelForm.organLongitude"></el-input>
+                    <el-input v-model="sameLevelForm.organLongitude" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="地图定点:">
                     <el-button type="success" icon="el-icon-map-location" @click="sameinnerVisible=true" class="choose-btn">选择经纬度</el-button>
@@ -59,7 +63,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addSameOrgan">确认</el-button>
-                <el-button @click="sameDialogVisible =false" type="primary">取 消</el-button>
+                <el-button @click="sameDialogVisible =false;clearValidate('sameLevelForm')" type="primary">取 消</el-button>
             </span>
             </el-dialog>
             <!-- 录入同级Dialog -->
@@ -68,15 +72,17 @@
             title="录入下级"
             :visible.sync="subDialogVisible"
             width="40%"
-            custom-class="subLevel">
+            custom-class="subLevel"
+            @close="clearValidate('subLevelForm')">
             <el-dialog
             width="30%"
             title="请选择经纬度"
             :visible.sync="subinnerVisible"
             append-to-body>
+            <vue-amap @func="getSubLng" @closefunc="closeMap"></vue-amap>
             </el-dialog>
             <span class="blue">添加下级组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="subLevelForm" :rules="rules">
+            <el-form label-position="right" :inline="true" label-width="auto" :model="subLevelForm" :rules="rules" ref="subLevelForm">
                 <el-form-item label="机构名称:" prop="organName">
                     <el-input v-model="subLevelForm.organName"></el-input>
                 </el-form-item>
@@ -90,10 +96,10 @@
                     <el-input v-model="subLevelForm.phone"></el-input>
                 </el-form-item>
                 <el-form-item label="机构经度:">
-                    <el-input v-model="subLevelForm.organLatitude"></el-input>
+                    <el-input v-model="subLevelForm.organLatitude" disabled=""></el-input>
                 </el-form-item>
                 <el-form-item label="机构纬度:">
-                    <el-input v-model="subLevelForm.organLongitude"></el-input>
+                    <el-input v-model="subLevelForm.organLongitude" disabled=""></el-input>
                 </el-form-item>
                 <el-form-item label="地图定点:">
                     <el-button type="success" icon="el-icon-map-location" @click="subinnerVisible=true" class="choose-btn">选择经纬度</el-button>
@@ -101,7 +107,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addSubOrgan">确认</el-button>
-                <el-button @click="subDialogVisible =false">取消</el-button>
+                <el-button @click="subDialogVisible =false;clearValidate('subLevelForm')">取消</el-button>
             </span>
             </el-dialog>
             <!-- 录入下级Dialog -->
@@ -110,15 +116,17 @@
             title="编辑"
             :visible.sync="configDialogVisible"
             width="35%"
-            custom-class="configLevel">
+            custom-class="configLevel"
+            @close="clearValidate('configForm')">
             <el-dialog
             width="30%"
             title="请选择经纬度"
             :visible.sync="configinnerVisible"
             append-to-body>
+            <vue-amap @func="getCofLng" @closefunc="closeMap"></vue-amap>
             </el-dialog>
             <span class="blue">编辑组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="configForm" >
+            <el-form label-position="right" :inline="true" label-width="auto" :model="configForm" ref="configForm">
                 <el-form-item label="机构名称:" >
                     <el-input v-model="configForm.organName"></el-input>
                 </el-form-item>
@@ -132,10 +140,10 @@
                     <el-input v-model="configForm.phone"></el-input>
                 </el-form-item>
                 <el-form-item label="机构经度:">
-                    <el-input v-model="configForm.organLongitude"></el-input>
+                    <el-input v-model="configForm.organLongitude" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="机构纬度:">
-                    <el-input v-model="configForm.organLatitude"></el-input>
+                    <el-input v-model="configForm.organLatitude" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="地图定点:">
                     <el-button type="success" icon="el-icon-map-location" @click="configinnerVisible=true" class="choose-btn">选择经纬度</el-button>
@@ -143,7 +151,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="editOrgan">确认</el-button>
-                <el-button @click="configDialogVisible =false">取 消</el-button>
+                <el-button @click="configDialogVisible =false;clearValidate('configForm')">取 消</el-button>
             </span>
             </el-dialog>
             <!-- 编辑组织Dialog -->
@@ -260,16 +268,18 @@
             width="35%"
             custom-class="sameLevel">
             <span class="blue">菜单权限</span>
-            <el-tree
-            :data="menuConfigList"
-            :props="menuConfigProps"
-            @check-change="menuTreeCheck"
-            show-checkbox
-            node-key="id"
-            ref="tree"
-            default-expand-all
-            >
-            </el-tree>
+            <div class="organTree">
+                <el-tree
+                :data="menuConfigList"
+                :props="menuConfigProps"
+                @check-change="menuTreeCheck"
+                show-checkbox
+                node-key="id"
+                ref="tree"
+                default-expand-all
+                >
+                </el-tree> 
+            </div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="MenuConfigRole">提交</el-button>
                 <el-button @click="MenuConfigRoleDialogVisible =false;$refs.tree.setCheckedKeys([])">取消</el-button>
@@ -283,7 +293,11 @@
     
 </template>
 <script>
+import VueAmap from '../components/VueAmap'
 export default {
+    components:{
+        VueAmap,
+    },
     data(){
         return{
             organList:[],
@@ -622,7 +636,29 @@ export default {
             let m = date.getMinutes() + ':'
             let s = date.getSeconds()
             return Y+M+D+h+m+s            
-        }
+        },
+        //获取经纬度
+        getLng(data){
+            this.sameLevelForm.organLatitude = data[0]
+            this.sameLevelForm.organLongitude = data[1]
+        },
+        getSubLng(data){
+            this.subLevelForm.organLatitude = data[0]
+            this.subLevelForm.organLongitude = data[1]
+        },
+        getCofLng(data){
+            this.configForm.organLatitude = data[0]
+            this.configForm.organLongitude = data[1]
+        },
+        //关闭地图
+        closeMap(data){
+            this.sameinnerVisible = data
+            this.subinnerVisible  = data
+            this.configinnerVisible = data
+        },
+        clearValidate(formName) {
+        this.$refs[formName].clearValidate();
+        },
     }
 }
 </script>
@@ -691,7 +727,5 @@ export default {
     /* .el-tree:hover{
         background: none;
     } */
-    .el-tree-node__content:hover{
-        background: none;
-    }
+
 </style>

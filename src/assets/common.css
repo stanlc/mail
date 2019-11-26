@@ -34,8 +34,22 @@
     .home /deep/ .el-form /deep/ .el-input__inner{
       color: #fff
     } 
-
+    
     .el-table /deep/ thead{
         color: #15d3da !important;
-        background: transparent !important;
+       
     }
+
+    .organTree .el-tree-node__content:hover{
+        background: none;
+    }
+    .organTree .el-tree .el-tree-node__content{
+        color: #fff;
+    }
+    .organTree .el-tree-node:focus > .el-tree-node__content {
+        background-color: transparent !important;
+      }
+      .organTree .el-tree-node:hover > .el-tree-node__content {
+        background-color: transparent !important;
+        color: #15d3da;
+      }

@@ -43,6 +43,7 @@ body .el-table th.gutter{
     background: transparent !important;    //表头背景色
     border: none !important;  //表头下边框
     text-align: center;
+    
   }
   thead tr{
     background: transparent
@@ -58,6 +59,7 @@ body .el-table th.gutter{
     td{
       border: none;
       text-align: center;
+      color: #fff;
     }
   }
 }  

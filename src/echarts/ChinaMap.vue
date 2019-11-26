@@ -65,6 +65,7 @@ export default {
             myChart:'',
             boxx:0,
             boxy:0,
+            colors:'',
             showmes:false,
             deviceList:[],
             geoDeviceList:[],
@@ -111,16 +112,19 @@ export default {
         show(row){
             this.$http.post(`/device/deviceGroup/${row.deviceNum}`).then(res=>{
                 this.deviceGroup = res.data.data
-
                 //显示弹出框
-                let tude = [parseFloat(this.deviceGroup.organLongitude),parseFloat(this.deviceGroup.organLatitude)]
+                let tude = [parseFloat(this.deviceGroup.organLatitude),parseFloat(this.deviceGroup.organLongitude)]
                 //地图标点
                 this.geoDeviceList.push({value:tude,info:this.deviceGroup})  //待去重
-                console.log(this.geoDeviceList)
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
                 let a = document.getElementById('message')
-                a.style.top =c[1]-188+'px'                
-                a.style.left=c[0]-165+'px'
+                if(row.status===1){
+                    this.colors = '#9bbc42'
+                }else{
+                    this.colors = '#a32d50'
+                }
+                a.style.top =c[0]-188+'px'                
+                a.style.left=c[1]-171+'px'
                 this.showmes = true
                 this.myChart.setOption(this.option)
             })
@@ -199,13 +203,7 @@ export default {
                             },
                             itemStyle: {
                                 normal: {
-                                    color: function(params){
-                                        if(params.state===1){
-                                            return '#a4c63e'
-                                        }else{
-                                            return '#a32d50'
-                                        }
-                                    }
+                                    color: this.colors
                                 }
                             },
                             data:this.geoDeviceList
@@ -215,16 +213,16 @@ export default {
                     }
                     this.myChart.setOption(this.option)
                      let that = this
-                        this.myChart.on('click',function(params){
-                            that.boxx= params.event.event.layerX  -143       //获取点击位置
-                            that.boxy = params.event.event.layerY-170
-                            console.log(params)
-                            if(params.data.name){
-                                that.openInfo() 
+                        // this.myChart.on('click',function(params){
+                        //     that.boxx= params.event.event.layerX  -143       //获取点击位置
+                        //     that.boxy = params.event.event.layerY-170
+                        //     console.log(params)
+                        //     if(params.data.name){
+                        //         that.openInfo() 
                                 
-                            }
+                        //     }
                             
-                        });
+                        // });
                     }
             }
 }

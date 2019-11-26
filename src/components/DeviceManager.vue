@@ -9,7 +9,14 @@
                     <el-input v-model="searchForm.type"></el-input>
                 </el-form-item> -->
                 <el-form-item label="设备名称：">
-                    <el-input v-model="searchForm.deviceName"></el-input>
+                    <el-autocomplete
+                    class="inline-input"
+                    v-model="searchForm.deviceName"
+                    :fetch-suggestions="NamequerySearch"
+                    placeholder="请输入设备名称"
+                    :trigger-on-focus="false"
+                    @select="handleSelect"
+                    ></el-autocomplete> 
                 </el-form-item> 
                 <el-form-item label="设备状态：">
                     <el-select v-model="searchForm.status">
@@ -28,7 +35,14 @@
                     ></el-autocomplete>                     
                 </el-form-item>  
                 <el-form-item label="所属机构：">
-                        <el-input v-model="searchForm.organName"></el-input>
+                    <el-autocomplete
+                    class="inline-input"
+                    v-model="searchForm.organName"
+                    :fetch-suggestions="OrganquerySearch"
+                    placeholder="请输入所属机构"
+                    :trigger-on-focus="false"
+                    @select="handleSelect"
+                    ></el-autocomplete>
                 </el-form-item>  
                 <el-form-item label="所在位置：">
                         <el-input v-model="searchForm.devicePosition"></el-input>
@@ -203,6 +217,8 @@ export default {
             tabelList:[],
             allOrganList:[],
             accList:[],
+            nameList:[],
+            orgList:[],
             valueId:0,
             pageInfo:{},
             currentPage: 1,
@@ -239,7 +255,7 @@ export default {
         if(localStorage.subAccountList){
             this.accountList = JSON.parse(localStorage.subAccountList)
         }else{
-             this.utils.getSubAccount(this)
+             this.utils.getSubAccount(this,{pagNum:1,pageSize:500})
         }
         if(localStorage.organList){
             this.organList = JSON.parse(localStorage.organList)
@@ -256,7 +272,15 @@ export default {
                 let aList = [],list = res.data.paging.list
                 list.map(item=>aList.push(item.deviceAccount))   //获取account数组
                 let uniList = Array.from(new Set([...aList]))   //去重
-                uniList.map(item=> this.accList.push({'value':item}))  
+                uniList.map(item=> this.accList.push({'value':item})) 
+                let bList = []
+                list.map(item=>bList.push(item.deviceName))   //获取设备名称数组
+                let unbiList = Array.from(new Set([...bList]))   //去重
+                unbiList.map(item=> this.nameList.push({'value':item}))   
+                let cList = []
+                list.map(item=>cList.push(item.organName))   //获取组织机构数组
+                let unciList = Array.from(new Set([...cList]))   //去重
+                unciList.map(item=> this.orgList.push({'value':item}))  
                     
         })         
 
@@ -311,6 +335,12 @@ export default {
                 this.pageInfo = res.data.paging
                 this.totalCount = this.pageInfo.totalCount
                 this.totalPage = this.pageInfo.totalPage 
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'查询成功'
+                    })
+                }
             })
             this.searchForm = {
                 "pageNum": 1,
@@ -388,6 +418,18 @@ export default {
             // 调用 callback 返回建议列表的数据
             cb(results);
         },
+        NamequerySearch(queryString, cb){
+            var list =  this.nameList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },
+        OrganquerySearch(queryString, cb){
+            var list =  this.orgList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
+            // 调用 callback 返回建议列表的数据
+            cb(results);
+        },        
         createFilter(queryString) {
             return (list) => {
             return (list.value.indexOf(queryString) === 0);

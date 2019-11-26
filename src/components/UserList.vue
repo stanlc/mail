@@ -23,7 +23,7 @@
                 </el-form-item>                                                                           
             </el-form>
             <el-form>
-                <el-button type="primary" @click="addUserVisible=true">新增用户</el-button>
+                <el-button type="primary" @click="openAdd">新增用户</el-button>
                 <el-button type="danger" @click="delUser">删除</el-button>
             </el-form>
             <el-table
@@ -147,7 +147,7 @@
                     :value="valueId"
                     ref="addTree"
                     @getValue="getValue($event)"
-                    v-model="editUserForm.organId"
+                    v-model="addUserForm.organId"
                     ></select-tree>
                 </el-form-item>
                 <el-form-item label="所属角色：">
@@ -220,7 +220,7 @@ export default {
             tabelList:[],
             userList:[],
             organList:[],
-            allOrganList:'',
+            allOrganList:[],
             userRoleList:[],
             selectUser:{},
             selectRole:{},
@@ -281,13 +281,10 @@ export default {
         this.utils.getOrganList(this)
     },
     mounted(){
-        this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
-        
     },
     methods:{
         userSelect(e){
             this.selectUser = e
-            // console.log(e)
         },
         CheckChange(){
 
@@ -326,6 +323,11 @@ export default {
             this.utils.getUserList(this,{"pageNum": this.pageNum,
                 "pageSize": this.pageNum,})
         },
+        openAdd(){
+            this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
+            this.addUserVisible=true
+            this.addUserForm={}
+        },
         addUser(){
             // if(this.addUserForm.organId){
             //     this.addUserForm.organName = this.organList[this.organList.findIndex((item)=>{return item.id===this.addUserForm.organId})].organName
@@ -336,7 +338,7 @@ export default {
             // console.log(this.addUserForm.roleName)
             this.utils.addUser(this,this.addUserForm)
             this.addUserVisible = false
-            
+            this.getList(this.searchForm) 
             
         },
         cancelAdd(){
@@ -494,7 +496,12 @@ export default {
         /* background: #06253d; */
         border-radius: 5px;
         margin: 0 auto;
+        position: relative;
     } 
+    .page{
+        position: absolute;
+        bottom: 20px;
+    }
      /* form样式 */
 
      form.el-form.el-form--label-right.el-form--inline{

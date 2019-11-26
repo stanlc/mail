@@ -132,9 +132,6 @@ let utils = {
         Vue.prototype.$http.post('/logger/pagerList',form).then(res=>{
             localStorage.logList = JSON.stringify(res.data.paging.list)
             vm.logList = JSON.parse(localStorage.logList)
-            if(res.data.code===200){
-                vm.$message({type:'success',message:'查询成功'})
-            }
         })
     },
     //获取设备组信息
@@ -165,8 +162,42 @@ let utils = {
           return arrs
         }
         return getChild(arr)
-      }
-      
+      },
+      Debounce(fn, t){
+        let delay = t || 500;
+        let timer;
+        console.log(fn)
+        console.log(typeof fn)
+        return function () {
+            let args = arguments;
+            if(timer){
+                clearTimeout(timer);
+            }
+            timer = setTimeout(() => {
+                timer = null;
+                fn.apply(this, args);
+            }, delay);
+        }
+    }, 
+    Throttle(fn, t){
+        let last;
+        let timer;
+        let interval = t || 500;
+        return function () {
+            let args = arguments;
+            let now = +new Date();
+            if (last && now - last < interval) {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    last = now;
+                    fn.apply(this, args);
+                }, interval);
+            } else {
+                last = now;
+                fn.apply(this, args);
+            }
+        }
+    },
 }
 
 

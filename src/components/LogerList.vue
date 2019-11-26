@@ -58,6 +58,7 @@
                     <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
+                    <a href="http://103.239.204.52:12204/logger/export">aaa</a>
                     <el-button type="primary" @click="exportEx">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
@@ -84,7 +85,7 @@
                 <el-table-column
                 label="所在区域"
                 prop="position"
-                :formatter="positionFormat"
+               
                 >
                 </el-table-column>                 
                 <el-table-column
@@ -139,7 +140,7 @@
                 <el-table-column
                 label="所在区域"
                 prop="position"
-                :formatter="positionFormat"
+                
                 >
                 </el-table-column>                 
                 <el-table-column
@@ -275,16 +276,19 @@ export default {
         }        
     },    
     mounted(){
-            if(this.logList){
-                let numList = [],timeList = []
-                this.logList.map(item=>numList.push(item.deviceNum))   //获取设备Num数组
-                this.logList.map(item=>timeList.push(item.createTime))
-                let uniNumList = Array.from(new Set([...numList]))   //去重
-                let uniTimeList = Array.from(new Set([...timeList]))   //去重
-                uniTimeList.map(item=> this.Dates.push({'value':item}))
-                uniNumList.map(item=> this.deviceNumList.push({'value':item}))
-            }
-            this.Dates.map(item=>item.label=this.createTime(item.value))
+             this.$http.post('/logger/pagerList',{
+                "pageNum":1,
+                "pageSize":1000
+            }).then(res=>{
+                let aList = [],list = res.data.paging.list
+                list.map(item=>aList.push(item.deviceNum))   //获取id数组
+                let uniList = Array.from(new Set([...aList]))   //去重
+                uniList.map(item=> this.deviceNumList.push({'value':item})) 
+                let bList = []
+                list.map(item=>bList.push(item.createTime))   //获取time数组
+                let unbiList = Array.from(new Set([...bList]))   //去重
+                unbiList.map(item=> this.Dates.push({'label':this.createTime(item),'value':item}))        
+            }) 
             this.getList(this.searchForm)
         },
     methods:{
@@ -350,15 +354,18 @@ export default {
             }
             return Y+M+D+h+m+s              
         },
-        positionFormat(row){
-            let val = row.position
-            let varr = val.split(',')
-            if(varr[1]){
-                return varr[1]+'-'+varr[0]
-            }else{
-                return varr[0]
-            }
-        },        
+        // positionFormat(row){
+        //     let val = row.position
+        //     if(val){
+        //        let varr = val.split(',') 
+        //     }
+            
+        //     if(varr[1]){
+        //         return varr[1]+'-'+varr[0]
+        //     }else{
+        //         return varr[0]
+        //     }
+        // },        
         // 取值
         getValue(value) {
         this.valueId = value;
@@ -366,11 +373,17 @@ export default {
         },
         //查询
         search(){
-            this.$http.post('/device/pagerList',this.searchForm).then(res=>{
+            this.$http.post('/logger/pagerList',this.searchForm).then(res=>{
                 this.tabelList = res.data.paging.list
                 this.pageInfo = res.data.paging
                 this.totalCount = this.pageInfo.totalCount
                 this.totalPage = this.pageInfo.totalPage 
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'查询成功'
+                    })
+                }
             })
             this.searchForm={
                 'pageNum':this.pageNum,
@@ -394,43 +407,36 @@ export default {
         },
         //输入建议
         querySearch(queryString, cb){
-            var deviceNumList = this.deviceNumList;
-            let unilist = Array.from(new Set(deviceNumList.filter(this.createFilter(queryString))))  
-            var results = queryString ? unilist : deviceNumList;
+            var list = this.deviceNumList;
+            var results = queryString ? list.filter(this.createFilter(queryString)) : list;
             // 调用 callback 返回建议列表的数据
             cb(results);
         },
         createFilter(queryString) {
-            return (deviceNumList) => {
-            return (deviceNumList.value.indexOf(queryString) === 0);
+            return (list) => {
+            return (list.value.indexOf(queryString) === 0);
             };
         },        
         handleSelect(item) {
             console.log(item);
         },
         exportEx(){
-            let form = Object.assign({},this.searchForm)
-            form.pageNum = 1
-            form.pageSize = 1000
-             this.$http.post('/logger/export',form).then(res=>{
-                this.exportTabelList = res.data.paging.list
-                this.exportExcel()
-            })
+             this.$http.get('/logger/export',{})
         },        
-        exportExcel () {
-        /* generate workbook object from table */
-        let wb = XLSX.utils.table_to_book(document.querySelector('#LogTable'));
-        /* get binary string as output */
-        let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
-        try {
-            FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '操作日志表.xlsx');
-        } catch (e)
-        {
-            if (typeof console !== 'undefined')
-                console.log(e, wbout)
-        }
-        return wbout
-    },                 
+    //     exportExcel () {
+    //     /* generate workbook object from table */
+    //     let wb = XLSX.utils.table_to_book(document.querySelector('#LogTable'));
+    //     /* get binary string as output */
+    //     let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
+    //     try {
+    //         FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '操作日志表.xlsx');
+    //     } catch (e)
+    //     {
+    //         if (typeof console !== 'undefined')
+    //             console.log(e, wbout)
+    //     }
+    //     return wbout
+    // },                 
     }
 }
 </script>

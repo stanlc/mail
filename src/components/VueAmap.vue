@@ -2,7 +2,7 @@
     <div class="_map">
         <div class="amap-page-container">
             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult" ></el-amap-search-box>
-          <el-amap ref="map"  vid="amapDemo" :plugin="plugin"  :zoom="zoom" :center="center" class="amap-demo" :events="events">
+          <el-amap ref="map"  vid="amapDemo" :plugin="plugin"  :zoom="zoom" :center="center" class="amap-demo" :events="events" @clikc="clickMap(e)">
             <el-amap-marker vid="component-marker" :position="makerConf.position" :content="makerConf.content"  ></el-amap-marker>
           </el-amap>
         </div>
@@ -14,13 +14,31 @@
                 </li>
             </ul>
         </div>
+        <div class="btns">
+            <el-button type="primary" @click="sendMsg">确定</el-button>
+            <el-button type="primary" @click="closeBox">取消</el-button>
+        </div>
+        
     </div>
   </template>
  
   <style>
+    
     .amap-page-container{
         height: 300px;
         position: relative;
+    }
+    .btns{
+      position: absolute;
+      bottom: 5px;
+      left: 38%;
+    }
+    .adrs{
+      height: 150px;
+      overflow: scroll;
+    }
+    .amap-logo{
+      display: none;
     }
     .search-box {
       position: absolute !important;
@@ -58,7 +76,7 @@
       components: {},
       data() {
         var me = this;
-        me.city = me.city || '武汉';
+        me.city = me.city || '成都';
         return {
           list:[], 
           currIndex:0,
@@ -67,16 +85,20 @@
           events:{
              init: (o) => {
              o.setCity(me.city,result => {
-                console.log("----------setCity",result);
+                // console.log("----------setCity",result);
                 if(result && result.length > 0){
                     me.zoom = 16;
                     me.makerConf.position = result;
                     me.getList(result);
                 }
              });
+
              //去掉logo
-             document.getElementsByClassName("amap-logo")[0].style.display = "none";
+            //  document.getElementsByClassName("amap-logo")[0].style.display = "none";
             },
+             click:(e)=>{
+                this.makerConf.position = [e.lnglat.lng,e.lnglat.lat]
+             },
             "dragend":function(e){
                 //console.log("dragging",e,this.getCenter());
                 var point = this.getCenter();
@@ -91,7 +113,6 @@
           },
          searchOption: {
             city: me.city,
-            citylimit: true
          },
          plugin:[
             'ToolBar',
@@ -130,13 +151,19 @@
      
       },
       methods: {
+        sendMsg:function(){
+          this.$emit('func',this.makerConf.position)
+          this.closeBox()
+        },
+        closeBox:function(){
+          this.$emit('closefunc',false)
+        },
         select:function(item,index){
             var me = this;
             me.currIndex = index;
             var point = item.location;
             me.makerConf.position =  [point.lng,point.lat];
             me.center = [point.lng,point.lat];
-             
         },
         //this.$refs.map.$$getCenter()
        getList:function(result){

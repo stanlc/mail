@@ -182,6 +182,14 @@
 import SelectTree from "./SelectTree";
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
+
+const delay = (function () {
+  let timer = 0
+  return function (callback, ms) {
+    clearTimeout(timer)
+    timer = setTimeout(callback, ms)
+  }
+})()
 export default {
     data(){
         return {

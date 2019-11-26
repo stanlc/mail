@@ -363,6 +363,12 @@ export default {
                             "pageNum":this.pageNum,
                             "pageSize":this.pageSize
                         })
+                    if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'添加成功'
+                    })
+                }
             })
             this.getList(this.searchForm)
             this.addAccountForm={}
@@ -375,6 +381,12 @@ export default {
                 this.pageInfo = res.data.paging
                 this.totalCount = this.pageInfo.totalCount
                 this.totalPage = this.pageInfo.totalPage 
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'查询成功'
+                    })
+                }
             })
             this.searchForm = {
                 "pageNum": 1,
