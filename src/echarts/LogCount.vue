@@ -2,9 +2,17 @@
     <div>
         <div class="datebox">
             {{today}}
-            <select v-model="month">
-                <option v-for="index of 12" :key="index" :label="index" :value="index"></option>
-            </select>
+            <div class="selectbox">
+                <select v-model="date" >
+                    <option value="0" selected disabled style="display: none;">日</option>
+                    <option v-for="item in day" :key="item.index" :label="item.value" :value="item.value"></option>
+                </select>
+                <select v-model="month" @change="selectFn($event)">
+                    <option value="0" selected disabled style="display: none;">月</option>
+                    <option v-for="index of 12" :key="index" :label="index" :value="index"></option>
+                </select>                
+            </div>
+
         </div>
         <div id="log" style="width: 300px;height:200px;"></div>
     </div>
@@ -16,13 +24,16 @@ export default {
             list : [],
             timeList:[],
             valueList:[],
+            year:0,
             month:0,
-            
+            date:0,
+            day:[],
         }
     },
     computed:{
         today(){
             let date = new Date() 
+            this.year = date.getFullYear
             let Y = date.getFullYear() + '年'
             let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '月'
             let D = date.getDate() + '日'
@@ -37,6 +48,13 @@ export default {
         //this.draw();
     },
     methods:{
+        selectFn(){
+            this.date = 0
+            let days = new Date(this.year,this.month,0)
+            let arr = []
+            arr = [...Array(days).keys()]
+            this.day = arr.shift()
+        },
         getValue(){
             this.$http.get('/index/timeInfo/').then(res=>{
                 this.list = res.data.data
@@ -130,16 +148,24 @@ export default {
     margin-right: 4px;
   }
   .datebox{
+      width: 75%;
      color: #00ffff; 
      font-size: 10px;
+     position: absolute;
+     top: 12%;
+     left: 8%;
+     z-index: 5;
   }
   .datebox select{
-      width: 40px;
-      
+      width: 35px;
+      height: 18px;
       border: none;
       background: #014043;
       border-radius: 5px;
       color: #00ffff; 
-
+      margin-left:8px;
+  }
+  .selectbox{
+      float: right;
   }
 </style>

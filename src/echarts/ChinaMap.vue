@@ -4,6 +4,7 @@
             <div id="map" style="width:650px;height:500px;"></div>
         </div>
         <div id="message" v-show="showmes">
+            <a class="close" @click="showmes=false">X</a>
             <span>设备定位</span><br>
             <span>联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
             <span>位置：{{deviceGroup.position}}{{deviceGroup.positionDetail}}</span><br>
@@ -42,7 +43,7 @@
                     <el-table-column
                     label="状态"
                     prop="status"
-                    :formatter="(row)=>{return row.status===1?'开启':'关闭'}"
+                    :formatter="statFormat"
                     >
                     </el-table-column>                     
                     <el-table-column
@@ -102,8 +103,10 @@ export default {
         openStat(e){
             if(e===1){
                 return '开启'
-            }else{
+            }else if(e===0){
                 return '关闭'
+            }else{
+                return '无状态'
             }
         },
         boxposition(e){
@@ -131,7 +134,7 @@ export default {
                 }
                 a.style.top =c[0]-168+'px'                
                 a.style.left=c[1]-187+'px'
-                this.showmes = true
+                this.showmes = !this.showmes
                 this.myChart.setOption(this.option)
             })
         },
@@ -140,8 +143,17 @@ export default {
             let a = document.getElementById('message')
             a.style.top =this.boxy+'px'
             a.style.left=this.boxx+'px'
-            this.showmes = true
+            this.showmes = !this.showmes
             
+        },
+        statFormat(row){
+                if(row.status===1){
+                    return '开启'
+                }else if(row.status===0){
+                    return '关闭'
+                }else{
+                    return '无状态'
+                }
         },
         draw(){
             this.myChart = this.$echarts.init(document.getElementById('map'))
@@ -337,4 +349,13 @@ export default {
             border-radius: 10px;
             background: #1b4887;
         }
+    .close{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        
+    }
+    .close:hover{
+        cursor:pointer
+    }
 </style>

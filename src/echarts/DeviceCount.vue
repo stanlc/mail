@@ -70,7 +70,8 @@ export default {
                     {
                         type: 'pie',
                         radius: [20,30],
-                        data:that.countlist
+                        data:that.countlist,
+                        minShowLabelAngle:1,  //扇区小于1%不显示
                     }
                 ]
             })
@@ -93,7 +94,7 @@ export default {
     margin-right: 4px;
   }
   #count{
-      margin-top:10%;
-      margin-left: 2%;
+      margin-top:5%;
+      margin-left: -3%;
   }
 </style>
