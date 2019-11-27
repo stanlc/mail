@@ -59,7 +59,19 @@
                 </el-form-item>  
                 <el-form-item>
                     <!-- <a href="/logger/export?x-user-token=8ba228d89a824282a8715dc9e01a29d8">aaa</a> -->
-                    <el-button type="primary" @click="getEx">导出</el-button>
+                    <el-button type="primary" @click="exportVisible=true">导出</el-button>
+                        <el-dialog
+                        title="下载表格"
+                        :visible.sync="exportVisible"
+                        width="25%"
+                        >
+                        <div style="text-align:center;">
+                            <p>是否下载表格</p>
+                        </div>
+                        <div class="center">
+                            <el-button type="primary" @click="exportEx">确认</el-button>
+                            <el-button type="primary" @click="exportVisible=false">返回</el-button></div>
+                        </el-dialog>                    
                 </el-form-item>                                                                             
             </el-form>
             <el-table
@@ -115,64 +127,7 @@
                     </template>                
                 </el-table-column>                                                 
             </el-table>
-            <!-- 导出xlx表格开始 -->
-            <el-table
-            :data="exportTabelList"
-            style="width: 100%"
-            @select="deviceSelect"
-            @check-change="CheckChange"
-            id="LogTable"
-            v-show="hide"
-            >
-                <el-table-column
-                type="selection"
-                width="55">
-                </el-table-column>
-                <el-table-column
-                label="序号"
-                type="index"
-                width="50">
-                </el-table-column>
-                <el-table-column
-                label="设备ID"
-                prop="deviceNum"
-                >
-                </el-table-column>
-                <el-table-column
-                label="所在区域"
-                prop="position"
-                
-                >
-                </el-table-column>                 
-                <el-table-column
-                label="设备名称"
-                prop="deviceName"
-                >
-                </el-table-column>
-                <el-table-column
-                label="运作状态"
-                prop="openStatus"
-                :formatter="(row)=>{return row.openStatus===1?'开':'关'}"
-                >
-                </el-table-column>    
-                <el-table-column
-                label="创建时间"
-                prop="createTime"
-                :formatter="formatTime"
-                >
-                </el-table-column> 
-                <el-table-column
-                label="操作"
-                width="200"
-                >
-                    <template class="btn-box" slot-scope="scope">
-                        <el-button type="primary" size="mini" @click="checkInfo(scope.row)">查看</el-button>                     
-                    </template>                
-                </el-table-column>                                                 
-            </el-table>          
-              
-            
-            <!-- 导出xlx表格结束             -->            
+                     
             <!-- 位置dialog开始 -->
             <el-dialog
             title="位置"
@@ -235,6 +190,8 @@ export default {
             Dates:[],
             valueId:0,
             checkInfoVisible:false,
+            exportVisible:false,
+            xlxurl:'',
             props:{
                 value:'id',
                 label:'organName',
@@ -422,8 +379,24 @@ export default {
             console.log(item);
         },
         exportEx(){
-             window.open('http://103.239.204.52:12204/logger/export')
+            let form = Object.assign({},this.searchForm)
+            form.pageNum = 1
+            form.pageSize = 500
+            this.$http.post('/logger/export',form).then(res=>{
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:res.data.message
+                    })
+                    this.xlxurl = res.data.data
+                    this.exportVisible = false
+                    this.openurl()
+                }
+            })
         }, 
+        openurl(){
+            window.open(this.xlxurl)
+        },
         fetchExportBill(url, data = {}) {
             return new Promise((resolve, reject) => {
             this.$http.post(url,data,{ responseType: 'arraybuffer'}).then(res => {
@@ -438,10 +411,7 @@ export default {
                 reject(null, error);
             })
             })
-        },       
-        getEx(){
-            this.$http.get('/logger/export')
-        },
+        }, 
         handleExport(row){
             const url="/logger/export"
             const options = {}

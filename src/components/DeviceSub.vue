@@ -219,7 +219,8 @@ export default {
             area:[],
             rules: {
                 userName:[
-                    { required: true, message: '请输入账号名称', trigger: ['blur', 'change'] }
+                    { required: true, message: '请输入账号名称', trigger: ['blur', 'change'] },
+                    {pattern:/^[0-9a-zA-Z]+$/,message:'请使用英文或数字',trigger: ['blur', 'change']}
                 ],
                 password:[
                     { required: true, message: '请输入密码', trigger: ['blur', 'change'] }

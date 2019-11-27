@@ -3,9 +3,9 @@
         <div class="datebox">
             {{today}}
             <div class="selectbox">
-                <select v-model="date" >
+                <select v-model="date" @change="selectDate">
                     <option value="0" selected disabled style="display: none;">日</option>
-                    <option v-for="item in day" :key="item.index" :label="item.value" :value="item.value"></option>
+                    <option v-for="item in day" :key="item.index" :label="item" :value="item"></option>
                 </select>
                 <select v-model="month" @change="selectFn($event)">
                     <option value="0" selected disabled style="display: none;">月</option>
@@ -16,7 +16,7 @@
         </div>
         <div id="log" style="width: 300px;height:200px;"></div>
     </div>
-</template>
+</template>index
 <script>
 export default {
     data(){
@@ -27,13 +27,14 @@ export default {
             year:0,
             month:0,
             date:0,
-            day:[],
+            day:[1,2,3],
+            selectDay:'',
         }
     },
     computed:{
         today(){
             let date = new Date() 
-            this.year = date.getFullYear
+            this.year = date.getFullYear()
             let Y = date.getFullYear() + '年'
             let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '月'
             let D = date.getDate() + '日'
@@ -50,13 +51,18 @@ export default {
     methods:{
         selectFn(){
             this.date = 0
-            let days = new Date(this.year,this.month,0)
+            let d = new Date(this.year,this.month,0)
+            let days = d.getDate()
             let arr = []
             arr = [...Array(days).keys()]
-            this.day = arr.shift()
+            this.day = arr
+        },
+        selectDate(){
+            this.selectDay = this.year+'-'+this.month+'-'+this.date
+            this.getValue()
         },
         getValue(){
-            this.$http.get('/index/timeInfo/').then(res=>{
+            this.$http.get('/index/timeInfo/',this.selectDay).then(res=>{
                 this.list = res.data.data
                 this.list.map(item=>{
                     this.timeList.push(item.hour)

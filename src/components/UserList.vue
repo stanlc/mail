@@ -243,10 +243,12 @@ export default {
             },
             rules: {
                 userName:[
-                    { required: true, message: '请输入用户名称', trigger: ['blur', 'change'] }
+                    { required: true, message: '请输入登录名称', trigger: ['blur', 'change'] },
+                     {pattern:/^[0-9a-zA-Z]+$/,message:'请使用英文或数字',trigger: ['blur', 'change']}
                 ],
                 nickName:[
-                    { required: true, message: '请输入登录名称', trigger: ['blur', 'change'] }
+                    { required: true, message: '请输入用户名称', trigger: ['blur', 'change'] }
+                   
                 ],
                 email:[
                     { required: true, message: '请输入邮箱地址', trigger: 'blur' },

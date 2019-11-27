@@ -21,12 +21,12 @@
                         <el-option label="关" value=0></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="报警状态：">
+                <!-- <el-form-item label="报警状态：">
                     <el-select v-model="searchForm.alarmStatus">
                         <el-option label="报警" value=1></el-option>
                         <el-option label="正常" value=0></el-option>
                     </el-select>
-                </el-form-item>                
+                </el-form-item>                 -->
                 <el-form-item label="设备ID：">
                     <el-autocomplete
                     class="inline-input"
@@ -44,7 +44,19 @@
                     <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
-                    <el-button type="primary" @click="exportEx">导出</el-button>
+                    <el-button type="primary" @click="exportVisible=true">导出</el-button>
+                    <el-dialog
+                        title="下载表格"
+                        :visible.sync="exportVisible"
+                        width="25%"
+                        >
+                        <div style="text-align:center;">
+                            <p>是否下载表格</p>
+                        </div>
+                        <div style="text-align:center;">
+                            <el-button type="primary" @click="exportEx">确认</el-button>
+                            <el-button type="primary" @click="exportVisible=false">返回</el-button></div>
+                        </el-dialog> 
                 </el-form-item>                                                                             
             </el-form>
             <el-table
@@ -102,67 +114,6 @@
                 </el-table-column>                                
             </el-table>
 
-            <!-- 导出xlx表格开始 -->
-          
-                <el-table
-                :data="exportTabelList "
-                style="width: 100%"
-                @select="deviceSelect"
-                @check-change="CheckChange"
-                id="RunTable"
-                v-show="hide"
-                >
-                    <el-table-column
-                    type="selection"
-                    width="55">
-                    </el-table-column>
-                    <el-table-column
-                    label="序号"
-                    type="index"
-                    width="50">
-                    </el-table-column>
-                    <el-table-column
-                    label="设备ID"
-                    prop="deviceNum"
-                    >
-                    </el-table-column>                
-                    <el-table-column
-                    label="所在区域"
-                    prop="position"
-                    :formatter="positionFormat"
-                    >  
-                    </el-table-column>             
-                    <el-table-column
-                    label="设备名称"
-                    prop="deviceName"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="开关状态"
-                    prop="openStatus"
-                    :formatter="(row)=>{return row.openStatus===1?'开':'关'}"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="报警状态"
-                    prop="alarmStatus"
-                    :formatter="(row)=>{return row.alarmStatus===1?'报警':'正常'}"
-                    >
-                    </el-table-column>                
-                    <el-table-column
-                    label="单日操作次数"
-                    prop="todayNum"
-                    >
-                    </el-table-column>     
-                    <el-table-column
-                    label="最后操作时间"
-                    prop="updateTime"
-                    :formatter="formatTime"
-                    >
-                    </el-table-column>                                
-                </el-table>
-            
-            <!-- 导出xlx表格结束             -->
         </div>
         <div class="page">
             <el-pagination
@@ -203,6 +154,8 @@ export default {
             valueId:0,
             currentPage: 1,
             pagesize:4,
+            exportVisible:false,
+            xlxurl:'',
             totalCount:0,
              searchForm:{
                 'pageNum':1,
@@ -282,6 +235,26 @@ export default {
                     this.runInfoList = res.data.paging.list
                 })
         },
+        exportEx(){
+            let form = Object.assign({},this.searchForm)
+            form.pageNum = 1
+            form.pageSize = 500
+            let that = this
+            this.$http.post('/monitoring/export',form).then(res=>{
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:res.data.message
+                    })
+                    this.xlxurl = res.data.data
+                    this.exportVisible = false
+                    this.openurl()
+                }
+            })
+        }, 
+        openurl(){
+            window.open(this.xlxurl)
+        },        
         //内容格式化
 
         formatTime(row){
@@ -358,29 +331,7 @@ export default {
         handleSelect(item) {
             //console.log(item);
         },  
-        exportEx(){
-            let form = Object.assign({},this.searchForm)
-            form.pageNum = 1
-            form.pageSize = 1000
-             this.$http.post('/monitoring/export',form).then(res=>{
-                this.exportTabelList = res.data.paging.list
-                this.exportExcel()
-            })
-        },
-        exportExcel () {
-                /* generate workbook object from table */
-                let wb = XLSX.utils.table_to_book(document.querySelector('#RunTable'));
-                /* get binary string as output */
-                let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
-                try {
-                    FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '运行监测表.xlsx');
-                } catch (e)
-                {
-                    if (typeof console !== 'undefined')
-                        console.log(e, wbout)
-                }
-                return wbout
-            },                 
+                
     }
 }
 </script>
