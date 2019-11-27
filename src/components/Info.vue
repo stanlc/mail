@@ -123,7 +123,7 @@ export default {
     justify-content: center;
     align-items: center; 
     position: relative; 
-    margin-top: 10px;
+    margin-top: 25px;
   }
   
   .monitor{
@@ -135,7 +135,7 @@ export default {
     justify-content: center;
     align-items: center; 
     position: relative; 
-    margin-top: 10px;
+    margin-top: 25px;
   }  
   
   .more{

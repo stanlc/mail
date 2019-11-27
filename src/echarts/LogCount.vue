@@ -1,5 +1,11 @@
 <template>
     <div>
+        <div class="datebox">
+            {{today}}
+            <select v-model="month">
+                <option v-for="index of 12" :key="index" :label="index" :value="index"></option>
+            </select>
+        </div>
         <div id="log" style="width: 300px;height:200px;"></div>
     </div>
 </template>
@@ -10,18 +16,25 @@ export default {
             list : [],
             timeList:[],
             valueList:[],
+            month:0,
             
         }
     },
     computed:{
-      
+        today(){
+            let date = new Date() 
+            let Y = date.getFullYear() + '年'
+            let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '月'
+            let D = date.getDate() + '日'
+            return Y+M+D
+        }, 
     },
     created(){
         
     },
     mounted(){
         this.getValue();   //获取设备数据
-        this.draw();
+        //this.draw();
     },
     methods:{
         getValue(){
@@ -32,6 +45,7 @@ export default {
                     this.valueList.push(item.openNum)
                 })
                 console.log(this.valueList)
+                this.draw()
             })
             
         },
@@ -39,7 +53,12 @@ export default {
             let that = this
             let myChart = this.$echarts.init(document.getElementById('log'))
             let option={
-            
+                tooltip:{
+                    show:true,
+                    formatter: function (params) {
+                        return '<p>'+params.name+'</p>'+'<p>'+params.value+'次'+'</p>'
+                    },
+                },
                 xAxis: {
                     type:'category',
                     boundaryGap: false,
@@ -109,5 +128,18 @@ export default {
     font-size: 16px;
     font-weight: normal;
     margin-right: 4px;
+  }
+  .datebox{
+     color: #00ffff; 
+     font-size: 10px;
+  }
+  .datebox select{
+      width: 40px;
+      
+      border: none;
+      background: #014043;
+      border-radius: 5px;
+      color: #00ffff; 
+
   }
 </style>

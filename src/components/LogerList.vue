@@ -58,8 +58,8 @@
                     <el-button type="primary" @click="clear">重置</el-button>
                 </el-form-item>  
                 <el-form-item>
-                    <a href="http://103.239.204.52:12204/logger/export">aaa</a>
-                    <el-button type="primary" @click="fetchExportBill('/logger/export')">导出</el-button>
+                    <!-- <a href="/logger/export?x-user-token=8ba228d89a824282a8715dc9e01a29d8">aaa</a> -->
+                    <el-button type="primary" @click="getEx">导出</el-button>
                 </el-form-item>                                                                             
             </el-form>
             <el-table
@@ -67,6 +67,7 @@
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
+            height="600"
             >
                 <el-table-column
                 type="selection"
@@ -438,20 +439,50 @@ export default {
             })
             })
         },       
-    //     exportExcel () {
-    //     /* generate workbook object from table */
-    //     let wb = XLSX.utils.table_to_book(document.querySelector('#LogTable'));
-    //     /* get binary string as output */
-    //     let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
-    //     try {
-    //         FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '操作日志表.xlsx');
-    //     } catch (e)
-    //     {
-    //         if (typeof console !== 'undefined')
-    //             console.log(e, wbout)
-    //     }
-    //     return wbout
-    // },                 
+        getEx(){
+            this.$http.get('/logger/export')
+        },
+        handleExport(row){
+            const url="/logger/export"
+            const options = {}
+            this.exportExcel(url,options)
+        }, 
+        exportExcel(url, options = {}) {
+        return new Promise((resolve, reject) => {
+            console.log(`${url} 请求数据，参数=>`, JSON.stringify(options))
+            this.$http.defaults.headers['content-type'] = 'application/json;charset=UTF-8'
+            this.$http({
+            method: 'post',
+            url: url, // 请求地址
+            data: options, // 参数
+            responseType: 'blob' // 表明返回服务器返回的数据类型
+            }).then(
+            response => {
+                resolve(response.data)
+                let blob = new Blob([response.data], {
+                type: 'application/vnd.ms-excel'
+                })
+                console.log(blob)
+                let fileName = Date.parse(new Date()) + '.xlsx'
+                if (window.navigator.msSaveOrOpenBlob) {
+                // console.log(2)
+                navigator.msSaveBlob(blob, fileName)
+                } else {
+                // console.log(3)
+                var link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = fileName
+                link.click()
+                //释放内存
+                window.URL.revokeObjectURL(link.href)
+                }
+            },
+            err => {
+                reject(err)
+            }
+            )
+        })
+        }            
     }
 }
 </script>

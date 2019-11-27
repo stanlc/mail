@@ -534,8 +534,12 @@ export default {
             }else{
                 let that = this
                 this.addRoleForm.organId = this.selectOrganId
-                this.utils.addRole(this.addRoleForm).then(()=>{
-                    that.utils.getRoleList(that,that.selectOrganId) 
+                this.utils.addRole(this.addRoleForm).then((res)=>{
+                    if(res.data.code===200){
+                        this.$message({type:'success',message:'添加成功'})
+                        that.utils.getRoleList(that,that.selectOrganId)  
+                    }
+                   
                 })
             }
             this.addRoleDialogVisible = false

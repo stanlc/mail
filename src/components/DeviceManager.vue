@@ -146,6 +146,7 @@
                 <el-table-column
                 label="设备名称"
                 prop="deviceName"
+                width="180"
                 >
                 </el-table-column>
                 <el-table-column

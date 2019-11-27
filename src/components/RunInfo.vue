@@ -70,7 +70,6 @@
                 <el-table-column
                 label="所在区域"
                 prop="position"
-                :formatter="positionFormat"
                 >  
                 </el-table-column>             
                 <el-table-column

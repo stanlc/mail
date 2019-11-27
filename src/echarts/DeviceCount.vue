@@ -70,10 +70,7 @@ export default {
                     {
                         type: 'pie',
                         radius: [20,30],
-                        data:that.countlist,
-                        itemStyle:{normal:{
-                            
-                        }}
+                        data:that.countlist
                     }
                 ]
             })
@@ -96,6 +93,7 @@ export default {
     margin-right: 4px;
   }
   #count{
-      margin-top: 15px;
+      margin-top:10%;
+      margin-left: 2%;
   }
 </style>

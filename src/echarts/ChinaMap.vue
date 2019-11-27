@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div id="map" style="width:600px;height:500px;"></div>
+        <div class="mapbox">
+            <div id="map" style="width:650px;height:500px;"></div>
+        </div>
         <div id="message" v-show="showmes">
             <span>设备定位</span><br>
             <span>联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
@@ -20,34 +22,38 @@
             </div>
         </div>
         <div class="table">
-            <el-table
-            :data='deviceList'
-            style="width: 100%"
-            height="550">
-                <el-table-column
-                label="设备ID"
-                prop="deviceId"
-                
-                >
+            <div class="tablebox">
+                <el-table
+                :data='deviceList'
+                style="width: 100%">
+                    <el-table-column
+                    type="index">
+                    </el-table-column>
+                    <el-table-column
+                    label="设备ID"
+                    prop="deviceId"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                    label="位置"
+                    prop="devicePosition"
+                    >
+                    </el-table-column>                 
+                    <el-table-column
+                    label="状态"
+                    prop="status"
+                    :formatter="(row)=>{return row.status===1?'开启':'关闭'}"
+                    >
+                    </el-table-column>                     
+                    <el-table-column
+                    label="操作">
+                    <template slot-scope="scope">
+                        <el-button @click="show(scope.row)" type="primary" size="mini">定位</el-button>
+                    </template>
                 </el-table-column>
-                <el-table-column
-                label="位置"
-                prop="devicePosition"
-                >
-                </el-table-column>                 
-                <el-table-column
-                label="状态"
-                prop="status"
-                :formatter="(row)=>{return row.status===1?'开':'关'}"
-                >
-                </el-table-column>                     
-                <el-table-column
-                label="操作">
-                <template slot-scope="scope">
-                    <el-button @click="show(scope.row)" type="primary" size="mini">定位</el-button>
-                </template>
-            </el-table-column>
-            </el-table>
+                </el-table>
+            </div>
+        
         </div>
         
     </div>
@@ -123,8 +129,8 @@ export default {
                 }else{
                     this.colors = '#a32d50'
                 }
-                a.style.top =c[0]-188+'px'                
-                a.style.left=c[1]-171+'px'
+                a.style.top =c[0]-168+'px'                
+                a.style.left=c[1]-187+'px'
                 this.showmes = true
                 this.myChart.setOption(this.option)
             })
@@ -241,8 +247,33 @@ export default {
     font-weight: normal;
     margin-right: 4px;
   }
+  .mapbox{
+    background: url(..\assets\img\mapbox.png) no-repeat;
+    background-size:contain;
+    width: 43vw;
+    height: 40vw;
+    margin-top: -10px;
+    display: inline-block;
+    text-align: center;
+  }
+  .table{
+    background: url(..\assets\img\list.png) no-repeat;
+    background-size:100% 100%;   
+    width: 26vw;
+    height: 40vw;   
+    margin-top: -10px;
+    padding: 0 15px;
+  }
+  .table .el-table{
+      margin: 25px auto;
+  }
+  .tablebox{
+      overflow-y: auto;
+  }
  #map{
      position: relative;
+     top: 10%;
+     left: -6%;
  }
  #message span,#message a{
      color: #fff;
@@ -259,7 +290,7 @@ export default {
 .table{
     position: absolute;
     top:0;
-    left: 47vw;
+    left: 42.5vw;
 }
     /* 组状态样式 */
     .group{
