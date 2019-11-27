@@ -1,7 +1,7 @@
 <template>
     <div>
         <span class="total"><b>{{count}}</b>总设备（台）</span>
-        <div id="count" style="width: 400px;height:200px;"></div>
+        <div id="count" style="width: 200px;height:200px;"></div>
     </div>
 </template>
 <script>
@@ -94,7 +94,5 @@ export default {
     margin-right: 4px;
   }
   #count{
-      margin-top:5%;
-      margin-left: -3%;
   }
 </style>

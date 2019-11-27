@@ -29,6 +29,8 @@ export default {
             date:0,
             day:[1,2,3],
             selectDay:'',
+            myChart:{},
+            option:{},
         }
     },
     computed:{
@@ -46,7 +48,7 @@ export default {
     },
     mounted(){
         this.getValue();   //获取设备数据
-        //this.draw();
+        this.draw();
     },
     methods:{
         selectFn(){
@@ -59,24 +61,27 @@ export default {
         },
         selectDate(){
             this.selectDay = this.year+'-'+this.month+'-'+this.date
+            this.selectDay = this.selectDay.toString()
             this.getValue()
+            this.myChart.setOption(this.option)
         },
         getValue(){
-            this.$http.get('/index/timeInfo/',this.selectDay).then(res=>{
+            this.timeList =[]
+            this.valueList = []
+            this.$http.get(`/index/timeInfo/?dataTime=${this.selectDay}`).then(res=>{
                 this.list = res.data.data
                 this.list.map(item=>{
                     this.timeList.push(item.hour)
                     this.valueList.push(item.openNum)
                 })
-                console.log(this.valueList)
-                this.draw()
+                this.myChart.setOption(this.option)
             })
             
         },
         draw(){
             let that = this
-            let myChart = this.$echarts.init(document.getElementById('log'))
-            let option={
+            this.myChart = this.$echarts.init(document.getElementById('log'))
+            this.option={
                 tooltip:{
                     show:true,
                     formatter: function (params) {
@@ -134,7 +139,7 @@ export default {
                 }]
 
             }
-            myChart.setOption(option)
+            this.myChart.setOption(this.option)
         }
     }
 }
