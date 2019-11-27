@@ -382,6 +382,7 @@ export default {
             let form = Object.assign({},this.searchForm)
             form.pageNum = 1
             form.pageSize = 500
+            var newWindow = window.open();
             this.$http.post('/logger/export',form).then(res=>{
                 if(res.data.code===200){
                     this.$message({
@@ -389,8 +390,9 @@ export default {
                         message:res.data.message
                     })
                     this.xlxurl = res.data.data
+                    console.log(res.data.data)
                     this.exportVisible = false
-                    this.openurl()
+                    newWindow.location.href = res.data.data;
                 }
             })
         }, 

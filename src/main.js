@@ -9,18 +9,18 @@ import Router from 'vue-router'
 import VueAMap from 'vue-amap';
 
 //节流
-var throttle = function(func, delay) {            
-  　　var prev = Date.now();            
-  　　return function() {                
-  　　　　var context = this;                
-  　　　　var args = arguments;                
-  　　　　var now = Date.now();                
-  　　　　if (now - prev >= delay) {                    
-  　　　　　　func.apply(context, args);                    
-  　　　　　　prev = Date.now();                
-  　　　　}            
-  　　}        
-  }   
+// var throttle = function(func, delay) {            
+//   　　var prev = Date.now();            
+//   　　return function() {                
+//   　　　　var context = this;                
+//   　　　　var args = arguments;                
+//   　　　　var now = Date.now();                
+//   　　　　if (now - prev >= delay) {                    
+//   　　　　　　func.apply(context, args);                    
+//   　　　　　　prev = Date.now();                
+//   　　　　}            
+//   　　}        
+//   }   
 
 Vue.use(VueAMap);
 VueAMap.initAMapApiLoader({
@@ -37,7 +37,8 @@ Vue.use(ElementUI)
 Vue.prototype.utils = utils
 Vue.prototype.$http = axios.create({
   baseURL:'http://103.239.204.52:12204/',//'http://192.168.60.190:11000/',http://beonelife.cn:6001/
-  timeout:5000
+  timeout:5000,
+  
 })
 
 //引入echarts
@@ -53,13 +54,13 @@ Vue.prototype.$http.interceptors.response.use(res=>{
       })
     }else if(res.data.code===403){
       
-      function handle (){
-          Vue.prototype.$message({
-          type:'error',
-          message:'请重新登录'
-        })
-      }
-      throttle(handle,100)()
+      // function handle (){
+      //     Vue.prototype.$message({
+      //     type:'error',
+      //     message:'请重新登录'
+      //   })
+      // }
+      // throttle(handle,100)()
       router.replace({ //跳转到登录页面
         path: '/login',
         query: { redirect: router.currentRoute.fullPath } // 将跳转的路由path作为参数，登录成功后跳转到该路由

@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="box">
         <span class="total"><b>{{count}}</b>总设备（台）</span>
-        <div id="count" style="width: 200px;height:200px;"></div>
+        <div id="count" style="width:300px;height:150px;"></div>
     </div>
 </template>
 <script>
@@ -43,7 +43,7 @@ export default {
                                 }else{
                                     per = ((params.value/that.count)*100).toFixed(2)
                                 }
-                                return params.name+'-'+per+'%'+' \n '+params.value+'(台)';
+                                return params.name+' \n '+per+'%'+' \n '+params.value+'(台)';
                             }}}})
                })
                 this.countlist.map((item,index)=>{item.itemStyle.normal.color=that.colors[index]})
@@ -70,6 +70,15 @@ export default {
                     {
                         type: 'pie',
                         radius: [20,30],
+                        label:{
+                            normal:{
+                                fontSize:'10',
+                            }
+                        },
+                        labelLine:{
+                            length:20,
+                            length2:8
+                        },
                         data:that.countlist,
                         minShowLabelAngle:1,  //扇区小于1%不显示
                     }
@@ -80,6 +89,7 @@ export default {
 }
 </script>
 <style scoped>
+
   .total{
     position: absolute;
     top: 25px;
@@ -94,5 +104,6 @@ export default {
     margin-right: 4px;
   }
   #count{
+      margin-top: 10px;
   }
 </style>

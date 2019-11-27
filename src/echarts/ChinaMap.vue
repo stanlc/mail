@@ -5,15 +5,15 @@
         </div>
         <div id="message" v-show="showmes">
             <a class="close" @click="showmes=false">X</a>
-            <span>设备定位</span><br>
+            <span style="color:#0bb6cf;display:block;">设备定位</span><br>
             <span>联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
             <span>位置：{{deviceGroup.position}}{{deviceGroup.positionDetail}}</span><br>
             <span>状态：开启{{deviceGroup.openStatusNum}}/关闭{{deviceGroup.offStatusNum}}</span><br> 
             <a href="javascript:;" @click="groupShow=!groupShow">>组状态查看</a>
             <div v-if="groupShow" class="group">
-                <span> 组状态</span><br>
-                <span>{{deviceGroup.position}}-{{deviceGroup.positionDetail}}</span>
-                <span>{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
+                <span style="color:#0bb6cf;display:block;"> 组状态</span><br>
+                <span >{{deviceGroup.position}}-{{deviceGroup.positionDetail}}</span>
+                <span >{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
                 <div class="groupBox center">
                     <div v-for="item in deviceGroup.groupInfoList" :key="item.index" class="groupItem">
                         <span class="boxName">{{item.positionDetail|boxposition}}</span>
@@ -122,19 +122,20 @@ export default {
             this.$http.post(`/device/deviceGroup/${row.deviceNum}`).then(res=>{
                 this.deviceGroup = res.data.data
                 //显示弹出框
-                let tude = [parseFloat(this.deviceGroup.organLatitude),parseFloat(this.deviceGroup.organLongitude)]
+                let cc = ((this.deviceGroup.openStatus)===1)?'#9bbc42':'#a32d50'
+                let tude = [parseFloat(this.deviceGroup.organLatitude),parseFloat(this.deviceGroup.organLongitude),cc]
                 //地图标点
-                this.geoDeviceList.push({value:tude,info:this.deviceGroup})  //待去重
+                this.geoDeviceList.push(tude)  //待去重
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
                 let a = document.getElementById('message')
                 if(row.status===1){
-                    this.colors = '#9bbc42'
-                }else{
                     this.colors = '#a32d50'
+                }else{
+                    this.colors = '#9bbc42'
                 }
                 a.style.top =c[0]-168+'px'                
                 a.style.left=c[1]-187+'px'
-                this.showmes = !this.showmes
+                this.showmes = true
                 this.myChart.setOption(this.option)
             })
         },
@@ -158,7 +159,7 @@ export default {
         draw(){
             this.myChart = this.$echarts.init(document.getElementById('map'))
             this.option = {
-           
+        
             geo: [
                 {
                     map:'china',
@@ -206,6 +207,7 @@ export default {
 
                     series:[
                         {
+                            
                             name:'标签',
                             type: 'scatter',
                             coordinateSystem: 'geo',
@@ -221,7 +223,10 @@ export default {
                             },
                             itemStyle: {
                                 normal: {
-                                    color: this.colors
+                                    color: function (params){
+                            　　　　　　　　return params.value[2]
+
+                            　　　　　　}
                                 }
                             },
                             data:this.geoDeviceList
@@ -310,20 +315,28 @@ export default {
     }
     .boxName{
         display: block;
-        width: 38px;
+        width: 100%;
         height: 20px;
         text-align: center;
+        padding: 2px;
         line-height: 20px;
         background: #09aec2;
         border-radius: 5px;
         font-size: 10px; 
     }  
+    .group{
+        
+        background: url(../assets/img/group.png) no-repeat;
+        background-size: contain;
+        padding: 15px;
+    }
     .groupBox{
         display: block;
-        width: 300px;
-        height: 170px;
+        width: 95%;
+        height: 100%;
         overflow-y: scroll;
         margin-bottom: 40px;
+        margin-top: 5px;
     }
     .groupItem{
         display: inline-block;

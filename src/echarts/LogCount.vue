@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="datebox">
-            {{today}}
+            <span>{{today}}</span>
             <div class="selectbox">
                 <select v-model="date" @change="selectDate">
                     <option value="0" selected disabled style="display: none;">日</option>
@@ -14,7 +14,7 @@
             </div>
 
         </div>
-        <div id="log" style="width: 300px;height:200px;"></div>
+        <div id="log" style="width: 280px;height:200px;"></div>
     </div>
 </template>index
 <script>
@@ -27,7 +27,7 @@ export default {
             year:0,
             month:0,
             date:0,
-            day:[1,2,3],
+            day:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
             selectDay:'',
             myChart:{},
             option:{},
@@ -37,6 +37,8 @@ export default {
         today(){
             let date = new Date() 
             this.year = date.getFullYear()
+            this.month = date.getMonth()+1
+            this.date = date.getDate()
             let Y = date.getFullYear() + '年'
             let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '月'
             let D = date.getDate() + '日'
@@ -45,6 +47,21 @@ export default {
     },
     created(){
         
+    },
+    watch: {
+        valueList: {
+        handler(newVal, oldVal) {
+            if (this.chart) {
+            if (newVal) {
+                this.chart.setOption(newVal,true);
+            } else {
+                this.chart.setOption(oldVal);
+            }
+            } else {
+                this.draw();
+            }
+            }
+        }
     },
     mounted(){
         this.getValue();   //获取设备数据
@@ -59,24 +76,28 @@ export default {
             arr = [...Array(days).keys()]
             this.day = arr
         },
-        selectDate(){
-            this.selectDay = this.year+'-'+this.month+'-'+this.date
-            this.selectDay = this.selectDay.toString()
-            this.getValue()
-            this.myChart.setOption(this.option)
-        },
+
         getValue(){
             this.timeList =[]
-            this.valueList = []
+            this.valueList = [0]
             this.$http.get(`/index/timeInfo/?dataTime=${this.selectDay}`).then(res=>{
                 this.list = res.data.data
-                this.list.map(item=>{
+                
+                this.list.map((item,a)=>{
+                    let that = this
                     this.timeList.push(item.hour)
-                    this.valueList.push(item.openNum)
+                    this.valueList.push([item.hour,item.openNum,that.today])
                 })
-                this.myChart.setOption(this.option)
             })
-            
+            let fn = ()=>{this.myChart.setOption(this.option,true)}
+            setTimeout(fn,200)
+        },
+        selectDate(){
+            let temp = this.selectDay
+            this.selectDay = this.year+'-'+this.month+'-'+this.date
+            this.selectDay = this.selectDay.toString()
+            let fn = ()=>{this.getValue()}
+            setTimeout(fn,200)
         },
         draw(){
             let that = this
@@ -85,13 +106,13 @@ export default {
                 tooltip:{
                     show:true,
                     formatter: function (params) {
-                        return '<p>'+params.name+'</p>'+'<p>'+params.value+'次'+'</p>'
+
+                        return '<p>'+(params.value[2]?params.value[2]:'')+'</p>'+'<p>'+(params.value[0]?params.value[0]:'')+'</p>'+'<p>'+(params.value[1]?params.value[1]:0)+'次'+'</p>'
                     },
                 },
                 xAxis: {
                     type:'category',
                     boundaryGap: false,
-                    
                     data:['0','4:00','8:00','12:00','16:00','20:00','24:00'],
                     axisLabel: {
                        color:'#fff',
@@ -159,13 +180,17 @@ export default {
     margin-right: 4px;
   }
   .datebox{
-      width: 75%;
+     width: 75%;
      color: #00ffff; 
      font-size: 10px;
      position: absolute;
-     top: 12%;
+     top: 14%;
      left: 8%;
      z-index: 5;
+  }
+  .datebox span{
+      position: absolute;
+      top: 15%;
   }
   .datebox select{
       width: 35px;
@@ -178,5 +203,6 @@ export default {
   }
   .selectbox{
       float: right;
+       
   }
 </style>
