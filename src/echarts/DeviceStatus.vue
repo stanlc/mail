@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="box">
         <div id="main" style="width: 300px;height:100px;"></div>
     </div>
 </template>
@@ -136,5 +136,23 @@ export default {
 }
 </script>
 <style scoped>
-
+    .box{
+    width: 100%;
+    display: -moz-box;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -moz-box-align: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -moz-box-pack: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    /*for ie9*/
+    justify-content: center;
+    }
 </style>
