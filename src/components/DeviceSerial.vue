@@ -38,5 +38,12 @@ export default {
         height: 100vh;
         
     }
+    .box-card{
+        background: rgba(11,53,115,0.2);
+        border: none;
+    }
+    .el-menu{
+        border:none;
+    }
     
 </style>

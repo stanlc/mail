@@ -4,18 +4,21 @@
     background: url(..\assets\img\bc.png);
     background-size: 100%;
   }
+ 
   .home /deep/ .el-card{
-    border: none
+    border: none;
   }
   .home /deep/ .el-menu{
-    border: none
+    border: none;
   }
   .home /deep/ .box-card{
+    
     background: rgba(11,53,115,0.2);
+    
   }
         /* dialog样式 */
   .home /deep/ .box-card /deep/ .el-dialog__header{
-      background: #19437e;
+      background: #54585e;
       padding:10px;
   }
   .home /deep/ .box-card /deep/ .el-dialog__title{

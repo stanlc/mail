@@ -38,7 +38,7 @@
             <vue-amap @func="getLng" @closefunc="closeMap"></vue-amap>
             </el-dialog>
             <span class="blue">添加同级组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="sameLevelForm" ref="sameLevelForm" :rules="rules">
+            <el-form label-position="right" :inline="true" label-width="90px" :model="sameLevelForm" ref="sameLevelForm" :rules="rules">
                 <el-form-item label="机构名称:" prop="organName">
                     <el-input v-model="sameLevelForm.organName"></el-input>
                 </el-form-item>
@@ -82,7 +82,7 @@
             <vue-amap @func="getSubLng" @closefunc="closeMap"></vue-amap>
             </el-dialog>
             <span class="blue">添加下级组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="subLevelForm" :rules="rules" ref="subLevelForm">
+            <el-form label-position="right" :inline="true" label-width="90px" :model="subLevelForm" :rules="rules" ref="subLevelForm">
                 <el-form-item label="机构名称:" prop="organName">
                     <el-input v-model="subLevelForm.organName"></el-input>
                 </el-form-item>
@@ -115,7 +115,7 @@
             <el-dialog
             title="编辑"
             :visible.sync="configDialogVisible"
-            width="35%"
+            width="40%"
             custom-class="configLevel"
             @close="clearValidate('configForm')">
             <el-dialog
@@ -126,7 +126,7 @@
             <vue-amap @func="getCofLng" @closefunc="closeMap"></vue-amap>
             </el-dialog>
             <span class="blue">编辑组织机构</span>
-            <el-form label-position="right" :inline="true" label-width="auto" :model="configForm" ref="configForm">
+            <el-form label-position="right" :inline="true" label-width="90px" :model="configForm" ref="configForm">
                 <el-form-item label="机构名称:" >
                     <el-input v-model="configForm.organName"></el-input>
                 </el-form-item>
@@ -221,7 +221,7 @@
             :visible.sync="addRoleinnerVisible"
             append-to-body>
             </el-dialog>
-            <el-form label-position="right"  label-width="auto" :model="addRoleForm" :rules="rules">
+            <el-form label-position="right"  label-width="90px" :model="addRoleForm" :rules="rules">
                 <el-form-item label="角色名称:" prop="roleName">
                     <el-input v-model="addRoleForm.roleName"></el-input>
                 </el-form-item>
@@ -247,7 +247,7 @@
             :visible.sync="configRoleinnerVisible"
             append-to-body>
             </el-dialog>
-            <el-form label-position="right"  label-width="auto" :model="configRoleForm">
+            <el-form label-position="right"  label-width="90px" :model="configRoleForm">
                 <el-form-item label="角色名称:">
                     <el-input v-model="configRoleForm.roleName"></el-input>
                 </el-form-item>
@@ -671,9 +671,13 @@ export default {
     .box-card {
         width: 40vw;
         height: 54vh;
-        /* background: #06253d; */
+        background: rgba(11,53,115,0.2);
+        border: none;
         border-radius: 5px;
         float: left;
+    }
+    .el-menu{
+        border:none;
     }
     .right{
        float: right;
@@ -714,6 +718,9 @@ export default {
      .el-input{
          width:150px;
      }
+     .el-form /deep/ .el-select /deep/ .el-input__inner{
+         color: #fff;
+     }
     .el-form /deep/ .el-form-item__label{
         color: #fff ;
     }
@@ -722,6 +729,7 @@ export default {
         height: 30px;
         color: #fff;
     }
+    
     .choose-btn{
         width:150px;
     }

@@ -37,6 +37,7 @@ export default {
 body .el-table th.gutter{
   display: table-cell!important;  //浏览器缩放表头出现白边
 }
+
 .el-table {
   background: transparent !important; //表格背景色
   tr th{
@@ -70,6 +71,7 @@ body .el-table th.gutter{
 .el-table--enable-row-hover .el-table__body tr:hover>td{
 background-color: #212e3e !important;    //hover项背景颜色
 }
+
 
 @import '../assets/common.css'
 </style>

@@ -343,10 +343,6 @@ export default {
                     })
                 }
             })
-            this.searchForm={
-                'pageNum':this.pageNum,
-                'pageSize':this.pageSize,
-            }
             this.$refs.selectTree.clearHandle()                    
         }, 
         clear(){
@@ -400,7 +396,7 @@ export default {
             })
         }, 
         openurl(){
-            window.open(this.xlxurl)
+            window.open(this.xlxurl,'_blank')
         },
         fetchExportBill(url, data = {}) {
             return new Promise((resolve, reject) => {
@@ -475,6 +471,8 @@ export default {
         width: 97vw;
         height: 78vh;
         /* background: #06253d; */
+        background: rgba(11,53,115,0.2);
+        border: none;
         border-radius: 5px;
         margin: 20px auto;
         position: relative;
@@ -498,6 +496,9 @@ export default {
         height: 30px;
         color: #fff;
     }
+      .el-form /deep/ .el-input__inner{
+      color: #fff
+    } 
     .el-autocomplete /deep/ .el-input__inner{
         background: none;
         height: 30px;
@@ -514,10 +515,28 @@ export default {
     .center{
         text-align: center;
     }
+           /* dialog样式 */
+    .box-card /deep/ .el-dialog__header{
+        background: #19437e;
+        padding:10px;
+    }
+    .box-card /deep/ .el-dialog__title{
+        color: #fff;
+    }
+     .box-card /deep/ .el-dialog__body{
+         background: #143666;
+         color: #fff;
+     }
+     .box-card /deep/ .el-dialog__footer{
+         background: #143666;
+     }
+     .sameLevel{
+         border-radius: 5px;
+     } 
     /* 组状态样式 */
     .boxName{
         display: block;
-        width: 38px;
+        width: 100%;
         height: 20px;
         text-align: center;
         line-height: 20px;
@@ -557,4 +576,23 @@ export default {
             border-radius: 10px;
             background: #1b4887;
         }
+          body{
+              /*ie下修改滚动条样式，在webkit内核浏览器无效*/
+           /* 三角箭头的颜色  */
+           scrollbar-arrow-color: #f4ae21;
+           /* *立体滚动条的颜色 */
+             scrollbar-face-color: #333;  
+            /* 立体滚动条亮边的颜色 */
+             scrollbar-3dlight-color: #666; 
+            /* 滚动条空白部分的颜色 */
+            scrollbar-highlight-color: #1b4887; 
+        /* 立体滚动条阴影的颜色  */
+            scrollbar-shadow-color: #1b4887; 
+        /* 立体滚动条强阴影的颜色 */
+            scrollbar-darkshadow-color: #666;  
+            /* 立体滚动条背景颜色 */
+            scrollbar-track-color: #666; 
+             /* 滚动条的基本颜色 */
+             scrollbar-base-color:#f8f8f8;
+       }
 </style>

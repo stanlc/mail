@@ -7,10 +7,11 @@
           </div>
           <div class="right clearfix">
             <div class="user">
-                <div class="vip float">
-                  vip<span>|</span>
+                <div class="float">
+                  <span>|</span>
                 </div>
                 <div class="float">
+                  
                   <el-avatar :size="20" icon="el-icon-user-solid"></el-avatar>
                 </div>
                 <div class="float">{{userName}}</div>
@@ -19,12 +20,31 @@
                     <i class="el-icon-arrow-down el-icon--right el-icon-more"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>修改密码</el-dropdown-item>
+                    <el-dropdown-item><span @click="changpassword=true;passForm={}">修改密码</span></el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <a href="javascript:;" class="el-icon-d-arrow-right" @click="checkout">退出</a>
             </div>
           </div>
+            <div class="box-card">
+            <el-dialog
+            title="修改密码"
+            :visible.sync="changpassword"
+            width="30%"
+            center>
+                <el-form :model="passForm">
+                  <el-form-item label="旧密码：">
+                    <el-input v-model="passForm.oldPassword" type="password"></el-input>
+                  </el-form-item>
+                  <el-form-item label="新密码：">
+                    <el-input v-model="passForm.newPassword"></el-input>
+                  </el-form-item>
+                </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="upadatepass">确定</el-button>
+            </span>
+            </el-dialog>
+            </div>
     </div>
 </template>
 
@@ -33,6 +53,8 @@ export default {
    data(){
     return{
       userName:'',
+      changpassword:false,
+      passForm:{},
     }
   },
   created(){
@@ -42,7 +64,19 @@ export default {
     checkout(){
       localStorage.clear()
       this.$router.push('/login')
+    },
+    upadatepass(){
+      this.$http.post('/user/editPassword',this.passForm).then(res=>{
+        if(res.data.code===200){
+          this.$message({
+            type:'success',
+            message:'修改密码成功，请重新登录'
+          })
+        }
+        this.$router.push('/login')
+      })
     }
+
   },
 }
 </script>
@@ -62,7 +96,7 @@ export default {
   }
   .el-dropdown-link {
     cursor: pointer;
-    color: #409EFF;
+    color: #fff;
   }
   .headContainer{
       width: 100%;
@@ -101,5 +135,20 @@ export default {
     .middle{
       vertical-align: middle;
       margin-right:18px;
+    }
+      form.el-form.el-form--label-right.el-form--inline{
+         margin-top: 20px;
+     }
+     
+     .el-input{
+         width:150px;
+     }
+    .el-form /deep/ .el-form-item__label{
+        color: #fff ;
+    }
+    .el-input /deep/ .el-input__inner{
+        background: none;
+        height: 30px;
+        color: #fff;
     }
 </style>

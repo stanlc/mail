@@ -431,4 +431,22 @@ export default {
      .btn-box .el-button{
          width: 5rem;
      }
+            /* dialog样式 */
+    .box-card /deep/ .el-dialog__header{
+        background: #19437e;
+        padding:10px;
+    }
+    .box-card /deep/ .el-dialog__title{
+        color: #fff;
+    }
+     .box-card /deep/ .el-dialog__body{
+         background: #143666;
+         color: #fff;
+     }
+     .box-card /deep/ .el-dialog__footer{
+         background: #143666;
+     }
+     .sameLevel{
+         border-radius: 5px;
+     } 
 </style>

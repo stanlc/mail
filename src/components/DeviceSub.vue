@@ -100,8 +100,8 @@
                         <el-option v-for="item in area" :key="item.index" :label="item.areaName" :value="item.areaName"></el-option>
                     </el-select>                                        
                 </el-form-item>
-            </el-form>            
-            <el-form :inline="true" label-position="right" label-width="auto" :rules="rules" ref="ruleForm" :model="addAccountForm">
+            </el-form>           
+            <el-form :inline="true" label-position="right" label-width="100px" :rules="rules" ref="ruleForm" :model="addAccountForm">
                 <el-form-item label="账号名称：" prop="userName">
                     <el-input v-model="addAccountForm.userName"></el-input>
                 </el-form-item>
@@ -481,16 +481,21 @@ export default {
      form.el-form.el-form--label-right.el-form--inline{
          margin-top: 20px;
      }
+    .el-form /deep/ .el-input__inner{
+      color: #fff
+    } 
      .el-input,.el-autocomplete{
-         width:150px;
+         width:150px ;
      }
      .el-select{
          width: 120px;
          margin-right: 10px;
      }
+     
     .el-form /deep/ .el-form-item__label{
         color: #fff ;
     }
+    
     .el-input /deep/ .el-input__inner{
         background: none;
         height: 30px;
@@ -518,6 +523,7 @@ export default {
     }
      .box-card /deep/ .el-dialog__body{
          background: #143666;
+         color: #fff;
      }
      .box-card /deep/ .el-dialog__footer{
          background: #143666;

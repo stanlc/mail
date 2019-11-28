@@ -37,7 +37,7 @@ export default {
     .el-menu{
         text-align: center;
         height: 84vh;
-        
+        border:none; 
     }
     
 </style>

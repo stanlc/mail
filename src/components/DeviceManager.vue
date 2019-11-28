@@ -456,6 +456,8 @@ export default {
         width: 97vw;
         height: 78vh;
         /* background: #06253d; */
+        background: rgba(11,53,115,0.2);
+        border: none;
         border-radius: 5px;
         margin: 20px auto;
         position: relative;
@@ -487,6 +489,9 @@ export default {
         height: 30px;
         color: #fff;
     }
+      .el-form /deep/ .el-input__inner{
+      color: #fff
+    } 
     .el-select /deep/ .el-input__inner {
         background-color: transparent;
         height: 30px;
@@ -494,5 +499,20 @@ export default {
     .choose-btn{
         width:150px;
     }      
-  
+    
+            /* dialog样式 */
+    .box-card /deep/ .el-dialog__header{
+        background: #19437e;
+        padding:10px;
+    }
+    .box-card /deep/ .el-dialog__title{
+        color: #fff;
+    }
+     .box-card /deep/ .el-dialog__body{
+         background: #143666;
+         color: #fff;
+     }
+     .box-card /deep/ .el-dialog__footer{
+         background: #143666;
+     }
 </style>

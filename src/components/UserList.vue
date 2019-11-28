@@ -94,9 +94,10 @@
             <el-dialog
             title="编辑用户"
             :visible.sync="editUserVisible"
-            width="35%"
+            width="38%"
+            
             >
-            <el-form label-position="right"  label-width="auto" :inline="true">
+            <el-form label-position="right"  label-width="90px" :inline="true">
                     <el-form-item label="机构名称：" >
                         <select-tree
                         :props="props"
@@ -136,10 +137,10 @@
             <el-dialog
             title="新增用户"
             :visible.sync="addUserVisible"
-            width="35%"
+            width="40%"
             class="add"
             >           
-            <el-form label-position="right"  label-width="auto" :model="addUserForm" :inline="true" :rules="rules">
+            <el-form label-position="right"  label-width="100px" :model="addUserForm" :inline="true" :rules="rules">
                 <el-form-item label="机构名称：" >
                     <select-tree
                     :props="props"
@@ -495,7 +496,8 @@ export default {
     .box-card {
         width: 82vw;
         height: 78vh;
-        /* background: #06253d; */
+        background: rgba(11,53,115,0.2);
+        border: none;
         border-radius: 5px;
         margin: 0 auto;
         position: relative;
@@ -524,8 +526,25 @@ export default {
         background-color: transparent;
         height: 30px;
     } 
+    .el-form /deep/ .el-input__inner{
+      color: #fff
+    } 
     .choose-btn{
         width:150px;
     } 
-       
+               /* dialog样式 */
+    .box-card /deep/ .el-dialog__header{
+        background: #19437e;
+        padding:10px;
+    }
+    .box-card /deep/ .el-dialog__title{
+        color: #fff;
+    }
+     .box-card /deep/ .el-dialog__body{
+         background: #143666;
+         color: #fff;
+     }
+     .box-card /deep/ .el-dialog__footer{
+         background: #143666;
+     }  
 </style>
