@@ -79,7 +79,7 @@
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
-            height="600"
+            height="570"
             >
                 <el-table-column
                 type="selection"
@@ -172,15 +172,15 @@ export default {
         return {
             searchForm:{
                 'pageNum':1,
-                'pageSize':5,
+                'pageSize':10,
             },
             pageInfo:{},
             currentPage: 1,
-            pagesize:5,
+            pagesize:10,
             totalCount:0,
             totalPage:0,
             pageNum:1,
-            pageSize:5,
+            pageSize:10,
             tabelList:[],
             exportTabelList:[],
             logList:[],
@@ -378,7 +378,6 @@ export default {
             let form = Object.assign({},this.searchForm)
             form.pageNum = 1
             form.pageSize = 500
-            // var newWindow = window.open();
             this.$http.post('/logger/export',form).then(res=>{
                 if(res.data.code===200){
                     this.$message({
@@ -387,16 +386,28 @@ export default {
                     })
                     // this.xlxurl = res.data.data
                     // console.log(res.data.data)
-                    // this.exportVisible = false
-                    // newWindow.location.href = res.data.data;
-                    this.xlxurl = res.data.data
                     this.exportVisible = false
-                    this.openurl()
+                    this.xlxurl = res.data.data
+                     this.openurl()
                 }
             })
         }, 
         openurl(){
-            window.open(this.xlxurl,'_blank')
+             this.$http({method:'get',url:this.xlxurl, responseType:'blob'}).then(res=>{
+                  console.log("response: ", res);
+                // new Blob([data])用来创建URL的file对象或者blob对象
+                let url = window.URL.createObjectURL(new Blob([res.data])); 
+                // 生成一个a标签
+                let link = document.createElement("a");
+                link.style.display = "none";
+                link.href = url;
+                // 生成时间戳
+                let arr = this.xlxurl.split('/')
+                let filename = arr.pop()
+                link.download = filename + ".xls";   
+                document.body.appendChild(link);
+                link.click();
+             })
         },
         fetchExportBill(url, data = {}) {
             return new Promise((resolve, reject) => {

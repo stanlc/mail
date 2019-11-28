@@ -60,10 +60,11 @@
                 </el-form-item>                                                                             
             </el-form>
             <el-table
-            :data="tabelList "
+            :data="tabelList"
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
+            height="520"
             >
                 <el-table-column
                 type="selection"
@@ -144,7 +145,7 @@ export default {
     data(){
         return {
             pageNum:1,
-            pageSize:5,
+            pageSize:8,
             pageInfo:{},
             idList:[],
             tabelList:[],
@@ -153,13 +154,13 @@ export default {
             organList:[],
             valueId:0,
             currentPage: 1,
-            pagesize:4,
+            pagesize:8,
             exportVisible:false,
             xlxurl:'',
             totalCount:0,
-             searchForm:{
+            searchForm:{
                 'pageNum':1,
-                'pageSize':4,
+                'pageSize':8,
             },
             props:{
                 value:'id',
@@ -181,22 +182,11 @@ export default {
         
     },
     mounted(){
-            //获取分页信息
-            this.$http.post('/monitoring/pagerList',{
-                'pageNum':1,
-                'pageSize':4,
-            }).then(res=>{
-                this.tabelList =res.data.paging.list
-                this.pageInfo = res.data.paging
-                this.currentPage = this.pageInfo.currentPage
-                this.pagesize = this.pageInfo.pageSize
-                this.totalCount = this.pageInfo.totalCount
-            })
+            this.getList(this.searchForm)
            if(localStorage.runInfoList){
                this.runInfoList = JSON.parse(localStorage.runInfoList)
            }else{
                this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
-                   
                    localStorage.runInfoList = JSON.stringify(res.data.paging.list)
                    this.runInfoList = JSON.parse(localStorage.runInfoList)
                    
@@ -223,18 +213,30 @@ export default {
         },
         //分页
         handleSizeChange(val) {
-            this.searchForm.pageSize = val
-            this.getList(this.searchForm)
+            this.pagesize = val
+            this.searchForm.pageSize = val 
+            this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
         },
         handleCurrentChange(val) {
+            this.currentPage = val
             this.searchForm.pageNum = val
-            this.getList(this.searchForm)
+            this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+            })
         },
         getList(form){
-            this.$http.post('/monitoring/pagerList',form).then(res=>{
-                    this.runInfoList = res.data.paging.list
-                })
-        },
+            this.$http.post('/monitoring/pagerList',form
+            ).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
+                this.pagesize = this.pageInfo.pageSize
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+            })
+        },  
         exportEx(){
             let form = Object.assign({},this.searchForm)
             form.pageNum = 1
@@ -253,7 +255,21 @@ export default {
             })
         }, 
         openurl(){
-            window.open(this.xlxurl,'_blank')
+                this.$http({method:'get',url:this.xlxurl, responseType:'blob'}).then(res=>{
+                  console.log("response: ", res);
+                // new Blob([data])用来创建URL的file对象或者blob对象
+                let url = window.URL.createObjectURL(new Blob([res.data])); 
+                // 生成一个a标签
+                let link = document.createElement("a");
+                link.style.display = "none";
+                link.href = url;
+                // 生成时间戳
+                let arr = this.xlxurl.split('/')
+                let filename = arr.pop()
+                link.download = filename + ".xls";   
+                document.body.appendChild(link);
+                link.click();
+                })
         },        
         //内容格式化
 
@@ -292,7 +308,6 @@ export default {
                         type:'success',message:'查询成功'
                     })
                 }
-
                 this.$refs.selectTree.clearHandle()
             })
             
@@ -303,9 +318,7 @@ export default {
                 'pageNum':this.pageNum,
                 'pageSize':this.pageSize,
             },
-            this.$http.post('/monitoring/pagerList',this.searchForm).then(res=>{
-                this.tabelList = res.data.paging.list
-            })            
+            this.getList(this.searchForm)           
         },
         // 取值
         getValue(value) {

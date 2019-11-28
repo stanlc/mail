@@ -35,7 +35,7 @@
             </el-form>
             <el-form :inline="true">
                 <el-form-item>
-                    <el-button type="primary" @click="bindDeviceDialogVisible=true" size="small">绑定设备</el-button>
+                    <el-button type="primary" @click="bindDeviceDialogVisible=true;clearValidate('bindDeviceForm')" size="small">绑定设备</el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="unBind" size="small">解绑设备</el-button>
@@ -94,26 +94,26 @@
             <el-dialog
             title="绑定设备"
             :visible.sync="bindDeviceDialogVisible"
-            width="40%"
+            width="25%"
             :model="bindDeviceForm"
             class="bind"
             >
-                <el-form label-position="right" label-width="auto">
+                <el-form label-position="right" label-width="auto" :rules="rules" ref="bindDeviceForm">
                     <el-form-item label="设备账号：">
                         <el-select v-model="bindDeviceForm.deviceAccount" @change="choseAccount" placeholder="请选择设备账号">
                             <el-option v-for="item in accountList" :key="item.index" :label="item.account" :value="item.account"></el-option>
                         </el-select>                                     
                     </el-form-item>
-                    <el-form-item label="设备授权码：">
+                    <el-form-item label="设备授权码：" prop="deviceSerial">
                         <el-input v-model="bindDeviceForm.deviceSerial" ></el-input>
                     </el-form-item>
-                    <el-form-item label="正品码：">
+                    <el-form-item label="正品码：" prop="genuineCode">
                         <el-input v-model="bindDeviceForm.genuineCode" ></el-input>
                     </el-form-item>   
                 </el-form>
                 <el-form :inline="true">
                     <el-button type="primary" @click="bindDevice">确定</el-button>
-                    <el-button type="primary" @click="bindDeviceDialogVisible =false;bindDeviceForm={}">取消</el-button>
+                    <el-button type="primary" @click="bindDeviceDialogVisible =false;bindDeviceForm={};clearValidate('bindDeviceForm')">取消</el-button>
                 </el-form>  
             </el-dialog>            
             <!-- 绑定设备dialog -->
@@ -121,7 +121,7 @@
             <el-dialog
             title="详情"
             :visible.sync="infoVisible"
-            width="40%"
+            width="30%"
             class="bind"
             >
             用户名：{{accountInfo.userName}}<br>
@@ -156,6 +156,14 @@ export default {
             selectAccounts:[],
             right:'right',
             searchForm:{'pageNum':this.pageNum,'pageSize':this.pageSize},
+            rules: {
+                deviceSerial:[
+                    { required: true, message: '请输入设备授权码', trigger: ['blur', 'change'] }
+                ],
+                genuineCode:[
+                    { required: true, message: '请输入正品码', trigger: ['blur', 'change'] }
+                ],
+                },
             pageInfo:{},
             currentPage: 1,
             pagesize:4,
@@ -367,7 +375,10 @@ export default {
         },        
         SerialhandleSelect(item) {
             //console.log(item);
-        }                      
+        }  ,
+        clearValidate(formName) {
+        this.$refs[formName].clearValidate();
+        },                      
     }
 }       
 </script>

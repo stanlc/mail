@@ -8,14 +8,11 @@
           <div class="right clearfix">
             <div class="user">
                 <div class="float">
+                  <img src="../assets/img/vip.png"/>
                   <span>|</span>
-                </div>
-                <div class="float">
-                  
                   <el-avatar :size="20" icon="el-icon-user-solid"></el-avatar>
-                </div>
-                <div class="float">{{userName}}</div>
-                <el-dropdown>
+                  <span>{{userName}}</span>
+                  <el-dropdown>
                   <span class="el-dropdown-link">
                     <i class="el-icon-arrow-down el-icon--right el-icon-more"></i>
                   </span>
@@ -24,6 +21,8 @@
                   </el-dropdown-menu>
                 </el-dropdown>
                 <a href="javascript:;" class="el-icon-d-arrow-right" @click="checkout">退出</a>
+                </div>
+                
             </div>
           </div>
             <div class="box-card">
@@ -92,6 +91,22 @@ export default {
 <style scoped lang="scss">
   .float{
   float: left;
+  }
+  .float span{
+    vertical-align: middle;
+  }
+  .float img{
+    vertical-align: middle;
+    height: 25px;
+  }
+  .user{
+    display: inline-block;
+  }
+  .user div{
+    vertical-align: middle
+  }
+  .user div a{
+    vertical-align: middle
   }
   .clearfix::after{
     content: '';

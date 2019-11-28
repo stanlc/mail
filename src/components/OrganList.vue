@@ -164,7 +164,7 @@
             <div>
                 <el-form :inline="true">
                     <el-form-item>
-                        <el-button type="primary" @click="addRoleDialogVisible=true" :disabled="addUserBtn">录入</el-button>
+                        <el-button type="primary" @click="addRoleDialogVisible=true;clearValidate('addRoleForm');addRoleForm={}" :disabled="addUserBtn">录入</el-button>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="configRole" :disabled="editUserBtn">编辑</el-button>
@@ -213,7 +213,7 @@
             <el-dialog
             title="角色录入"
             :visible.sync="addRoleDialogVisible"
-            width="35%"
+            width="20%"
             custom-class="sameLevel">
             <el-dialog
             width="30%"
@@ -221,7 +221,7 @@
             :visible.sync="addRoleinnerVisible"
             append-to-body>
             </el-dialog>
-            <el-form label-position="right"  label-width="90px" :model="addRoleForm" :rules="rules">
+            <el-form label-position="right"  label-width="90px" :model="addRoleForm" :rules="rules" ref="addRoleForm">
                 <el-form-item label="角色名称:" prop="roleName">
                     <el-input v-model="addRoleForm.roleName"></el-input>
                 </el-form-item>
@@ -231,7 +231,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addRole">确认</el-button>
-                <el-button @click="addRoleDialogVisible =false" type="primary">取 消</el-button>
+                <el-button @click="addRoleDialogVisible =false;clearValidate('addRoleForm')" type="primary">取 消</el-button>
             </span>
             </el-dialog>
             <!-- 添加角色Dialog --> 

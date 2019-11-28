@@ -32,7 +32,7 @@
                     <el-button type="primary" @click="addOldAccountVisible=true">绑定已有订阅账号</el-button>
                 </el-form-item> -->
                 <el-form-item>
-                    <el-button type="primary" @click="addAccountDialogVisible=true;addAccountForm={}">创建新的订阅账号</el-button>
+                    <el-button type="primary" @click="addAccountDialogVisible=true;addAccountForm={};clearValidate('ruleForm')">创建新的订阅账号</el-button>
                 </el-form-item>                
             </el-form>
             <el-table
@@ -123,7 +123,7 @@
             </el-form>            
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addAccount">确定</el-button>
-                <el-button type="primary" @click="addAccountDialogVisible =false">取消</el-button>
+                <el-button type="primary" @click="addAccountDialogVisible =false;clearValidate('ruleForm')">取消</el-button>
             </span>
             </el-dialog>            
             <!-- 新增订阅账号dialog -->
@@ -448,7 +448,9 @@ export default {
             //console.log(item);
         },
         //输入验证
-        
+        clearValidate(formName) {
+        this.$refs[formName].clearValidate();
+        },  
        
     }
 }       

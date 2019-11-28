@@ -1,6 +1,10 @@
 <template>
     <div>
         <div class="mapbox">
+            <div class="statImg">
+                <img src="../assets/img/on.png"/><span style="">在线</span>
+                <img src="../assets/img/off.png"/><span>离线</span>
+            </div>
             <div id="map" style="width:650px;height:500px;"></div>
         </div>
         <div id="message" v-show="showmes">
@@ -134,8 +138,8 @@ export default {
                 }else{
                     this.colors = '#9bbc42'
                 }
-                a.style.top =c[0]-168+'px'                
-                a.style.left=c[1]-187+'px'
+                a.style.top =c[0]-80+'px'                
+                a.style.left=c[1]-64+'px'
                 this.showmes = true
                 this.groupShow = false
                 this.myChart.setOption(this.option)
@@ -272,8 +276,37 @@ export default {
     width: 43vw;
     height: 40vw;
     margin-top: -10px;
-    display: inline-block;
-    text-align: center;
+    display: -moz-box;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -moz-box-align: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -moz-box-pack: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    /*for ie9*/
+    justify-content: center;
+    position: relative;
+  }
+  .statImg{
+      position: absolute;
+      top: 5%;
+      left: 5%;
+      color: #fff;
+      display: inline-block;
+  }
+  .statImg span{
+      vertical-align: middle;
+  }
+  .statImg img{
+      vertical-align: middle;
+      margin:0 5px 0 15px;
   }
   .table{
     background: url(..\assets\img\list.png) no-repeat;
@@ -289,11 +322,7 @@ export default {
   .tablebox{
       overflow-y: auto;
   }
- #map{
-     position: relative;
-     top: 10%;
-     left: -6%;
- }
+
  #message span,#message a{
      color: #fff;
  }

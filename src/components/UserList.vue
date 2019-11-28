@@ -27,10 +27,11 @@
                 <el-button type="danger" @click="delUser">删除</el-button>
             </el-form>
             <el-table
-            :data="userList"
+            :data="tabelList"
             style="width: 100%"
             @select="userSelect"
             @check-change="CheckChange"
+            height="495"
             >
                 <el-table-column
                 type="selection"
@@ -94,7 +95,7 @@
             <el-dialog
             title="编辑用户"
             :visible.sync="editUserVisible"
-            width="38%"
+            width="28%"
             
             >
             <el-form label-position="right"  label-width="90px" :inline="true">
@@ -137,10 +138,10 @@
             <el-dialog
             title="新增用户"
             :visible.sync="addUserVisible"
-            width="40%"
+            width="30%"
             class="add"
             >           
-            <el-form label-position="right"  label-width="100px" :model="addUserForm" :inline="true" :rules="rules">
+            <el-form label-position="right"  label-width="100px" :model="addUserForm" :inline="true" :rules="rules" ref="addUserForm">
                 <el-form-item label="机构名称：" >
                     <select-tree
                     :props="props"
@@ -208,14 +209,14 @@ export default {
     data(){
         return {
             searchForm:{
-                pageNum:1,
-                pageSize:10,
-                "pageNum": this.pageNum,
-                "pageSize": this.pageSize,
+                "pageNum": 1,
+                "pageSize": 8,
             },
             pageInfo:{},
             currentPage: 1,
-            pagesize:10,
+            pagesize:8,
+            pageNum:1,
+            pageSize:8,
             totalCount:0,
             totalPage:0,
             tabelList:[],
@@ -280,10 +281,12 @@ export default {
        { SelectTree,}
     ,
     created(){
-        this.utils.getUserList(this,this.searchForm)
+        // this.utils.getUserList(this,this.searchForm)
         this.utils.getOrganList(this)
+        this.getList(this.searchForm)
     },
     mounted(){
+        
     },
     methods:{
         userSelect(e){
@@ -319,17 +322,31 @@ export default {
             })
         },        
         searchUser(){
-            this.utils.getUserList(this,this.searchForm)
+            this.$http.post('user/userList',this.searchForm).then(res=>{
+                this.tabelList = res.data.paging.list
+                this.pageInfo = res.data.paging
+                this.totalCount = this.pageInfo.totalCount
+                this.totalPage = this.pageInfo.totalPage 
+                if(res.data.code===200){
+                    this.$message({
+                        type:'success',
+                        message:'查询成功'
+                    })
+                }
+            })
         },
         clear(){
-            this.searchForm = {"pageNum": this.pageNum,"pageSize": this.pageNum,}
-            this.utils.getUserList(this,{"pageNum": this.pageNum,
-                "pageSize": this.pageNum,})
+            this.searchForm={
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
+            }
+            this.getList(this.searchForm)
         },
         openAdd(){
             this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
             this.addUserVisible=true
             this.addUserForm={}
+            this.clearValidate('addUserForm')
         },
         addUser(){
             // if(this.addUserForm.organId){
@@ -341,13 +358,13 @@ export default {
             // console.log(this.addUserForm.roleName)
             this.utils.addUser(this,this.addUserForm)
             this.addUserVisible = false
-            this.getList(this.searchForm) 
-            
+            this.getList(this.searchForm)
         },
         cancelAdd(){
             this.addUserVisible=false
             this.$refs.addTree.clearHandle()
             this.addUserForm= {}
+            this.clearValidate('addUserForm')
         },
         delUser(){
             let that = this
@@ -355,12 +372,17 @@ export default {
                 if(item.id!==0){
                     let id = item.id
                     // console.log(id)
-                    this.utils.delUser(id).then(()=>{
-                        that.utils.getUserList(that,that.searchForm)
-                        this.$message({
-                            type:'success',
-                            message:'删除成功'
-                        })
+                    this.utils.delUser(id).then((res)=>{
+                        if(res.data.code===200){
+                            this.$message({
+                                type:'success',
+                                message:'删除成功'
+                            })
+                        this.getList({
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
+            })
+                        }
                     })
                 }
             })    
@@ -374,8 +396,10 @@ export default {
                         type:'success',
                         message:'删除成功'
                     })
-                this.utils.getUserList(this,{"pageNum": this.pageNum,
-                    "pageSize": this.pageNum,})
+                        this.getList({
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
+            })
                     }
             })
         },
@@ -393,7 +417,7 @@ export default {
             //     this.editUserForm.roleId = this.userRoleList.filter(item=>item.roleName===this.editUserForm.roleName)[0].roleId
             // }            
             this.utils.editUser(this.editUserForm).then((res)=>{
-                that.utils.getUserList(that,that.searchForm)
+                this.getList(this.searchForm) 
                        if(res.data.code===200){
                             this.$message({
                                 type:'success',
@@ -469,7 +493,10 @@ export default {
                 }) 
             }
                       
-        }           
+        },
+        clearValidate(formName) {
+        this.$refs[formName].clearValidate();
+        },           
         
     }
 }

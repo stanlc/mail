@@ -67,6 +67,7 @@ let utils = {
             vm.addUserForm={}
             if(res.data.code===200){
                 vm.$message({type:'success',message:'添加用户成功'})
+                vm.getList(vm.searchForm)
                 vm.utils.getUserList(vm,{"pageNum": vm.pageNum,
                 "pageSize": vm.pageNum,})
             }

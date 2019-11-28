@@ -20,8 +20,9 @@
                 </el-form-item> 
                 <el-form-item label="设备状态：">
                     <el-select v-model="searchForm.status">
-                        <el-option label="在线" value=1></el-option>
-                        <el-option label="离线" value=0></el-option>
+                        <el-option label="打开" value=1></el-option>
+                        <el-option label="关闭" value=0></el-option>
+                        <el-option label="无状态" value=2></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="订阅账号：">
@@ -106,7 +107,7 @@
             <el-dialog
             title="配置机构"
             :visible.sync="configOrganVisible"
-            width="40%"
+            width="25%"
             :model="configOrganForm"
             class="bind"
             >
@@ -133,6 +134,7 @@
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
+            height="450"
             >
                 <el-table-column
                 type="selection"
@@ -211,7 +213,7 @@ export default {
         return {
            
             pageNum:1,
-            pageSize:4,
+            pageSize:7,
             deviceList:[],
             accountList:[],
             organList:[],
@@ -223,12 +225,12 @@ export default {
             valueId:0,
             pageInfo:{},
             currentPage: 1,
-            pagesize:4,
+            pagesize:7,
             totalCount:0,
             totalPage:0,
             searchForm:{
                 "pageNum": 1,
-                "pageSize": 4
+                "pageSize": 7
             },
             props:{
                 value:'id',
@@ -262,7 +264,6 @@ export default {
             this.organList = JSON.parse(localStorage.organList)
         }
         
-        this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
         
         this.getList(this.searchForm)
 
@@ -322,12 +323,13 @@ export default {
             })
         },
         status(row){
-            let s = row.status
-            if(s===1){
-                return '在线'
-            }else{
-                return '离线'
-            }
+                if(row.status===1){
+                    return '开启'
+                }else if(row.status===0){
+                    return '关闭'
+                }else{
+                    return '无状态'
+                }
         },
         //筛选
         search(){
@@ -343,15 +345,11 @@ export default {
                     })
                 }
             })
-            this.searchForm = {
-                "pageNum": 1,
-                "pageSize": 4
-            }
         },
         clear(){
-            this.searchForm = {
-                "pageNum": 1,
-                "pageSize": 4
+            this.searchForm={
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
             }
             this.getList(this.searchForm)
         },
@@ -365,6 +363,7 @@ export default {
             this.configDeviceDialogVisible = true
             this.configorigin = row
             this.configDeviceForm = Object.assign({},row)
+            
             // this.configDeviceForm.aliasName = row.aliasName
             // this.configDeviceForm.devicePosition = row.devicePosition
             // this.configDeviceForm.id = row.id
@@ -382,6 +381,7 @@ export default {
         //配置机构
         configOrgan(){
             this.configOrganVisible = true
+            this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
         },
         
        
@@ -406,6 +406,7 @@ export default {
             console.log(e)
         },
         getValue(value) {
+            
             this.valueId = value;
             this.configOrganForm.organId = value
             if(value){
