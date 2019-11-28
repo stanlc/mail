@@ -31,12 +31,12 @@
             title="修改密码"
             :visible.sync="changpassword"
             width="30%"
-            center>
-                <el-form :model="passForm">
-                  <el-form-item label="旧密码：">
+            >
+                <el-form :model="passForm" label-width="120px" label-position="right" >
+                  <el-form-item label="旧密码：" prop="old">
                     <el-input v-model="passForm.oldPassword" type="password"></el-input>
                   </el-form-item>
-                  <el-form-item label="新密码：">
+                  <el-form-item label="新密码：" prop="new">
                     <el-input v-model="passForm.newPassword"></el-input>
                   </el-form-item>
                 </el-form>
@@ -55,6 +55,15 @@ export default {
       userName:'',
       changpassword:false,
       passForm:{},
+      rules:{
+                old:[
+                    { required: true, message: '请输入旧密码', trigger: ['blur', 'change'] }
+                ],
+                new:[
+                    { required: true, message: '请输入新密码', trigger: ['blur', 'change'] }
+                     
+                ],
+      }
     }
   },
   created(){
@@ -151,4 +160,18 @@ export default {
         height: 30px;
         color: #fff;
     }
+        .box-card /deep/ .el-dialog__header{
+        background: #19437e;
+        padding:10px;
+    }
+    .box-card /deep/ .el-dialog__title{
+        color: #fff;
+    }
+     .box-card /deep/ .el-dialog__body{
+         background: #143666;
+         color: #fff;
+     }
+     .box-card /deep/ .el-dialog__footer{
+         background: #143666;
+     }
 </style>

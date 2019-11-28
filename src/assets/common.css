@@ -17,10 +17,7 @@
     
   }
         /* dialog样式 */
-  .home /deep/ .box-card /deep/ .el-dialog__header{
-      background: #54585e;
-      padding:10px;
-  }
+  
   .home /deep/ .box-card /deep/ .el-dialog__title{
       color: #fff;
   }
