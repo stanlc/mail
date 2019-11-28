@@ -47,7 +47,7 @@ export default {
                             }}}})
                })
                 this.countlist.map((item,index)=>{item.itemStyle.normal.color=that.colors[index]})
-                console.log(this.countlist)
+                // console.log(this.countlist)
                 this.draw()
             })
         },

@@ -6,15 +6,15 @@
         <div id="message" v-show="showmes">
             <a class="close" @click="showmes=false">X</a>
             <span style="color:#0bb6cf;display:block;">设备定位</span><br>
-            <span>联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
+            <span style="color:#56d123;">联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
             <span>位置：{{deviceGroup.position}}{{deviceGroup.positionDetail}}</span><br>
             <span>状态：开启{{deviceGroup.openStatusNum}}/关闭{{deviceGroup.offStatusNum}}</span><br> 
-            <a href="javascript:;" @click="groupShow=!groupShow">>组状态查看</a>
+            <a href="javascript:;" @click="groupShow=!groupShow" style="color:#0bb6cf;display:block;margin-top:5px;">组状态查看</a>
             <div v-if="groupShow" class="group">
                 <span style="color:#0bb6cf;display:block;"> 组状态</span><br>
-                <span >{{deviceGroup.position}}-{{deviceGroup.positionDetail}}</span>
+                <span style="display:inline-block;">{{deviceGroup.position}}-{{deviceGroup.positionDetail}}</span>
                 <span >{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
-                <div class="groupBox center">
+                <div class="groupBox center" >
                     <div v-for="item in deviceGroup.groupInfoList" :key="item.index" class="groupItem">
                         <span class="boxName">{{item.positionDetail|boxposition}}</span>
                         <p :class="item.openStatus===1?'green':'red'">{{item.openStatus|openStat}}</p>
@@ -26,7 +26,8 @@
             <div class="tablebox">
                 <el-table
                 :data='deviceList'
-                style="width: 100%">
+                style="width: 100%"
+                height="540">
                     <el-table-column
                     type="index">
                     </el-table-column>
@@ -136,6 +137,7 @@ export default {
                 a.style.top =c[0]-168+'px'                
                 a.style.left=c[1]-187+'px'
                 this.showmes = true
+                this.groupShow = false
                 this.myChart.setOption(this.option)
             })
         },
@@ -311,7 +313,9 @@ export default {
 }
     /* 组状态样式 */
     .group{
-        margin-top:60px;
+        margin-top:28px;
+        position: relative;
+        left: -180px;
     }
     .boxName{
         display: block;
@@ -329,6 +333,8 @@ export default {
         background: url(../assets/img/group.png) no-repeat;
         background-size: contain;
         padding: 15px;
+        z-index: 3;
+        position: relative;
     }
     .groupBox{
         display: block;

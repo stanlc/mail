@@ -63,3 +63,22 @@
         background-color: transparent !important;
         color: #15d3da;
       }
+
+
+    
+  
+  .tablebox /deep/ .el-table__body-wrapper::-webkit-scrollbar {
+    width: 6px; 
+    height: 6px; 
+  }
+  
+  .tablebox /deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
+    background: #0bb6cf;
+    border-radius: 5px;
+  }
+ 
+  .tablebox /deep/ .el-table__body-wrapper::-webkit-scrollbar-track {/*滚动条里面轨道*/
+            
+    border-radius: 10px;
+    background: #1b4887;
+}

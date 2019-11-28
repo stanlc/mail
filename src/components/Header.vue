@@ -14,7 +14,14 @@
                   <el-avatar :size="20" icon="el-icon-user-solid"></el-avatar>
                 </div>
                 <div class="float">{{userName}}</div>
-                <div class="el-icon-more"><span>|</span></div>
+                <el-dropdown>
+                  <span class="el-dropdown-link">
+                    <i class="el-icon-arrow-down el-icon--right el-icon-more"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item>修改密码</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
                 <a href="javascript:;" class="el-icon-d-arrow-right" @click="checkout">退出</a>
             </div>
           </div>
@@ -52,6 +59,10 @@ export default {
   a{
     color: #fff;
     text-decoration: none;
+  }
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
   }
   .headContainer{
       width: 100%;
