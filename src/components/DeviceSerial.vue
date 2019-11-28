@@ -8,7 +8,7 @@
           text-color="#fff"
           router
           >
-          <el-menu-item v-for="item in subList" :key="item.index" :index="item.sourcePath" >{{item.resourceName}}</el-menu-item>
+          <el-menu-item v-for="item in subList" :key="item.index" :index="item.sourcePath" ><div :class="item.iconCls"></div>{{item.resourceName}}</el-menu-item>
           </el-menu>
         </el-aside>
         <el-main>
@@ -45,5 +45,8 @@ export default {
     .el-menu{
         border:none;
     }
-    
+    .el-menu-item{
+    text-align: center;
+    width:100%;
+  }
 </style>

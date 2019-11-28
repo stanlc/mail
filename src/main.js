@@ -7,7 +7,7 @@ import axios from 'axios'
 import utils from './util/utils'
 import Router from 'vue-router'
 import VueAMap from 'vue-amap';
-
+import 'babel-polyfill'
 //节流
 // var throttle = function(func, delay) {            
 //   　　var prev = Date.now();            

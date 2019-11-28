@@ -7,7 +7,7 @@
           text-color="#fff"
           router
           >
-          <el-menu-item v-for="item in menuList" :key="item.index" :index="item.sourcePath" >{{item.resourceName}}</el-menu-item>
+          <el-menu-item v-for="item in menuList" :key="item.index" :index="item.sourcePath" ><div :class="item.iconCls"></div>{{item.resourceName}}</el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -52,5 +52,5 @@ export default {
     color: #fff !important;
     background-color: #22bdd8 !important;
   }
-
+  //标签样式
 </style>

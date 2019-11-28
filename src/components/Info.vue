@@ -105,14 +105,27 @@ export default {
     background-size:contain;
     width: 20vw;
     height: 10vw; 
-    display:flex;
-    justify-content: center;
+    display: -moz-box;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -moz-box-align: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
     align-items: center;
+    -moz-box-pack: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    /*for ie9*/
+    justify-content: center;
     position: relative;
     padding-top: 5px;
   }
   .status .cav{
-    margin-left: 70px;
+    margin-left: 60px;
   }
   .count{
     background: url(..\assets\img\deviceCount.png) no-repeat;
