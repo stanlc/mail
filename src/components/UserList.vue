@@ -31,7 +31,8 @@
             style="width: 100%"
             @select="userSelect"
             @check-change="CheckChange"
-            height="495"
+                :height="tableHeight"
+                ref="table"
             >
                 <el-table-column
                 type="selection"
@@ -219,6 +220,7 @@ export default {
             pageSize:8,
             totalCount:0,
             totalPage:0,
+            tableHeight:50,
             tabelList:[],
             userList:[],
             organList:[],
@@ -286,7 +288,7 @@ export default {
         this.getList(this.searchForm)
     },
     mounted(){
-        
+        this.tableChange()
     },
     methods:{
         userSelect(e){
@@ -497,7 +499,19 @@ export default {
         clearValidate(formName) {
         this.$refs[formName].clearValidate();
         },           
-        
+        tableChange(){
+        this.$nextTick(function () {
+            this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 235;
+            
+            // 监听窗口大小变化
+            let self = this;
+            window.onresize = function() {
+                self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 235
+            }
+        })
+        //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
+　　　　 //240表示你想要调整的表格距离底部的高度（你可以自己随意调整），因为我们一般都有放分页组件的，所以需要给它留一个高度　
+        },           
     }
 }
 </script>

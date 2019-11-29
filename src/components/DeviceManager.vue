@@ -134,7 +134,8 @@
             style="width: 100%"
             @select="deviceSelect"
             @check-change="CheckChange"
-            height="450"
+            :height="tableHeight"
+            ref="table"
             >
                 <el-table-column
                 type="selection"
@@ -228,6 +229,7 @@ export default {
             pagesize:7,
             totalCount:0,
             totalPage:0,
+            tableHeight:50,
             searchForm:{
                 "pageNum": 1,
                 "pageSize": 7
@@ -266,7 +268,7 @@ export default {
         
         
         this.getList(this.searchForm)
-
+        this.tableChange()
         this.$http.post('/device/pagerList',{
                 "pageNum":1,
                 "pageSize":1000
@@ -439,7 +441,20 @@ export default {
         },        
         handleSelect(item) {
             //console.log(item);
-        },        
+        }, 
+        tableChange(){
+        this.$nextTick(function () {
+            this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 240;
+            
+            // 监听窗口大小变化
+            let self = this;
+            window.onresize = function() {
+                self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 240
+            }
+        })
+        //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
+　　　　 //240表示你想要调整的表格距离底部的高度（你可以自己随意调整），因为我们一般都有放分页组件的，所以需要给它留一个高度　
+        },          
     }
 }
 </script>

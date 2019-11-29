@@ -45,6 +45,8 @@
             :data="tabelList"
             style="width: 100%"
             @select="accountSelect"
+            :height="tableHeight"
+            ref="table"
             >
                 <el-table-column
                 type="selection"
@@ -98,7 +100,7 @@
             :model="bindDeviceForm"
             class="bind"
             >
-                <el-form label-position="right" label-width="auto" :rules="rules" ref="bindDeviceForm">
+                <el-form label-position="right" label-width="auto" :rules="rules" ref="bindDeviceForm" :model="bindDeviceForm">
                     <el-form-item label="设备账号：">
                         <el-select v-model="bindDeviceForm.deviceAccount" @change="choseAccount" placeholder="请选择设备账号">
                             <el-option v-for="item in accountList" :key="item.index" :label="item.account" :value="item.account"></el-option>
@@ -172,6 +174,7 @@ export default {
             tabelList:[],
             pageNum:1,
             pageSize:4,
+            tableHeight:50,
             addOldAccountForm:{},
             bindDeviceForm:{},
             accList:[],
@@ -193,7 +196,8 @@ export default {
                 let unisList = Array.from(new Set([...sList])) 
                 uniList.map(item=> this.accList.push({'value':item}))    
                 unisList.map(item=> this.serList.push({'value':item}))         
-        })            
+        })
+        this.tableChange()            
     },
     methods:{
         accountSelect(e){
@@ -378,7 +382,20 @@ export default {
         }  ,
         clearValidate(formName) {
         this.$refs[formName].clearValidate();
-        },                      
+        }, 
+        tableChange(){
+        this.$nextTick(function () {
+            this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 240;
+            
+            // 监听窗口大小变化
+            let self = this;
+            window.onresize = function() {
+                self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 240
+            }
+        })
+        //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
+　　　　 //240表示你想要调整的表格距离底部的高度（你可以自己随意调整），因为我们一般都有放分页组件的，所以需要给它留一个高度　
+        },                        
     }
 }       
 </script>

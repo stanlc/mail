@@ -5,9 +5,9 @@
                 <img src="../assets/img/on.png"/><span style="">在线</span>
                 <img src="../assets/img/off.png"/><span>离线</span>
             </div>
-            <div id="map" style="width:650px;height:500px;"></div>
-        </div>
-        <div id="message" v-show="showmes">
+            <div id="map" style="width:650px;height:500px;"> 
+            </div>
+            <div id="message" v-show="showmes">
             <a class="close" @click="showmes=false">X</a>
             <span style="color:#0bb6cf;display:block;">设备定位</span><br>
             <span style="color:#56d123;">联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
@@ -25,7 +25,9 @@
                     </div>
                 </div>                
             </div>
+            </div>
         </div>
+
         <div class="table">
             <div class="tablebox">
                 <el-table
@@ -125,34 +127,42 @@ export default {
     methods:{
         show(row){
             this.$http.post(`/device/deviceGroup/${row.deviceNum}`).then(res=>{
+                
                 this.deviceGroup = res.data.data
                 //显示弹出框
                 let cc = ((this.deviceGroup.openStatus)===1)?'#9bbc42':'#a32d50'
                 let tude = [parseFloat(this.deviceGroup.organLatitude),parseFloat(this.deviceGroup.organLongitude),cc]
                 //地图标点
                 this.geoDeviceList.push(tude)  //待去重
-                let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
+                
                 let a = document.getElementById('message')
                 if(row.status===1){
                     this.colors = '#a32d50'
                 }else{
                     this.colors = '#9bbc42'
                 }
-                a.style.top =c[0]-80+'px'                
-                a.style.left=c[1]-64+'px'
-                this.showmes = true
-                this.groupShow = false
                 this.myChart.setOption(this.option)
+                let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
+                console.log(s)
+                a.style.top =c[0]-180+'px'                
+                a.style.left=c[1]-170+'px'
+                this.showmes = true 
+                this.groupShow = false
+                
+               
+                   
+                
+                
             })
         },
-        openInfo(){
+        // openInfo(){
             
-            let a = document.getElementById('message')
-            a.style.top =this.boxy+'px'
-            a.style.left=this.boxx+'px'
-            this.showmes = !this.showmes
+        //     let a = document.getElementById('message')
+        //     a.style.top =this.boxy+'px'
+        //     a.style.left=this.boxx+'px'
+        //     this.showmes = !this.showmes
             
-        },
+        // },
         statFormat(row){
                 if(row.status===1){
                     return '开启'
@@ -294,6 +304,11 @@ export default {
     justify-content: center;
     position: relative;
   }
+  #map{
+      position: absolute;
+      left: 62%;
+      transform: translateX(-65%);
+  }
   .statImg{
       position: absolute;
       top: 5%;
@@ -331,9 +346,11 @@ export default {
     background-size: contain;
     width: 300px;
     height: 160px;
-    display: block; 
     padding: 15px;
+    display: block; 
     position: absolute;
+    top:0;
+    left: 0%;
 }
 .table{
     position: absolute;
