@@ -96,7 +96,7 @@
             <el-dialog
             title="编辑用户"
             :visible.sync="editUserVisible"
-            width="28%"
+            width="35%"
             
             >
             <el-form label-position="right"  label-width="90px" :inline="true">
@@ -127,19 +127,18 @@
                     <el-form-item label="手机号码：">
                         <el-input v-model="editUserForm.phone"></el-input>
                     </el-form-item>
-                    <el-form-item>
-                            <el-button type="primary" @click="editUser">提交</el-button>
-                    </el-form-item><el-form-item>
-                        <el-button type="primary" @click="editUserVisible=false;$refs.editTree.clearHandle()">取消</el-button>
-                    </el-form-item>
             </el-form>
+            <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="editUser">提交</el-button>
+                    <el-button type="primary" @click="editUserVisible=false;$refs.editTree.clearHandle()">取消</el-button>
+            </span>
             </el-dialog>
             <!-- 编辑用户Dialog --> 
             <!-- 添加用户Dialog -->
             <el-dialog
             title="新增用户"
             :visible.sync="addUserVisible"
-            width="30%"
+            width="38%"
             class="add"
             >           
             <el-form label-position="right"  label-width="100px" :model="addUserForm" :inline="true" :rules="rules" ref="addUserForm">
@@ -170,12 +169,16 @@
                     <el-form-item label="手机号码：" prop="phone">
                         <el-input v-model="addUserForm.phone"></el-input>
                     </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="addUser">添加</el-button>
-                    </el-form-item><el-form-item>
-                        <el-button type="primary" @click="cancelAdd">取消</el-button>
-                    </el-form-item>
-            </el-form>
+            </el-form >
+            <span slot="footer" class="dialog-footer">
+                <el-form :inline="true">
+                        <el-form-item>
+                            <el-button type="primary" @click="addUser">添加</el-button>
+                        </el-form-item><el-form-item>
+                            <el-button type="primary" @click="cancelAdd">取消</el-button>
+                        </el-form-item>
+                </el-form>
+            </span>
             </el-dialog>
             <!-- 添加用户Dialog -->                          
         </div>

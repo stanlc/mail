@@ -12,7 +12,8 @@
             <span style="color:#0bb6cf;display:block;">设备定位</span><br>
             <span style="color:#56d123;">联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
             <span>位置：{{deviceGroup.position}}{{deviceGroup.positionDetail}}</span><br>
-            <span>状态：开启{{deviceGroup.openStatusNum}}/关闭{{deviceGroup.offStatusNum}}</span><br> 
+            <span>状态：开启{{openBoxNum}}/关闭{{closeBoxNum}}/无状态{{noneBoxNum}}</span><br>
+            <span>箱体数量：{{deviceGroup.totalNum}}</span> 
             <a href="javascript:;" @click="groupShow=!groupShow" style="color:#0bb6cf;display:block;margin-top:5px;">组状态查看</a>
             <div v-if="groupShow" class="group">
                 <span style="color:#0bb6cf;display:block;"> 组状态</span><br>
@@ -33,7 +34,8 @@
                 <el-table
                 :data='deviceList'
                 style="width: 100%"
-                height="540">
+                :height="tableHeight"
+                ref="table">
                     <el-table-column
                     type="index">
                     </el-table-column>
@@ -80,12 +82,17 @@ export default {
             boxx:0,
             boxy:0,
             colors:'',
+            tableHeight:50,
             showmes:false,
             deviceList:[],
             geoDeviceList:[],
+            openBoxNum:0,
+            closeBoxNum:0,
+            noneBoxNum:0,
             deviceGroup:{
             },
             option:{},
+            cDom:{},
             groupShow:false,
         }
     },
@@ -103,7 +110,7 @@ export default {
     mounted(){
         this.utils.getDeviceList(this,{});   //获取设备数据
         this.draw();
-       
+        this.tableChange()
         
     },
     filters:{
@@ -127,14 +134,25 @@ export default {
     methods:{
         show(row){
             this.$http.post(`/device/deviceGroup/${row.deviceNum}`).then(res=>{
-                
                 this.deviceGroup = res.data.data
+                this.openBoxNum = 0
+                this.closeBoxNum = 0
+                this.noneBoxNum = 0
+                let arr = this.deviceGroup.groupInfoList
+                arr.map(item=>{
+                    if(item.openStatus===1){
+                        this.openBoxNum ++
+                    }else if(item.openStatus===0){
+                        this.closeBoxNum ++
+                    }else {
+                        this.noneBoxNum ++
+                    }
+                })
                 //显示弹出框
                 let cc = ((this.deviceGroup.openStatus)===1)?'#9bbc42':'#a32d50'
                 let tude = [parseFloat(this.deviceGroup.organLatitude),parseFloat(this.deviceGroup.organLongitude),cc]
                 //地图标点
                 this.geoDeviceList.push(tude)  //待去重
-                
                 let a = document.getElementById('message')
                 if(row.status===1){
                     this.colors = '#a32d50'
@@ -142,11 +160,13 @@ export default {
                     this.colors = '#9bbc42'
                 }
                 this.myChart.setOption(this.option)
+                this.cDom = this.myChart.getDom
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
-                a.style.top =c[0]-180+'px'                
-                a.style.left=c[1]-170+'px'
+                a.style.top =c[1]-50-100+'px'                
+                a.style.left=c[0]-201+'px'
                 this.showmes = true 
                 this.groupShow = false
+                console.log(this.cDom.nodeType)
             })
         },
         // openInfo(){
@@ -219,7 +239,7 @@ export default {
                         {
                             
                             name:'标签',
-                            type: 'scatter',
+                            type: 'effectScatter',
                             coordinateSystem: 'geo',
                             label: {
                                 normal: {
@@ -256,8 +276,21 @@ export default {
                         //     }
                             
                         // });
+                    },
+                tableChange(){
+                this.$nextTick(function () {
+                    this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 235;
+                    // 监听窗口大小变化
+                    let self = this;
+                    window.onresize = function() {
+                        self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 235
                     }
-            }
+                })
+                //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
+        　　　　 //240表示你想要调整的表格距离底部的高度（你可以自己随意调整），因为我们一般都有放分页组件的，所以需要给它留一个高度　
+                },  
+            },
+ 
 }
 </script>
 <style scoped>

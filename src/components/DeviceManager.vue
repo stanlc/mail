@@ -85,7 +85,7 @@
             <el-dialog
             title="编辑设备"
             :visible.sync="configDeviceDialogVisible"
-            width="40%"
+            width="35%"
             :model="configDeviceForm"
             class="bind"
             >
@@ -97,10 +97,12 @@
                         <el-input v-model="configDeviceForm.devicePosition" ></el-input>
                     </el-form-item>   
                 </el-form>
-                <el-form :inline="true">
-                    <el-button type="primary" @click="configDevice">确定</el-button>
-                    <el-button type="primary" @click="configDeviceDialogVisible =false;configDeviceForm={}">取消</el-button>
-                </el-form>  
+                <span slot="footer" class="dialog-footer">
+                    <el-form :inline="true">
+                        <el-button type="primary" @click="configDevice">确定</el-button>
+                        <el-button type="primary" @click="configDeviceDialogVisible =false;configDeviceForm={}">取消</el-button>
+                    </el-form>  
+                </span>
             </el-dialog>            
             <!-- 编辑设备dialog --> 
             <!-- 配置机构dialog -->
@@ -123,10 +125,12 @@
                         ></select-tree>
                     </el-form-item>
                 </el-form>
-                <el-form :inline="true">
-                    <el-button type="primary" @click="editOrgan">确定</el-button>
-                    <el-button type="primary" @click="configOrganVisible =false;$refs.selectTree.clearHandle()">取消</el-button>
-                </el-form>  
+                <span slot="footer" class="dialog-footer">
+                    <el-form :inline="true">
+                        <el-button type="primary" @click="editOrgan">确定</el-button>
+                        <el-button type="primary" @click="configOrganVisible =false;$refs.selectTree.clearHandle()">取消</el-button>
+                    </el-form>  
+                </span>
             </el-dialog>            
             <!-- 配置机构dialog -->                                         
             <el-table

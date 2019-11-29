@@ -45,6 +45,20 @@ Vue.prototype.$http = axios.create({
 var echarts = require('echarts');
 Vue.prototype.$echarts = echarts;
 
+function debounce(fn, delay) {
+  var timer = null;
+  return function () {
+      var _this = this;
+      var _args = arguments;
+      // 清除上一个timer
+      clearTimeout(timer);
+      // 当最后回调时，经过delay毫秒后执行事件处理程序
+      timer = setTimeout(function() {
+          fn.apply(_this, _args);
+      }, delay);
+  }
+}
+
 //响应拦截
 Vue.prototype.$http.interceptors.response.use(res=>{
     if(res.data.code===500){
@@ -53,17 +67,9 @@ Vue.prototype.$http.interceptors.response.use(res=>{
         message:res.data.message
       })
     }else if(res.data.code===403){
-      
-      // function handle (){
-      //     Vue.prototype.$message({
-      //     type:'error',
-      //     message:'请重新登录'
-      //   })
-      // }
-      // throttle(handle,100)()
       router.replace({ //跳转到登录页面
         path: '/login',
-        query: { redirect: router.currentRoute.fullPath } // 将跳转的路由path作为参数，登录成功后跳转到该路由
+        
       });
     }else{
       return res

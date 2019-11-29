@@ -72,6 +72,10 @@ body .el-table th.gutter{
 background-color: #212e3e !important;    //hover项背景颜色
 }
 
+  .el-table  thead{
+      color: #15d3da !important;
+      
+  }
 
 @import '../assets/common.css'
 </style>

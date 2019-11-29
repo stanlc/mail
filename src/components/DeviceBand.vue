@@ -113,10 +113,12 @@
                         <el-input v-model="bindDeviceForm.genuineCode" ></el-input>
                     </el-form-item>   
                 </el-form>
-                <el-form :inline="true">
-                    <el-button type="primary" @click="bindDevice">确定</el-button>
-                    <el-button type="primary" @click="bindDeviceDialogVisible =false;bindDeviceForm={};clearValidate('bindDeviceForm')">取消</el-button>
-                </el-form>  
+                <span slot="footer" class="dialog-footer">
+                    <el-form :inline="true">
+                        <el-button type="primary" @click="bindDevice">确定</el-button>
+                        <el-button type="primary" @click="bindDeviceDialogVisible =false;bindDeviceForm={};clearValidate('bindDeviceForm')">取消</el-button>
+                    </el-form> 
+                </span>
             </el-dialog>            
             <!-- 绑定设备dialog -->
             <!-- 详情dialog -->
@@ -128,7 +130,9 @@
             >
             用户名：{{accountInfo.userName}}<br>
             用户邮箱：{{accountInfo.email}}<br>
-            <el-button type="primary" @click="infoVisible=false">确定</el-button>  
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="infoVisible=false">确定</el-button>  
+            </span>
             </el-dialog>            
             <!-- 详情dialog -->                   
         </div>

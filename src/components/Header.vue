@@ -8,19 +8,27 @@
           <div class="right clearfix">
             <div class="user">
                 <div class="float">
-                  <img src="../assets/img/vip.png"/>
-                  <span>|</span>
-                  <el-avatar :size="20" icon="el-icon-user-solid"></el-avatar>
-                  <span>{{userName}}</span>
-                  <el-dropdown>
-                  <span class="el-dropdown-link">
-                    <i class="el-icon-arrow-down el-icon--right el-icon-more"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item><span @click="changpassword=true;passForm={}">修改密码</span></el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-                <a href="javascript:;" class="el-icon-d-arrow-right" @click="checkout">退出</a>
+                  <el-breadcrumb separator="|">
+                    <el-breadcrumb-item>
+                        <img src="../assets/img/vip.png"/>
+                    </el-breadcrumb-item>
+                    <el-breadcrumb-item>
+                          <el-avatar :size="20" icon="el-icon-user-solid"></el-avatar>
+                          <span>{{userName}}</span>
+                          <el-dropdown>
+                          <span class="el-dropdown-link">
+                            <i class="el-icon-arrow-down el-icon--right el-icon-more"></i>
+                          </span>
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item><span @click="changpassword=true;passForm={}">修改密码</span></el-dropdown-item>
+                          </el-dropdown-menu>
+                        </el-dropdown>
+                    </el-breadcrumb-item>
+                    <el-breadcrumb-item>
+                         <a href="javascript:;" class="el-icon-d-arrow-right" @click="checkout">退出</a>
+                    </el-breadcrumb-item>
+                  </el-breadcrumb>
+                  
                 </div>
                 
             </div>
@@ -74,15 +82,23 @@ export default {
       this.$router.push('/login')
     },
     upadatepass(){
-      this.$http.post('/user/editPassword',this.passForm).then(res=>{
-        if(res.data.code===200){
-          this.$message({
-            type:'success',
-            message:'修改密码成功，请重新登录'
-          })
-        }
-        this.$router.push('/login')
-      })
+      if(!this.passForm.oldPassword||!this.passForm.oldPassword){
+        this.$message({
+          type:'error',
+          message:'请填写密码'
+        })
+      }else{
+          this.$http.post('/user/editPassword',this.passForm).then(res=>{
+          if(res.data.code===200){
+            this.$message({
+              type:'success',
+              message:'修改密码成功，请重新登录'
+            })
+          }
+          this.$router.push('/login')
+        })
+      }
+   
     }
 
   },
@@ -91,6 +107,16 @@ export default {
 <style scoped lang="scss">
   .float{
   float: left;
+  }
+  .float .el-breadcrumb{
+    height: 30px;
+    line-height: 30px;
+  }
+  .float .el-breadcrumb /deep/ .el-breadcrumb__inner{
+    color: #fff;
+  }
+    .float .el-breadcrumb /deep/ .el-breadcrumb__inner a{
+    color: #fff;
   }
   .float span{
     vertical-align: middle;

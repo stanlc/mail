@@ -258,21 +258,27 @@ export default {
             })
         }, 
         openurl(){
-                this.$http({method:'get',url:this.xlxurl, responseType:'blob'}).then(res=>{
-                  console.log("response: ", res);
-                // new Blob([data])用来创建URL的file对象或者blob对象
-                let url = window.URL.createObjectURL(new Blob([res.data])); 
-                // 生成一个a标签
-                let link = document.createElement("a");
-                link.style.display = "none";
-                link.href = url;
-                // 生成时间戳
-                let arr = this.xlxurl.split('/')
-                let filename = arr.pop()
-                link.download = filename + ".xls";   
-                document.body.appendChild(link);
-                link.click();
-                })
+            
+                if (!!window.ActiveXObject || "ActiveXObject" in window){
+                    window.open(this.xlxurl)
+                }else{
+                        this.$http({method:'get',url:this.xlxurl, responseType:'blob'}).then(res=>{
+                        console.log("response: ", res);
+                        // new Blob([data])用来创建URL的file对象或者blob对象
+                        let url = window.URL.createObjectURL(new Blob([res.data])); 
+                        // 生成一个a标签
+                        let link = document.createElement("a");
+                        link.style.display = "none";
+                        link.href = url;
+                        // 生成时间戳
+                        let arr = this.xlxurl.split('/')
+                        let filename = arr.pop()
+                        link.download = filename;   
+                        document.body.appendChild(link);
+                        link.click();
+                        })
+                }
+
         },        
         //内容格式化
 
