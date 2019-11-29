@@ -143,16 +143,10 @@ export default {
                 }
                 this.myChart.setOption(this.option)
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
-                console.log(s)
                 a.style.top =c[0]-180+'px'                
                 a.style.left=c[1]-170+'px'
                 this.showmes = true 
                 this.groupShow = false
-                
-               
-                   
-                
-                
             })
         },
         // openInfo(){
@@ -306,6 +300,7 @@ export default {
   }
   #map{
       position: absolute;
+      top: 10%;
       left: 62%;
       transform: translateX(-65%);
   }
