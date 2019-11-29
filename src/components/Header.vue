@@ -3,7 +3,7 @@
           <div class="left clearfix">
             <!-- <div class="logo"></div>
             <div class="title">信报箱监测平台</div> -->
-            <p><img class="middle" src="..\assets\img\logo.png"/>信报箱监测平台</p>
+            <p><img class="middle" src="../assets/img/logo.png"/>信报箱监测平台</p>
           </div>
           <div class="right clearfix">
             <div class="user">
