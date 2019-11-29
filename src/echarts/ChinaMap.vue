@@ -193,8 +193,7 @@ export default {
             geo: [
                 {
                     map:'china',
-                    
-                            regions: [
+                    regions: [
                         {
                         name: "南海诸岛",
                         value: 0,
@@ -203,7 +202,7 @@ export default {
                             opacity: 0,
                             label: {
                                 show: false
-                            }
+                            },
                             }
                         }
                         },
@@ -222,13 +221,13 @@ export default {
                             borderColor:'#04b2ac',
                             borderWidth:0.8,
                             areaColor: '#081b41',
-        
                         },
                         emphasis: {
                             borderWidth:1,
                             areaColor: '#081b41',
                             borderColor:'#013a67'
-                        }
+                        },
+                        
                     }
                 }
         
