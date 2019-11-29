@@ -387,7 +387,7 @@ export default {
 }
     /* 组状态样式 */
     .group{
-        margin-top:28px;
+        margin-top:20px;
         position: relative;
         left: -180px;
     }
@@ -403,12 +403,12 @@ export default {
         font-size: 10px; 
     }  
     .group{
-        
         background: url(../assets/img/group.png) no-repeat;
         background-size: contain;
         padding: 15px;
         z-index: 3;
         position: relative;
+        top: -20px;
     }
     .groupBox{
         display: block;
