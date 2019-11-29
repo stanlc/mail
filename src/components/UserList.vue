@@ -327,9 +327,11 @@ export default {
             })
         },        
         searchUser(){
-            this.$http.post('user/userList',this.searchForm).then(res=>{
+            this.searchForm.pageNum = 1
+            this.$http.post('/user/userList',this.searchForm).then(res=>{
                 this.tabelList = res.data.paging.list
                 this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
                 this.totalCount = this.pageInfo.totalCount
                 this.totalPage = this.pageInfo.totalPage 
                 if(res.data.code===200){
@@ -337,7 +339,9 @@ export default {
                         type:'success',
                         message:'查询成功'
                     })
+                    //this.$refs.selectTree.clearHandle()  
                 }
+                 
             })
         },
         clear(){

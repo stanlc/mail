@@ -46,7 +46,7 @@
                     ></el-autocomplete>
                 </el-form-item>  
                 <el-form-item label="所在位置：">
-                        <el-input v-model="searchForm.devicePosition"></el-input>
+                        <el-input v-model="searchForm.devicePosition" placeholder="请输入详细地址"></el-input>
                 </el-form-item>                                                                                                       
             </el-form>
             <el-form>
@@ -339,9 +339,11 @@ export default {
         },
         //筛选
         search(){
+            this.searchForm.pageNum = 1
             this.$http.post('/device/pagerList',this.searchForm).then(res=>{
                 this.tabelList = res.data.paging.list
                 this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
                 this.totalCount = this.pageInfo.totalCount
                 this.totalPage = this.pageInfo.totalPage 
                 if(res.data.code===200){
@@ -349,7 +351,9 @@ export default {
                         type:'success',
                         message:'查询成功'
                     })
+                    this.$refs.selectTree.clearHandle()  
                 }
+                 
             })
         },
         clear(){

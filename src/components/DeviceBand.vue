@@ -26,7 +26,7 @@
                     ></el-autocomplete>
                 </el-form-item> 
                 <el-form-item label="正品码：">
-                    <el-input v-model="searchForm.genuineCode"></el-input>
+                    <el-input v-model="searchForm.genuineCode" placeholder="请输入正品码"></el-input>
                 </el-form-item>                                 
                 <el-form-item>
                     <el-button type="primary" @click="searchBind" size="small" >查询</el-button>
@@ -35,7 +35,7 @@
             </el-form>
             <el-form :inline="true">
                 <el-form-item>
-                    <el-button type="primary" @click="bindDeviceDialogVisible=true;clearValidate('bindDeviceForm')" size="small">绑定设备</el-button>
+                    <el-button type="primary" @click="bindDeviceDialogVisible=true;" size="small">绑定设备</el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="unBind" size="small">解绑设备</el-button>
@@ -99,6 +99,7 @@
             width="25%"
             :model="bindDeviceForm"
             class="bind"
+             @close="clearValidate('bindDeviceForm')"
             >
                 <el-form label-position="right" label-width="auto" :rules="rules" ref="bindDeviceForm" :model="bindDeviceForm">
                     <el-form-item label="设备账号：">
@@ -110,7 +111,7 @@
                         <el-input v-model="bindDeviceForm.deviceSerial" ></el-input>
                     </el-form-item>
                     <el-form-item label="正品码：" prop="genuineCode">
-                        <el-input v-model="bindDeviceForm.genuineCode" ></el-input>
+                        <el-input v-model="bindDeviceForm.genuineCode"></el-input>
                     </el-form-item>   
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -330,9 +331,11 @@ export default {
         },
         //筛选
         searchBind(){
+            this.searchForm.pageNum = 1
             this.$http.post('/serial/pagerList',this.searchForm).then(res=>{
                 this.tabelList = res.data.paging.list
                 this.pageInfo = res.data.paging
+                this.currentPage = this.pageInfo.currentPage
                 this.totalCount = this.pageInfo.totalCount
                 this.totalPage = this.pageInfo.totalPage 
                 if(res.data.code===200){
@@ -340,12 +343,10 @@ export default {
                         type:'success',
                         message:'查询成功'
                     })
+                    //this.$refs.selectTree.clearHandle()  
                 }
-            })
-            this.searchForm = {
-                "pageNum": 1,
-                "pageSize": 4
-            }                        
+                 
+            })                       
         },
         clear(){
             this.searchForm = {
