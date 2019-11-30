@@ -203,8 +203,9 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage"
+            :page-sizes="[5, 10, 15,20]"
             :page-size="pagesize"
-            layout="total, prev, pager, next, jumper"
+            layout="total, prev, pager, next, sizes,jumper"
             background
             :total="totalCount">
             </el-pagination>
@@ -218,7 +219,7 @@ export default {
         return {
            
             pageNum:1,
-            pageSize:7,
+            pageSize:10,
             deviceList:[],
             accountList:[],
             organList:[],
@@ -230,13 +231,13 @@ export default {
             valueId:0,
             pageInfo:{},
             currentPage: 1,
-            pagesize:7,
+            pagesize:10,
             totalCount:0,
             totalPage:0,
             tableHeight:50,
             searchForm:{
-                "pageNum": 1,
-                "pageSize": 7
+                "pageNum": this.pageNum,
+                "pageSize": this.pageSize
             },
             props:{
                 value:'id',

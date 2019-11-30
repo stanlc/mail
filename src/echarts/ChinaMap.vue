@@ -162,8 +162,13 @@ export default {
                 this.myChart.setOption(this.option)
                 this.cDom = this.myChart.getDom
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
-                a.style.top =c[1]-50-100+'px'                
-                a.style.left=c[0]-201+'px'
+                if(window.screen.width>=1920){
+                    a.style.top =c[1]-120+'px'                
+                    a.style.left=c[0]-75+'px'
+                }else{
+                    a.style.top =c[1]-50-100+'px'                
+                    a.style.left=c[0]-201+'px'
+                }
                 this.showmes = true 
                 this.groupShow = false
                 console.log(this.cDom.nodeType)

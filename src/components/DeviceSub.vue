@@ -32,7 +32,7 @@
                     <el-button type="primary" @click="addOldAccountVisible=true">绑定已有订阅账号</el-button>
                 </el-form-item> -->
                 <el-form-item>
-                    <el-button type="primary" @click="addAccountDialogVisible=true;addAccountForm={};clearValidate('ruleForm')">创建新的订阅账号</el-button>
+                    <el-button type="primary" @click="addAccountDialogVisible=true;addAccountForm={}">创建新的订阅账号</el-button>
                 </el-form-item>                
             </el-form>
             <el-table
@@ -89,7 +89,8 @@
             title="创建新的订阅账号"
             :visible.sync="addAccountDialogVisible"
             width="40%"
-            :model="addAccountForm">
+            :model="addAccountForm"
+            @close="clearValidate('ruleForm')">
             <el-form :inline="true">
                 <el-form-item label="所在地区：">
                     <el-select v-model="addAccountForm.provCode" @change="changeProvince" placeholder="省级地区">
@@ -171,8 +172,9 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage"
+            :page-sizes="[5, 10, 15,20]"
             :page-size="pagesize"
-            layout="total, prev, pager, next, jumper"
+            layout="total, prev, pager, next, sizes,jumper"
             background
             :total="totalCount">
             </el-pagination>
@@ -201,11 +203,11 @@ export default {
             },
             pageInfo:{},
             currentPage: 1,
-            pagesize:8,
+            pagesize:10,
             totalCount:0,
             totalPage:0,
             pageNum:1,
-            pageSize:8,
+            pageSize:10,
             tableHeight:50,
             tabelList:[],
             accountList:[
@@ -399,9 +401,9 @@ export default {
             })
         },
         clear(){
-            this.searchForm = {
-                "pageNum": 1,
-                "pageSize": 8
+            this.searchForm={
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
             }
             this.getList(this.searchForm)         
         },

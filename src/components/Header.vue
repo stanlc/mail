@@ -118,6 +118,9 @@ export default {
     .float .el-breadcrumb /deep/ .el-breadcrumb__inner a{
     color: #fff;
   }
+      .float .el-breadcrumb /deep/ .el-breadcrumb__inner a:hover{
+    color: #00ffdd;
+  }
   .float span{
     vertical-align: middle;
   }

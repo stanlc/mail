@@ -164,7 +164,7 @@
             <div>
                 <el-form :inline="true">
                     <el-form-item>
-                        <el-button type="primary" @click="addRoleDialogVisible=true;clearValidate('addRoleForm');addRoleForm={}" :disabled="addUserBtn">录入</el-button>
+                        <el-button type="primary" @click="addRoleDialogVisible=true;addRoleForm={}" :disabled="addUserBtn">录入</el-button>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="configRole" :disabled="editUserBtn">编辑</el-button>
@@ -214,7 +214,8 @@
             title="角色录入"
             :visible.sync="addRoleDialogVisible"
             width="20%"
-            custom-class="sameLevel">
+            custom-class="sameLevel"
+            @close="clearValidate('addRoleForm');">
             <el-dialog
             width="30%"
             title="请选择经纬度"
@@ -480,7 +481,6 @@ export default {
             }else{
                 this.subDialogVisible=true
                 this.subLevelForm.referId = this.selectOrganId
-                
             }
         },
         openConfig(){

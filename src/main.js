@@ -45,19 +45,6 @@ Vue.prototype.$http = axios.create({
 var echarts = require('echarts');
 Vue.prototype.$echarts = echarts;
 
-function debounce(fn, delay) {
-  var timer = null;
-  return function () {
-      var _this = this;
-      var _args = arguments;
-      // 清除上一个timer
-      clearTimeout(timer);
-      // 当最后回调时，经过delay毫秒后执行事件处理程序
-      timer = setTimeout(function() {
-          fn.apply(_this, _args);
-      }, delay);
-  }
-}
 
 //响应拦截
 Vue.prototype.$http.interceptors.response.use(res=>{

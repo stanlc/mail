@@ -6,16 +6,16 @@
         <div>
             <el-form :inline="true" :model="searchForm">
                 <el-form-item label="用户名称：">
-                    <el-input v-model="searchForm.nickName"></el-input>
+                    <el-input v-model="searchForm.nickName" placeholder="请输入用户名称"></el-input>
                 </el-form-item>
                 <el-form-item label="登录名称：">
-                    <el-input v-model="searchForm.userName"></el-input>
+                    <el-input v-model="searchForm.userName" placeholder="请输入登录名称"></el-input>
                 </el-form-item> 
                 <el-form-item label="手机号：">
-                    <el-input v-model="searchForm.phone"></el-input>
+                    <el-input v-model="searchForm.phone" placeholder="请输入手机号"></el-input>
                 </el-form-item>
-                <el-form-item label="电子邮箱：">
-                    <el-input v-model="searchForm.email"></el-input>
+                <el-form-item label="电子邮箱：" >
+                    <el-input v-model="searchForm.email" placeholder="请输入电子邮箱"></el-input>
                 </el-form-item>               
                 <el-form-item>
                     <el-button type="primary" @click="searchUser">查询</el-button>
@@ -140,6 +140,7 @@
             :visible.sync="addUserVisible"
             width="38%"
             class="add"
+            @close="clearValidate('addUserForm')"
             >           
             <el-form label-position="right"  label-width="100px" :model="addUserForm" :inline="true" :rules="rules" ref="addUserForm">
                 <el-form-item label="机构名称：" >
@@ -187,8 +188,9 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage"
+            :page-sizes="[5, 10, 15,20]"
             :page-size="pagesize"
-            layout="total, prev, pager, next, jumper"
+            layout="total, prev, pager, next,sizes, jumper"
             background
             :total="totalCount">
             </el-pagination>
@@ -214,13 +216,13 @@ export default {
         return {
             searchForm:{
                 "pageNum": 1,
-                "pageSize": 8,
+                "pageSize": 10,
             },
             pageInfo:{},
             currentPage: 1,
-            pagesize:8,
+            pagesize:10,
             pageNum:1,
-            pageSize:8,
+            pageSize:10,
             totalCount:0,
             totalPage:0,
             tableHeight:50,
@@ -355,7 +357,7 @@ export default {
             this.allOrganList = this.utils.getAllNode(this.organList,'childrenList')
             this.addUserVisible=true
             this.addUserForm={}
-            this.clearValidate('addUserForm')
+            // this.clearValidate('addUserForm')
         },
         addUser(){
             // if(this.addUserForm.organId){

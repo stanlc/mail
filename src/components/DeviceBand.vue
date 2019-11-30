@@ -142,8 +142,9 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage"
+            :page-sizes="[5, 10, 15,20]"
             :page-size="pagesize"
-            layout="total, prev, pager, next, jumper"
+            layout="total, prev, pager, next, sizes,jumper"
             background
             :total="totalCount">
             </el-pagination>
@@ -173,12 +174,12 @@ export default {
                 },
             pageInfo:{},
             currentPage: 1,
-            pagesize:4,
+            pagesize:10,
             totalCount:0,
             totalPage:0,
             tabelList:[],
             pageNum:1,
-            pageSize:4,
+            pageSize:10,
             tableHeight:50,
             addOldAccountForm:{},
             bindDeviceForm:{},
@@ -303,8 +304,8 @@ export default {
                         message:'解绑成功'
                     })
                     that.utils.getbindList(that,{
-                        "pageNum": 1,
-                        "pageSize": 4
+                        "pageNum": that.pageNum,
+                        "pageSize": that.pageSize
                     })
                 }
             })
@@ -321,8 +322,8 @@ export default {
                                 message:'解绑成功'
                             })
                             that.utils.getbindList(that,{
-                                "pageNum": 1,
-                                "pageSize": 8
+                                "pageNum": that.pageNum,
+                                "pageSize": that.pageSize
                             })
                         }
                     })                    
@@ -349,9 +350,9 @@ export default {
             })                       
         },
         clear(){
-            this.searchForm = {
-                "pageNum": 1,
-                "pageSize": 4
+            this.searchForm={
+                'pageNum':this.pageNum,
+                'pageSize':this.pageSize,
             }
             this.getList(this.searchForm)    
         },
