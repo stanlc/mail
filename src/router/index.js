@@ -104,6 +104,10 @@ const router = new VueRouter({
 
 router.beforeEach((to,from,next)=>{
   if(!to.meta.isPubilc && !localStorage.token){ 
+    Vue.prototype.$message({
+      type:'error',
+      message:'请先登录'
+    })
     return next('/login')
   }
     return next()  

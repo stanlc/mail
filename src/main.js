@@ -68,6 +68,10 @@ Vue.prototype.$http.interceptors.request.use(
   config => {
       if (localStorage.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
           config.headers["x-user-token"] = `${localStorage.token}`;
+      }else{       
+        router.replace({ //跳转到登录页面
+          path: '/login',
+        });
       }
       return config;
   },
