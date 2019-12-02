@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="mapbox">
+        <div class="mapbox" id="mapbox">
             <div class="statImg">
                 <img src="../assets/img/on.png"/><span style="">在线</span>
                 <img src="../assets/img/off.png"/><span>离线</span>
             </div>
-            <div id="map" style="width:650px;height:500px;"> 
+            <div id="map" style="width:100%;height:100%;"> 
             </div>
             <div id="message" v-show="showmes">
             <a class="close" @click="showmes=false">X</a>
@@ -71,8 +71,6 @@
 <script>
 
 import "echarts/map/js/china.js"
-import GroupInfo from '../components/GroupInfo'
-import "echarts-gl" //3D地图插件
 export default {
     data(){
         return {
@@ -95,9 +93,6 @@ export default {
             cDom:{},
             groupShow:false,
         }
-    },
-    components:{
-        GroupInfo,
     },
     computed:{
         rest(){
@@ -162,13 +157,9 @@ export default {
                 this.myChart.setOption(this.option)
                 this.cDom = this.myChart.getDom
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
-                if(window.screen.width>=1920){
-                    a.style.top =c[1]-120+'px'                
-                    a.style.left=c[0]-75+'px'
-                }else{
-                    a.style.top =c[1]-50-100+'px'                
-                    a.style.left=c[0]-201+'px'
-                }
+                let box = document.getElementById('map').getElementsByTagName('div')[0]
+                a.style.top =c[1]*100/box.offsetWidth-180*100/box.offsetWidth+5+'%'                
+                a.style.left=c[0]*100/box.offsetHeight-200*100/box.offsetHeight+'%'
                 this.showmes = true 
                 this.groupShow = false
                 console.log(this.cDom.nodeType)
@@ -193,6 +184,7 @@ export default {
         },
         draw(){
             this.myChart = this.$echarts.init(document.getElementById('map'))
+            let myMap = this.myChart
             this.option = {
         
             geo: [
@@ -269,17 +261,10 @@ export default {
                     ]
                     }
                     this.myChart.setOption(this.option)
-                     let that = this
-                        // this.myChart.on('click',function(params){
-                        //     that.boxx= params.event.event.layerX  -143       //获取点击位置
-                        //     that.boxy = params.event.event.layerY-170
-                        //     console.log(params)
-                        //     if(params.data.name){
-                        //         that.openInfo() 
-                                
-                        //     }
-                            
-                        // });
+                    window.addEventListener("resize",function(){   
+                        myMap.resize();
+                    });
+
                     },
                 tableChange(){
                 this.$nextTick(function () {
@@ -289,6 +274,7 @@ export default {
                     window.onresize = function() {
                         self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 235
                     }
+
                 })
                 //this.$refs.table.$el.offsetTop：表格距离浏览器的高度
         　　　　 //240表示你想要调整的表格距离底部的高度（你可以自己随意调整），因为我们一般都有放分页组件的，所以需要给它留一个高度　
@@ -337,9 +323,8 @@ export default {
   }
   #map{
       position: absolute;
-      top: 10%;
-      left: 62%;
-      transform: translateX(-65%);
+      left: -4%;
+      top: 5%;
   }
   .statImg{
       position: absolute;
@@ -381,7 +366,7 @@ export default {
     padding: 15px;
     display: block; 
     position: absolute;
-    top:0;
+    top:0%;
     left: 0%;
 }
 .table{

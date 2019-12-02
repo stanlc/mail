@@ -21,7 +21,7 @@
                     </el-form-item>
                 </el-form>
             <div  class="organTree">
-                <el-tree :data="organList" :props="organProps" @node-click="handleNodeClick" default-expand-all></el-tree>
+                <el-tree :data="organList" :props="organProps" @node-click="handleNodeClick" default-expand-all ></el-tree>
             </div>
             <!-- 录入同级Dialog -->
             <el-dialog
@@ -740,5 +740,8 @@ export default {
     /* .el-tree:hover{
         background: none;
     } */
-
+    .el-tree-node.is-current>.el-tree-node__content {
+    color: #4d95fd;
+    font-weight: bold;
+} 
 </style>

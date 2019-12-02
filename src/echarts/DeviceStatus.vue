@@ -1,6 +1,6 @@
 <template>
     <div class="box">
-        <div id="main" style="width: 300px;height:100px;"></div>
+        <div id="main" style="width: 80%;height:100%;"></div>
     </div>
 </template>
 <script>
@@ -57,12 +57,16 @@ export default {
                 let count = this.count
                 var colors=[['#35ddf0','#176273' ],['#ff8c37', '#ffdcc3'],['#ffc257', '#ffedcc'], ['#fd6f97', '#fed4e0'],['#a181fc', '#e3d9fe']]
                 data.forEach(function(item, index){
-                    
+                    if (!!window.ActiveXObject || "ActiveXObject" in window){
+                       var lindex = index*1
+                    }else{
+                        lindex = index
+                    }
                     titleArr.push(
                         {
                             text:item.name,
-                            left: index * 20 + 8.5 +'%',
-                            top: '80%',
+                            left: index * 25 + 11 +'%',
+                            top: '75%',
                             textAlign: 'center',
                             textStyle: {
                                 fontWeight: 'normal',
@@ -77,7 +81,7 @@ export default {
                             name: item.name,
                             type: 'pie',
                             clockWise: false,
-                            radius: [20, 25],
+                            radius: ['30%', '35%'],
                             itemStyle:  {
                                 normal: {
                                     color: colors[index][0],
@@ -92,7 +96,7 @@ export default {
                                 }
                             },
                             hoverAnimation: false,
-                            center: [index * 20 + 10 +'%', '50%'],
+                            center: [index * 26 + 11 +'%', '50%'],
                             data: [{
                                 value: item.value,
                                 label: {
@@ -123,21 +127,31 @@ export default {
                             }]
                         }    
                     )
+                   
                 });
             
-                
+              
             let option = {
                 title:titleArr,
                 series: seriesArr
             }
+            // let a = document.getElementById('main').getElementsByTagName('div')[0]
+            // if (!!window.ActiveXObject || "ActiveXObject" in window){
+            //     a.style.width = '300px'
+            // }
+            
             myChart.setOption(option)
+            window.addEventListener("resize",function(){   
+                myChart.resize();
+            });
         }
     }
 }
 </script>
 <style scoped>
     .box{
-    width: 100%;
+    width: 20vw;
+    height: 10vw; 
     display: -moz-box;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -154,5 +168,7 @@ export default {
     -webkit-justify-content: center;
     /*for ie9*/
     justify-content: center;
+    
     }
+
 </style>

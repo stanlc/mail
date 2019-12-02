@@ -7,14 +7,12 @@
                     <device-status class="cav"></device-status>
                 </div>
                 <div class="count">
-                    <div class="dcount">
                       <el-button type="text" icon="el-icon-more" class="more" @click="$router.push('/device/manager')"></el-button>
                       <device-count></device-count>
-                    </div>
                 </div>
                 <div class="monitor">
                   <el-button type="text" icon="el-icon-more" class="more" @click="$router.push('/loger/list')"></el-button>
-                  <log-count></log-count>
+                  <log-count class="logecharts"></log-count>
                 </div>
             </div>
         </el-col>
@@ -124,8 +122,14 @@ export default {
     position: relative;
     padding-top: 5px;
   }
-  .status .cav{
-    margin-left: 60px;
+  // .status .cav{
+  //   margin-left: 60px;
+  //   width:100%;
+  // }
+  @media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+        .status .cav{
+            margin: 0 10%;
+          }
   }
   .count{
     background: url(..\assets\img\deviceCount.png) no-repeat;
@@ -138,7 +142,6 @@ export default {
     position: relative; 
     margin-top: 25px;
   }
-  
   .monitor{
     background: url(..\assets\img\logCount.png) no-repeat;
     background-size:100%;
@@ -150,7 +153,7 @@ export default {
     position: relative; 
     margin-top: 25px;
   }  
-  
+
   .more{
     position: absolute;
     top:10px;

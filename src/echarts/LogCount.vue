@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="box">
         <div class="datebox">
             <span>{{today}}</span>
             <div class="selectbox">
@@ -12,9 +12,8 @@
                     <option v-for="index of 12" :key="index" :label="index" :value="index"></option>
                 </select>                
             </div>
-
         </div>
-        <div id="log" style="width: 280px;height:200px;"></div>
+        <div id="log" style="width: 95%;height:190%;"></div>
     </div>
 </template>index
 <script>
@@ -74,7 +73,7 @@ export default {
             let days = d.getDate()
             let arr = []
             arr = [...Array(days).keys()]
-            this.day = arr
+            this.day = arr.map(item=>item+1)
         },
 
         getValue(){
@@ -102,6 +101,7 @@ export default {
         draw(){
             let that = this
             this.myChart = this.$echarts.init(document.getElementById('log'))
+            let myLog = this.myChart
             this.option={
                 tooltip:{
                     show:true,
@@ -129,6 +129,12 @@ export default {
                 },
                 yAxis: {
                     type: 'value',
+                    name:'(次)',
+                    nameGap:5,
+                    nameTextStyle:{
+                        color:'#fff',
+                        align:'right',
+                    },
                     axisLabel: {
                        color:'#fff'
                     },
@@ -161,7 +167,10 @@ export default {
 
             }
             this.myChart.setOption(this.option)
-        }
+            window.addEventListener("resize",function(){   
+                        myLog.resize();
+                    });
+            }
     }
 }
 </script>
@@ -201,8 +210,16 @@ export default {
       color: #00ffff; 
       margin-left:8px;
   }
+  #log{
+      position: relative;
+      top:10px;
+      left:5%;
+  }
   .selectbox{
       float: right;
        
+  }
+.box{
+      width:100%;
   }
 </style>

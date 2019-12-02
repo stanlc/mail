@@ -32,7 +32,9 @@ export default {
 }
 </script>
 <style lang='scss'>
-    
+.el-input__inner{
+  line-height: 0 !important;   //ie下有line-height文字不会垂直居中
+}    
     //Table样式
 body .el-table th.gutter{
   display: table-cell!important;  //浏览器缩放表头出现白边
@@ -78,4 +80,6 @@ background-color: #212e3e !important;    //hover项背景颜色
   }
 
 @import '../assets/common.css'
+
+
 </style>

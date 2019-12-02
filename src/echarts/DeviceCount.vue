@@ -1,7 +1,7 @@
 <template>
     <div class="box">
         <span class="total"><b>{{count}}</b>总设备（台）</span>
-        <div id="count" style="width:300px;height:150px;"></div>
+        <div id="count" style="width:100%;height:100%;"></div>
     </div>
 </template>
 <script>
@@ -57,11 +57,11 @@ export default {
             myChart.setOption({
                     title:{
                         text:that.count,
-                        top:'45%',
-                        left:'47.5%',
+                        top:'center',
+                        left:'center',
                         textStyle:{
                             fontWeight: 'normal',
-                            fontSize: '14',
+                            fontSize: '18',
                             color: '#fff',
                             textAlign: 'center',
                         }
@@ -69,7 +69,7 @@ export default {
                     series : [
                     {
                         type: 'pie',
-                        radius: [20,30],
+                        radius: ['40%',"65%"],
                         label:{
                             normal:{
                                 fontSize:'10',
@@ -84,12 +84,18 @@ export default {
                     }
                 ]
             })
+            window.addEventListener("resize",function(){   
+                myChart.resize();
+            });
         }
     }
 }
 </script>
 <style scoped>
-
+  .box{
+      width:100%;
+      height: 60%;
+  }
   .total{
     position: absolute;
     top: 25px;
