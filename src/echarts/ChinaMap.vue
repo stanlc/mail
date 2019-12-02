@@ -158,8 +158,14 @@ export default {
                 this.cDom = this.myChart.getDom
                 let c = this.myChart.convertToPixel('geo', tude);   //把经纬度转为坐标
                 let box = document.getElementById('map').getElementsByTagName('div')[0]
-                a.style.top =c[1]*100/box.offsetWidth-180*100/box.offsetWidth+5+'%'                
-                a.style.left=c[0]*100/box.offsetHeight-200*100/box.offsetHeight+'%'
+                if(document.body.clientWidth>1440){
+                    a.style.top =c[1]*100/box.offsetWidth-180*100/box.offsetWidth+6+'%'                
+                    a.style.left=c[0]*100/box.offsetHeight-200*100/box.offsetHeight-2+'%'
+                }else{
+                    a.style.top =c[1]*100/box.offsetWidth-180*100/box.offsetWidth+5+'%'                
+                    a.style.left=c[0]*100/box.offsetHeight-200*100/box.offsetHeight+'%'                    
+                }
+
                 this.showmes = true 
                 this.groupShow = false
                 console.log(this.cDom.nodeType)

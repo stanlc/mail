@@ -1,6 +1,6 @@
 <template>
     <div class="box">
-        <div id="main" style="width: 80%;height:100%;"></div>
+        <div id="main" :class="[isIe?'ieCls':'normalCls']"></div>
     </div>
 </template>
 <script>
@@ -24,6 +24,15 @@ export default {
     mounted(){
         this.getValue();   //获取设备数据
         
+    },
+    computed:{
+        isIe(){
+           if (!!window.ActiveXObject || "ActiveXObject" in window){
+               return true
+           }else{
+               return false
+           } 
+        }
     },
     methods:{
         getValue(){
@@ -57,11 +66,7 @@ export default {
                 let count = this.count
                 var colors=[['#35ddf0','#176273' ],['#ff8c37', '#ffdcc3'],['#ffc257', '#ffedcc'], ['#fd6f97', '#fed4e0'],['#a181fc', '#e3d9fe']]
                 data.forEach(function(item, index){
-                    if (!!window.ActiveXObject || "ActiveXObject" in window){
-                       var lindex = index*1
-                    }else{
-                        lindex = index
-                    }
+
                     titleArr.push(
                         {
                             text:item.name,
@@ -170,5 +175,12 @@ export default {
     justify-content: center;
     
     }
-
+    .ieCls{
+        width: 110%;
+        height: 100%;
+    }
+    .normalCls{
+        width: 80%;
+        height: 100%;
+    }
 </style>
