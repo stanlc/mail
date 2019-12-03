@@ -86,7 +86,7 @@ export default {
     
   }
   .bg-purple{
-    margin-top: -10px;
+    margin-top: -0.5%;
   }
   .bg-purple-dark {
     background: #99a9bf;

@@ -352,7 +352,6 @@ export default {
                         type:'success',
                         message:'查询成功'
                     })
-                    this.$refs.selectTree.clearHandle()  
                 }
                  
             })
@@ -453,12 +452,12 @@ export default {
         }, 
         tableChange(){
         this.$nextTick(function () {
-            this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 240;
+            this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 0.3*window.innerHeight;
             
             // 监听窗口大小变化
             let self = this;
             window.onresize = function() {
-                self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 240
+                self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 0.3*window.innerHeight
             }
         })
         //this.$refs.table.$el.offsetTop：表格距离浏览器的高度

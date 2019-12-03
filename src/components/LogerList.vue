@@ -140,7 +140,7 @@
                 <p>位置：{{deviceInfo.position}}</p>
                 <p>状态：开启{{deviceInfo.openStatusNum}}/关闭{{deviceInfo.offStatusNum}}</p>
                 <p>箱体数量：{{deviceInfo.totalNum}}</p>
-                <div class="groupBox center">
+                <div class="groupBox">
                     <div v-for="item in deviceInfo.groupInfoList" :key="item.index" class="groupItem">
                         <span class="boxName">{{item.positionDetail|boxposition}}</span>
                         <p :class="item.openStatus===1?'green':'red'">{{item.openStatus|openStat}}</p>
@@ -480,12 +480,12 @@ export default {
         //tabel高度
         tabelChange(){
         this.$nextTick(function () {
-            this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 240;
+            this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 0.3*window.innerHeight;
             
             // 监听窗口大小变化
             let self = this;
             window.onresize = function() {
-                self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 240
+                self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop -  0.3*window.innerHeight
             }
         })
         //this.$refs.table.$el.offsetTop：表格距离浏览器的高度

@@ -12,7 +12,7 @@
             <span style="color:#0bb6cf;display:block;">设备定位</span><br>
             <span style="color:#56d123;">联系人：{{deviceGroup.organPerson}} {{deviceGroup.phone}}</span><br>
             <span>位置：{{deviceGroup.position}}{{deviceGroup.positionDetail}}</span><br>
-            <span>状态：开启{{openBoxNum}}/关闭{{closeBoxNum}}/无状态{{noneBoxNum}}</span><br>
+            <span>状态：开启{{deviceGroup.openStatusNum}}/关闭{{deviceGroup.offStatusNum}}</span><br>
             <span>箱体数量：{{deviceGroup.totalNum}}</span> 
             <a href="javascript:;" @click="groupShow=!groupShow" style="color:#0bb6cf;display:block;margin-top:5px;">组状态查看</a>
             <div v-if="groupShow" class="group">
@@ -274,11 +274,12 @@ export default {
                     },
                 tableChange(){
                 this.$nextTick(function () {
-                    this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 235;
+                    let tableoffset = document.getElementsByClassName('table')[0].offsetHeight
+                    this.tableHeight = 0.9*tableoffset ;
                     // 监听窗口大小变化
                     let self = this;
                     window.onresize = function() {
-                        self.tableHeight = window.innerHeight - self.$refs.table.$el.offsetTop - 235
+                        self.tableHeight = 0.9*tableoffset
                     }
 
                 })
@@ -308,7 +309,8 @@ export default {
     background-size:contain;
     width: 43vw;
     height: 40vw;
-    margin-top: -10px;
+    margin-top: -0.5%;
+    margin-left: -0.5%;
     display: -moz-box;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -351,7 +353,8 @@ export default {
     background-size:100% 100%;   
     width: 26vw;
     height: 40vw;   
-    margin-top: -10px;
+    margin-top: -0.5%;
+    margin-left: 0.5%;
     padding: 0 15px;
   }
   .table .el-table{
